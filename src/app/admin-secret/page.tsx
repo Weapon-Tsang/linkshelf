@@ -1,6 +1,6 @@
+import { redirect } from "next/navigation";
 import { safeReturnTo } from "@/features/auth/guards";
 import { GoogleLoginButton } from "@/features/auth/google-login-button";
-import { createAdminEntryToken } from "@/features/auth/session";
 
 interface AdminSecretPageProps {
   readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -13,8 +13,18 @@ function first(value: string | string[] | undefined): string | undefined {
 export default async function AdminSecretPage({ searchParams }: AdminSecretPageProps) {
   const query = await searchParams;
   const returnTo = safeReturnTo(first(query.returnTo), "/admin/dashboard");
+  const requestedChallenge = first(query.challenge);
   const entry =
-    process.env.NODE_ENV === "production" ? undefined : createAdminEntryToken();
+    requestedChallenge &&
+    /^v1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(requestedChallenge)
+      ? requestedChallenge
+      : undefined;
+
+  if (process.env.NODE_ENV !== "production" && !entry) {
+    redirect(
+      `/api/auth/admin-entry?returnTo=${encodeURIComponent(returnTo)}`,
+    );
+  }
 
   return (
     <main className="flex min-h-screen flex-col bg-[#f3f5f7] px-5 py-10 text-[var(--ink)] sm:px-10">

@@ -1,14 +1,19 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   DEVELOPMENT_ONLY_SESSION_SECRET,
+  ADMIN_ENTRY_COOKIE_NAME,
+  MAX_ADMIN_ENTRY_AGE_MS,
   MAX_SESSION_AGE_MS,
   SESSION_COOKIE_NAME,
   createSessionCookie,
+  createAdminEntryChallenge,
+  consumeAdminEntryChallenge,
   decodeSession,
   encodeSession,
   readSessionFromRequest,
   readSessionToken,
   resolveSessionSecret,
+  verifyAdminEntryChallenge,
 } from "@/features/auth/session";
 
 const SECRET = "test-secret-that-is-long-enough-for-hmac";
@@ -98,6 +103,32 @@ describe("session cookie helpers", () => {
     ).toThrow(/AUTH_SECRET/);
   });
 
+  it.each([undefined, " ".repeat(40), "x".repeat(31)])(
+    "rejects weak production secret %s",
+    (authSecret) => {
+      expect(() =>
+        resolveSessionSecret({ nodeEnv: "production", authSecret }),
+      ).toThrow(/32 bytes/);
+    },
+  );
+
+  it("accepts a non-whitespace production secret of at least 32 bytes", () => {
+    const authSecret = "s".repeat(32);
+    expect(resolveSessionSecret({ nodeEnv: "production", authSecret })).toBe(
+      authSecret,
+    );
+  });
+
+  it("does not let explicit weak secrets bypass production enforcement", () => {
+    expect(() =>
+      createSessionCookie("user-creator", {
+        secret: "too-short",
+        now: NOW,
+        nodeEnv: "production",
+      }),
+    ).toThrow(/32 bytes/);
+  });
+
   it("creates an HTTP-only, same-site cookie with production security", () => {
     const cookie = createSessionCookie("user-creator", {
       secret: SECRET,
@@ -154,5 +185,99 @@ describe("session cookie helpers", () => {
     expect(
       readSessionFromRequest(new Request("https://linkshelf.test/")),
     ).toBeNull();
+  });
+});
+
+describe("one-time admin entry challenges", () => {
+  const nonce = "n".repeat(43);
+
+  it("binds a short-lived signed payload to an HTTP-only browser cookie", () => {
+    const challenge = createAdminEntryChallenge("/admin/dashboard", {
+      secret: SECRET,
+      now: NOW,
+      nonce,
+      nodeEnv: "development",
+    });
+
+    expect(challenge.cookie).toMatchObject({
+      name: ADMIN_ENTRY_COOKIE_NAME,
+      value: nonce,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: MAX_ADMIN_ENTRY_AGE_MS / 1000,
+      },
+    });
+    expect(
+      verifyAdminEntryChallenge(
+        challenge.token,
+        challenge.cookie.value,
+        "/admin/dashboard",
+        { secret: SECRET, now: NOW },
+      ),
+    ).toMatchObject({ nonce, returnTo: "/admin/dashboard" });
+  });
+
+  it("rejects expired, cookie-mismatched, and return-mismatched challenges", () => {
+    const challenge = createAdminEntryChallenge("/admin/dashboard", {
+      secret: SECRET,
+      now: NOW,
+      nonce,
+    });
+
+    expect(
+      verifyAdminEntryChallenge(
+        challenge.token,
+        challenge.cookie.value,
+        "/admin/dashboard",
+        { secret: SECRET, now: NOW + MAX_ADMIN_ENTRY_AGE_MS },
+      ),
+    ).toBeNull();
+    expect(
+      verifyAdminEntryChallenge(
+        challenge.token,
+        "different-browser-nonce",
+        "/admin/dashboard",
+        { secret: SECRET, now: NOW },
+      ),
+    ).toBeNull();
+    expect(
+      verifyAdminEntryChallenge(
+        challenge.token,
+        challenge.cookie.value,
+        "/admin/other",
+        { secret: SECRET, now: NOW },
+      ),
+    ).toBeNull();
+  });
+
+  it("consumes each valid nonce only once", () => {
+    const uniqueNonce = "r".repeat(43);
+    const challenge = createAdminEntryChallenge("/admin/dashboard", {
+      secret: SECRET,
+      now: NOW,
+      nonce: uniqueNonce,
+    });
+    const consume = () =>
+      consumeAdminEntryChallenge(
+        challenge.token,
+        challenge.cookie.value,
+        "/admin/dashboard",
+        { secret: SECRET, now: NOW },
+      );
+
+    expect(consume()).toMatchObject({ nonce: uniqueNonce });
+    expect(consume()).toBeNull();
+  });
+
+  it("normalizes unsafe return paths before signing", () => {
+    const challenge = createAdminEntryChallenge("//evil.example/steal", {
+      secret: SECRET,
+      now: NOW,
+      nonce: "s".repeat(43),
+    });
+
+    expect(challenge.payload.returnTo).toBe("/admin/dashboard");
   });
 });

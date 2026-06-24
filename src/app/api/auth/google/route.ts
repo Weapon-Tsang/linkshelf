@@ -5,10 +5,12 @@ import {
   resolveDevelopmentUser,
   type DevelopmentRoleHint,
 } from "@/features/auth/adapter";
-import { safeReturnTo } from "@/features/auth/guards";
+import { hasSameOrigin, safeReturnTo } from "@/features/auth/guards";
 import {
+  ADMIN_ENTRY_COOKIE_NAME,
+  consumeAdminEntryChallenge,
   createSessionCookie,
-  verifyAdminEntryToken,
+  readAdminEntryCookie,
 } from "@/features/auth/session";
 
 const DEFAULT_DESTINATIONS: Record<DevelopmentRoleHint, string> = {
@@ -26,6 +28,12 @@ function redirect(request: Request, pathname: string): NextResponse {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  if (!hasSameOrigin(request)) {
+    return new Response("Cross-origin authentication request rejected", {
+      status: 403,
+    });
+  }
+
   let form: FormData;
   try {
     form = await request.formData();
@@ -49,7 +57,14 @@ export async function POST(request: Request): Promise<Response> {
   if (!isRoleHint(role)) {
     return new Response("Invalid development role", { status: 400 });
   }
-  if (role === "admin" && !verifyAdminEntryToken(form.get("entry"))) {
+  if (
+    role === "admin" &&
+    !consumeAdminEntryChallenge(
+      form.get("entry"),
+      readAdminEntryCookie(request),
+      safeReturnTo(requestedReturnTo, DEFAULT_DESTINATIONS.admin),
+    )
+  ) {
     return new Response("Admin entry verification failed", { status: 403 });
   }
 
@@ -65,6 +80,16 @@ export async function POST(request: Request): Promise<Response> {
     const response = redirect(request, destination);
     const cookie = createSessionCookie(user.id);
     response.cookies.set(cookie.name, cookie.value, cookie.options);
+    if (role === "admin") {
+      response.cookies.set(ADMIN_ENTRY_COOKIE_NAME, "", {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: false,
+        expires: new Date(0),
+        maxAge: 0,
+      });
+    }
     return response;
   } finally {
     database.close();

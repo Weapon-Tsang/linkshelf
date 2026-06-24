@@ -61,24 +61,16 @@ describe("development Google identity aliases", () => {
 });
 
 describe("existing-user auth lookup", () => {
-  it("maps a Google subject or email without creating a user", () => {
+  it("maps only an exact Google subject without creating a user", () => {
     const database = fixture();
     expect(
       findAuthUserByGoogle(database, {
         subject: "google-creator",
-        email: "other@example.test",
       })?.id,
     ).toBe("user-creator");
     expect(
       findAuthUserByGoogle(database, {
         subject: "unknown",
-        email: "FAN@LINKSHELF.LOCAL",
-      })?.id,
-    ).toBe("user-fan");
-    expect(
-      findAuthUserByGoogle(database, {
-        subject: "unknown",
-        email: "missing@example.test",
       }),
     ).toBeNull();
   });

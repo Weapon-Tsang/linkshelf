@@ -103,21 +103,19 @@ export function findAuthUserById(
 
 export function findAuthUserByGoogle(
   database: DatabaseSync,
-  identity: { readonly subject?: string | null; readonly email?: string | null },
+  identity: { readonly subject?: string | null },
 ): AuthUser | null {
   const subject = identity.subject?.trim() ?? "";
-  const email = identity.email?.trim() ?? "";
-  if (!subject && !email) return null;
+  if (!subject) return null;
 
-  const rows = database
+  const row = database
     .prepare(
       `SELECT ${USER_COLUMNS}
        FROM users
-       WHERE (google_subject = ? OR email = ? COLLATE NOCASE)${activeUserClause(database)}
-       LIMIT 2`,
+       WHERE google_subject = ?${activeUserClause(database)}`,
     )
-    .all(subject, email) as unknown as UserRow[];
-  return rows.length === 1 ? toAuthUser(rows[0]) : null;
+    .get(subject) as UserRow | undefined;
+  return toAuthUser(row);
 }
 
 export function resolveDevelopmentUser(

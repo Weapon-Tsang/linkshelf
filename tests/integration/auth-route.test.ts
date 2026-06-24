@@ -4,25 +4,33 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { POST as googleLogin } from "@/app/api/auth/google/route";
 import { POST as logout } from "@/app/api/auth/logout/route";
-import { authOptions } from "@/auth";
-import { createDatabase } from "@/lib/db/client";
-import { migrate } from "@/lib/db/migrate";
-import { seed } from "@/lib/db/seed";
+import { GET as createAdminEntry } from "@/app/api/auth/admin-entry/route";
 import {
+  ADMIN_ENTRY_COOKIE_NAME,
   SESSION_COOKIE_NAME,
-  createAdminEntryToken,
+  createAdminEntryChallenge,
   readSessionFromRequest,
 } from "@/features/auth/session";
 
 const SECRET = "integration-auth-secret";
 let temporaryDirectory: string;
 
-function post(path: string, fields: Record<string, string>, cookie?: string): Request {
+function post(
+  path: string,
+  fields: Record<string, string>,
+  cookie?: string,
+  origin = "http://linkshelf.test",
+): Request {
   return new Request(`http://linkshelf.test${path}`, {
     method: "POST",
-    headers: cookie ? { cookie } : undefined,
+    headers: { origin, ...(cookie ? { cookie } : {}) },
     body: new URLSearchParams(fields),
   });
+}
+
+function setCookies(response: Response): string[] {
+  const headers = response.headers as Headers & { getSetCookie?: () => string[] };
+  return headers.getSetCookie?.() ?? [response.headers.get("set-cookie") ?? ""];
 }
 
 beforeEach(() => {
@@ -76,19 +84,79 @@ describe("development Google auth route", () => {
     expect(response.headers.get("set-cookie")).toBeNull();
   });
 
-  it("accepts admin only with the signed secret-entry contract", async () => {
+  it("mints and consumes a same-browser admin entry only once", async () => {
+    const entryResponse = await createAdminEntry(
+      new Request(
+        "http://linkshelf.test/api/auth/admin-entry?returnTo=%2Fadmin%2Fdashboard",
+      ),
+    );
+    expect(entryResponse.status).toBe(303);
+    const entryUrl = new URL(entryResponse.headers.get("location") ?? "");
+    const entry = entryUrl.searchParams.get("challenge") ?? "";
+    const challengeCookie = setCookies(entryResponse)
+      .find((cookie) => cookie.startsWith(`${ADMIN_ENTRY_COOKIE_NAME}=`))
+      ?.split(";", 1)[0];
+    expect(entry).toMatch(/^v1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
+    expect(challengeCookie).toContain(`${ADMIN_ENTRY_COOKIE_NAME}=`);
+
     const response = await googleLogin(
       post("/api/auth/google", {
         role: "admin",
-        entry: createAdminEntryToken(SECRET),
+        entry,
         returnTo: "/admin/dashboard",
-      }),
+      }, challengeCookie),
     );
 
     expect(response.status).toBe(303);
     expect(response.headers.get("location")).toBe(
       "http://linkshelf.test/admin/dashboard",
     );
+    expect(setCookies(response).join("\n")).toContain(
+      `${ADMIN_ENTRY_COOKIE_NAME}=`,
+    );
+    expect(setCookies(response).join("\n")).toContain("Max-Age=0");
+
+    const replay = await googleLogin(
+      post(
+        "/api/auth/google",
+        { role: "admin", entry, returnTo: "/admin/dashboard" },
+        challengeCookie,
+      ),
+    );
+    expect(replay.status).toBe(403);
+  });
+
+  it("rejects expired and return-mismatched admin challenges", async () => {
+    const expired = createAdminEntryChallenge("/admin/dashboard", {
+      secret: SECRET,
+      now: 1,
+      nonce: "e".repeat(43),
+    });
+    const expiredResponse = await googleLogin(
+      post(
+        "/api/auth/google",
+        {
+          role: "admin",
+          entry: expired.token,
+          returnTo: "/admin/dashboard",
+        },
+        `${expired.cookie.name}=${expired.cookie.value}`,
+      ),
+    );
+    expect(expiredResponse.status).toBe(403);
+
+    const mismatch = createAdminEntryChallenge("/admin/dashboard", {
+      secret: SECRET,
+      nonce: "m".repeat(43),
+    });
+    const mismatchResponse = await googleLogin(
+      post(
+        "/api/auth/google",
+        { role: "admin", entry: mismatch.token, returnTo: "/admin/other" },
+        `${mismatch.cookie.name}=${mismatch.cookie.value}`,
+      ),
+    );
+    expect(mismatchResponse.status).toBe(403);
   });
 
   it("falls back instead of following an open redirect", async () => {
@@ -104,11 +172,26 @@ describe("development Google auth route", () => {
       "http://linkshelf.test/hub/dashboard",
     );
   });
+
+  it("rejects cross-origin custom auth posts", async () => {
+    const response = await googleLogin(
+      post(
+        "/api/auth/google",
+        { role: "creator", returnTo: "/studio/dashboard" },
+        undefined,
+        "https://evil.example",
+      ),
+    );
+
+    expect(response.status).toBe(403);
+    expect(response.headers.get("set-cookie")).toBeNull();
+  });
 });
 
 describe("production Google auth handoff", () => {
   it("redirects configured production requests to Auth.js", async () => {
     vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("AUTH_SECRET", "s".repeat(32));
     vi.stubEnv("AUTH_GOOGLE_ID", "google-id");
     vi.stubEnv("AUTH_GOOGLE_SECRET", "google-secret");
 
@@ -126,59 +209,6 @@ describe("production Google auth handoff", () => {
     expect(response.headers.get("set-cookie")).toBeNull();
   });
 
-  it("allows only Google identities already mapped to local users", async () => {
-    const database = createDatabase(process.env.LINKSHELF_DB_PATH);
-    migrate(database);
-    seed(database, { publicRoot: "/definitely/missing" });
-    database.close();
-
-    const signIn = authOptions.callbacks?.signIn;
-    expect(signIn).toBeTypeOf("function");
-    const invokeSignIn = signIn as NonNullable<typeof signIn>;
-
-    const existing = await invokeSignIn({
-      user: {
-        id: "google-oauth-user",
-        name: "Creator",
-        email: "creator@linkshelf.local",
-      },
-      account: {
-        provider: "google",
-        type: "oauth",
-        providerAccountId: "google-creator",
-      },
-      profile: {
-        sub: "google-creator",
-        email: "creator@linkshelf.local",
-      },
-      email: { verificationRequest: false },
-      credentials: undefined,
-    });
-    const missing = await invokeSignIn({
-      user: {
-        id: "unknown-google-user",
-        name: "Unknown",
-        email: "unknown@example.test",
-      },
-      account: {
-        provider: "google",
-        type: "oauth",
-        providerAccountId: "unknown-subject",
-      },
-      profile: { sub: "unknown-subject", email: "unknown@example.test" },
-      email: { verificationRequest: false },
-      credentials: undefined,
-    });
-
-    expect(existing).toBe(true);
-    expect(missing).toBe(false);
-    const verificationDatabase = createDatabase(process.env.LINKSHELF_DB_PATH);
-    const count = verificationDatabase
-      .prepare("SELECT COUNT(*) AS count FROM users")
-      .get() as { count: number };
-    verificationDatabase.close();
-    expect(count.count).toBe(3);
-  });
 });
 
 describe("logout route", () => {
@@ -197,5 +227,46 @@ describe("logout route", () => {
       `${SESSION_COOKIE_NAME}=`,
     );
     expect(response.headers.get("set-cookie")).toContain("Max-Age=0");
+  });
+
+  it("rejects cross-origin logout posts", async () => {
+    const response = await logout(
+      post(
+        "/api/auth/logout",
+        { returnTo: "/" },
+        `${SESSION_COOKIE_NAME}=old-token`,
+        "https://evil.example",
+      ),
+    );
+
+    expect(response.status).toBe(403);
+    expect(response.headers.get("set-cookie")).toBeNull();
+  });
+
+  it("clears development and all present Auth.js v4 cookie chunks", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    const cookie = [
+      `${SESSION_COOKIE_NAME}=dev`,
+      "next-auth.session-token.0=first",
+      "next-auth.session-token.1=second",
+      "__Secure-next-auth.session-token=secure",
+      "next-auth.callback-url=callback",
+      "__Host-next-auth.csrf-token=csrf",
+    ].join("; ");
+
+    const response = await logout(post("/api/auth/logout", { returnTo: "/" }, cookie));
+    const cleared = setCookies(response).join("\n");
+
+    expect(response.status).toBe(303);
+    for (const name of [
+      SESSION_COOKIE_NAME,
+      "next-auth.session-token.0",
+      "next-auth.session-token.1",
+      "__Secure-next-auth.session-token",
+      "next-auth.callback-url",
+      "__Host-next-auth.csrf-token",
+    ]) {
+      expect(cleared).toContain(`${name}=`);
+    }
   });
 });

@@ -21,9 +21,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <p className="mb-5 inline-flex rounded-full bg-[var(--glow)] px-4 py-2 text-sm font-bold text-[var(--ink)]">
             Creator Portal
           </p>
-          <h1 className="max-w-2xl text-5xl font-bold leading-[1.08] tracking-tight text-[var(--ink)] xl:text-6xl">
+          <h2 className="max-w-2xl text-5xl font-bold leading-[1.08] tracking-tight text-[var(--ink)] xl:text-6xl">
             Your entire digital presence, organized on one shelf.
-          </h1>
+          </h2>
           <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--muted)]">
             Bring your recommendations, audience, and creator business into one calm workspace.
           </p>
@@ -61,9 +61,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--teal-700)]">
             Creator workspace
           </p>
-          <h2 className="mt-3 text-4xl font-bold tracking-tight text-[var(--ink)]">
+          <h1 className="mt-3 text-4xl font-bold tracking-tight text-[var(--ink)]">
             Creator Login
-          </h2>
+          </h1>
           <p className="mt-4 leading-7 text-[var(--muted)]">
             Continue with your Google account to manage your shelves, audience, and earnings.
           </p>

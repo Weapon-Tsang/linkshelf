@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import LoginPage from "@/app/login/page";
 import AdminSecretPage from "@/app/admin-secret/page";
 import ForbiddenPage from "@/app/forbidden/page";
+import { createAdminEntryChallenge } from "@/features/auth/session";
 
 afterEach(() => {
   cleanup();
@@ -10,11 +11,22 @@ afterEach(() => {
 });
 
 async function renderSurface(surface: "creator" | "admin") {
+  const adminChallenge =
+    surface === "admin" && process.env.NODE_ENV !== "production"
+      ? createAdminEntryChallenge("/admin/dashboard", {
+          nonce: "c".repeat(43),
+        })
+      : undefined;
   const page =
     surface === "creator"
       ? await LoginPage({ searchParams: Promise.resolve({}) })
-      : await AdminSecretPage({ searchParams: Promise.resolve({}) });
-  return render(page);
+      : await AdminSecretPage({
+          searchParams: Promise.resolve({
+            challenge: adminChallenge?.token,
+            returnTo: adminChallenge?.payload.returnTo,
+          }),
+        });
+  return { ...render(page), adminChallenge };
 }
 
 describe("Google-only login surfaces", () => {
@@ -52,7 +64,7 @@ describe("Google-only login surfaces", () => {
   });
 
   it("posts a signed admin entry marker from the secret route", async () => {
-    await renderSurface("admin");
+    const { adminChallenge } = await renderSurface("admin");
     const form = screen.getByRole("button", {
       name: /continue with google/i,
     }).closest("form");
@@ -61,8 +73,17 @@ describe("Google-only login surfaces", () => {
     expect(
       (form?.querySelector('input[name="entry"]') as HTMLInputElement | null)
         ?.value,
-    ).toMatch(/^v1\.[A-Za-z0-9_-]+$/);
+    ).toBe(adminChallenge?.token);
     expect(screen.getByText(/authorized administrators only/i)).toBeVisible();
+  });
+
+  it("uses Creator Login as the only level-one heading", async () => {
+    await renderSurface("creator");
+
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Creator Login" }),
+    ).toBeVisible();
   });
 
   it("renders in production without local or Google credentials", async () => {

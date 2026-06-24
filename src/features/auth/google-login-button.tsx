@@ -15,7 +15,9 @@ export function GoogleLoginButton({
   className = "",
 }: GoogleLoginButtonProps) {
   const safeEntry =
-    entry && /^v1\.[A-Za-z0-9_-]{43}$/.test(entry) ? entry : undefined;
+    entry && /^v1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(entry)
+      ? entry
+      : undefined;
 
   return (
     <form action="/api/auth/google" method="post">
