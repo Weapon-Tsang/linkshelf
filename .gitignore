@@ -7,3 +7,9 @@ node_modules/
 coverage/
 playwright-report/
 test-results/
+*.tsbuildinfo
+next-env.d.ts
+data/
+public/uploads/
+.auth/
+.npm-cache/
