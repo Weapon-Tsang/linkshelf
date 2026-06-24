@@ -98,7 +98,8 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
           NULL, 'fan-demo-20', '${CREATED_AT}', '${CREATED_AT}'),
         ('user-admin', 'google-admin', 'admin@linkshelf.local', 'Super Admin', 'ADMIN',
           NULL, NULL, '${CREATED_AT}', '${CREATED_AT}')
-      ON CONFLICT(id) DO UPDATE SET avatar_url = excluded.avatar_url;
+      ON CONFLICT(id) DO UPDATE SET
+        avatar_url = COALESCE(users.avatar_url, excluded.avatar_url);
 
       INSERT INTO creator_profiles
         (id, user_id, handle, display_name, bio, category, avatar_url, cover_url, affiliate_tag,
@@ -110,8 +111,8 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
           ${asset(STITCH_ASSET_SOURCES.profileCover)}, 'liamcreator-20',
           '${CREATED_AT}', '${CREATED_AT}')
       ON CONFLICT(id) DO UPDATE SET
-        avatar_url = excluded.avatar_url,
-        cover_url = excluded.cover_url;
+        avatar_url = COALESCE(creator_profiles.avatar_url, excluded.avatar_url),
+        cover_url = COALESCE(creator_profiles.cover_url, excluded.cover_url);
 
       INSERT INTO shelves
         (id, creator_id, slug, title, description, category, status, theme, source_content_url,
@@ -129,7 +130,8 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
           'Compact essentials that make location shoots easier.', 'Travel', 'PUBLISHED',
           'living', 'https://www.youtube.com/watch?v=linkshelf-travel',
           ${asset(STITCH_ASSET_SOURCES.shelfTravel)}, '${CREATED_AT}', '${CREATED_AT}', NULL)
-      ON CONFLICT(id) DO UPDATE SET cover_url = excluded.cover_url;
+      ON CONFLICT(id) DO UPDATE SET
+        cover_url = COALESCE(shelves.cover_url, excluded.cover_url);
 
       INSERT INTO products
         (id, shelf_id, title, description, price_cents, currency, merchant, destination_url,
@@ -164,7 +166,8 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
           'https://www.amazon.com/dp/B07ZWFNZBK',
           ${asset(STITCH_ASSET_SOURCES.productTravelBackpack)},
           1, 68, 54, '${CREATED_AT}', '${CREATED_AT}')
-      ON CONFLICT(id) DO UPDATE SET image_url = excluded.image_url;
+      ON CONFLICT(id) DO UPDATE SET
+        image_url = COALESCE(products.image_url, excluded.image_url);
 
       INSERT OR IGNORE INTO social_channels
         (id, creator_id, type, value, enabled, sort_position, created_at, updated_at)

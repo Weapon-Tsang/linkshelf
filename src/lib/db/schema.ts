@@ -268,10 +268,10 @@ export const schemaMigrations: readonly SchemaMigration[] = [
           CHECK (typeof(sort_position) = 'integer' AND sort_position >= 0),
         hotspot_x ANY
           CHECK (hotspot_x IS NULL OR
-            (typeof(hotspot_x) = 'integer' AND hotspot_x >= 0 AND hotspot_x <= 100)),
+            (typeof(hotspot_x) IN ('integer', 'real') AND hotspot_x >= 0 AND hotspot_x <= 100)),
         hotspot_y ANY
           CHECK (hotspot_y IS NULL OR
-            (typeof(hotspot_y) = 'integer' AND hotspot_y >= 0 AND hotspot_y <= 100)),
+            (typeof(hotspot_y) IN ('integer', 'real') AND hotspot_y >= 0 AND hotspot_y <= 100)),
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         UNIQUE (shelf_id, sort_position)
@@ -419,7 +419,24 @@ export const schemaMigrations: readonly SchemaMigration[] = [
       INSERT INTO saves_v2 SELECT * FROM saves;
       INSERT INTO comments_v2 SELECT * FROM comments;
       INSERT INTO shares_v2 SELECT * FROM shares;
+
+      CREATE TRIGGER click_events_v2_attribution_validate
+      BEFORE INSERT ON click_events_v2
+      BEGIN
+        SELECT CASE WHEN NOT EXISTS (
+          SELECT 1 FROM products_v2
+          WHERE products_v2.id = NEW.product_id AND products_v2.shelf_id = NEW.shelf_id
+        ) THEN RAISE(ABORT, 'product must belong to click shelf') END;
+        SELECT CASE WHEN NEW.share_id IS NOT NULL AND NOT EXISTS (
+          SELECT 1 FROM shares_v2
+          WHERE shares_v2.id = NEW.share_id AND shares_v2.shelf_id = NEW.shelf_id
+        ) THEN RAISE(ABORT, 'share must belong to click shelf') END;
+        SELECT CASE WHEN NEW.beneficiary = 'FAN' AND NEW.share_id IS NULL
+          THEN RAISE(ABORT, 'fan beneficiary requires a share') END;
+      END;
+
       INSERT INTO click_events_v2 SELECT * FROM click_events;
+      DROP TRIGGER click_events_v2_attribution_validate;
       INSERT INTO wallet_entries_v2 SELECT * FROM wallet_entries;
       INSERT INTO withdrawals_v2 SELECT * FROM withdrawals;
 

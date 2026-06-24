@@ -422,7 +422,7 @@ describe("local database", () => {
     ).toThrow(/NOT NULL constraint failed/);
   });
 
-  it("rejects fractional and text money values plus non-integer positions and hotspots", () => {
+  it("rejects fractional and text money values plus non-integer positions", () => {
     const db = createMigratedDatabase();
     seed(db);
     const insertProduct = db.prepare(
@@ -482,12 +482,34 @@ describe("local database", () => {
         "https://www.amazon.com/dp/B09XS7JWHH",
         null,
         10.5,
-        50.5,
-        50,
+        null,
+        null,
         "2026-06-24T00:00:00.000Z",
         "2026-06-24T00:00:00.000Z",
       ),
     ).toThrow(/CHECK constraint failed/);
+
+    insertProduct.run(
+      "product-fractional-hotspot",
+      "shelf-travel",
+      "Fractional hotspot",
+      "Valid fractional coordinates",
+      BigInt(100),
+      "USD",
+      "Amazon",
+      "https://www.amazon.com/dp/B09XS7JWHH",
+      null,
+      BigInt(10),
+      10.5,
+      20.25,
+      "2026-06-24T00:00:00.000Z",
+      "2026-06-24T00:00:00.000Z",
+    );
+    expect(
+      db
+        .prepare("SELECT hotspot_x, hotspot_y FROM products WHERE id = ?")
+        .get("product-fractional-hotspot"),
+    ).toEqual({ hotspot_x: 10.5, hotspot_y: 20.25 });
 
     expect(() =>
       db
@@ -628,6 +650,17 @@ describe("local database", () => {
     const db = createMigratedDatabase();
     const publicRoot = createTemporaryPublicRoot();
     seed(db, { publicRoot });
+    db.exec(`
+      UPDATE creator_profiles
+        SET avatar_url = 'https://cdn.example.com/custom-avatar.png'
+        WHERE id = 'creator-liam';
+      UPDATE shelves
+        SET cover_url = 'https://cdn.example.com/custom-shelf.png'
+        WHERE id = 'shelf-photography';
+      UPDATE products
+        SET image_url = 'https://cdn.example.com/custom-product.png'
+        WHERE id = 'product-sony-a7iv';
+    `);
     const manifestDirectory = join(publicRoot, "stitch");
     const assetsDirectory = join(manifestDirectory, "assets");
     mkdirSync(assetsDirectory, { recursive: true });
@@ -655,9 +688,17 @@ describe("local database", () => {
       ),
     ].filter((path): path is string => path !== null);
 
-    expect(mediaPaths).toHaveLength(12);
-    expect(mediaPaths.every((path) => Object.values(manifest).includes(path))).toBe(true);
-    expect(mediaPaths.every((path) => existsSync(join(publicRoot, path)))).toBe(true);
+    const localizedPaths = mediaPaths.filter((path) => path.startsWith("/stitch/assets/"));
+    expect(mediaPaths).toEqual(
+      expect.arrayContaining([
+        "https://cdn.example.com/custom-avatar.png",
+        "https://cdn.example.com/custom-shelf.png",
+        "https://cdn.example.com/custom-product.png",
+      ]),
+    );
+    expect(localizedPaths).toHaveLength(9);
+    expect(localizedPaths.every((path) => Object.values(manifest).includes(path))).toBe(true);
+    expect(localizedPaths.every((path) => existsSync(join(publicRoot, path)))).toBe(true);
   });
 
   it("stores null media when the asset manifest is unavailable", () => {
@@ -677,6 +718,43 @@ describe("local database", () => {
           .get() as { count: number }
       ).count,
     ).toBe(0);
+  });
+
+  it("does not clear custom media when the asset manifest is unavailable", () => {
+    const db = createMigratedDatabase();
+    const publicRoot = createTemporaryPublicRoot();
+    seed(db, { publicRoot });
+    db.exec(`
+      UPDATE users SET avatar_url = 'https://cdn.example.com/user.png' WHERE id = 'user-creator';
+      UPDATE creator_profiles
+        SET avatar_url = 'https://cdn.example.com/profile.png',
+            cover_url = 'https://cdn.example.com/profile-cover.png'
+        WHERE id = 'creator-liam';
+      UPDATE shelves
+        SET cover_url = 'https://cdn.example.com/shelf.png'
+        WHERE id = 'shelf-photography';
+      UPDATE products
+        SET image_url = 'https://cdn.example.com/product.png'
+        WHERE id = 'product-sony-a7iv';
+    `);
+
+    seed(db, { publicRoot });
+
+    expect(db.prepare("SELECT avatar_url FROM users WHERE id = 'user-creator'").get()).toEqual({
+      avatar_url: "https://cdn.example.com/user.png",
+    });
+    expect(
+      db.prepare("SELECT avatar_url, cover_url FROM creator_profiles WHERE id = 'creator-liam'").get(),
+    ).toEqual({
+      avatar_url: "https://cdn.example.com/profile.png",
+      cover_url: "https://cdn.example.com/profile-cover.png",
+    });
+    expect(db.prepare("SELECT cover_url FROM shelves WHERE id = 'shelf-photography'").get()).toEqual({
+      cover_url: "https://cdn.example.com/shelf.png",
+    });
+    expect(db.prepare("SELECT image_url FROM products WHERE id = 'product-sony-a7iv'").get()).toEqual({
+      image_url: "https://cdn.example.com/product.png",
+    });
   });
 
   it("rolls back a failed migration without recording or leaking partial schema", () => {
@@ -753,7 +831,7 @@ describe("local database", () => {
          '2026-06-24T00:00:00.000Z', NULL);
       INSERT INTO products VALUES
         ('product-v1', 'shelf-v1', 'V1 product', 'Product', 100, 'USD', 'Amazon',
-         'https://www.amazon.com/dp/B09JZT6YK5', '/legacy-product.jpg', 0, 10, 20,
+         'https://www.amazon.com/dp/B09JZT6YK5', '/legacy-product.jpg', 0, 10.5, 20.25,
          '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z');
       INSERT INTO social_channels VALUES
         ('channel-v1', 'creator-v1', 'X', '@v1', 1, 0, '2026-06-24T00:00:00.000Z',
@@ -789,6 +867,117 @@ describe("local database", () => {
     expect(db.prepare("SELECT reviewer_id FROM withdrawals").all()).toEqual([
       { reviewer_id: "user-v1-admin" },
     ]);
+    expect(db.prepare("SELECT hotspot_x, hotspot_y FROM products WHERE id = 'product-v1'").get()).toEqual({
+      hotspot_x: 10.5,
+      hotspot_y: 20.25,
+    });
+  });
+
+  it.each([
+    {
+      beneficiary: "CREATOR",
+      expected: /product must belong to click shelf/,
+      label: "a product from another shelf",
+      productId: "product-v1-a",
+      shareId: null,
+      shelfId: "shelf-v1-b",
+    },
+    {
+      beneficiary: "CREATOR",
+      expected: /share must belong to click shelf/,
+      label: "a share from another shelf",
+      productId: "product-v1-b",
+      shareId: "share-v1-a",
+      shelfId: "shelf-v1-b",
+    },
+    {
+      beneficiary: "FAN",
+      expected: /fan beneficiary requires a share/,
+      label: "a fan beneficiary without a share",
+      productId: "product-v1-b",
+      shareId: null,
+      shelfId: "shelf-v1-b",
+    },
+  ])("rolls back v2 when v1 attribution contains $label", (invalidClick) => {
+    const db = createDatabase(":memory:");
+    databases.push(db);
+    db.exec(`
+      CREATE TABLE schema_migrations (
+        version INTEGER PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        applied_at TEXT NOT NULL
+      );
+      ${schemaMigrations[0].sql}
+      INSERT INTO schema_migrations VALUES (1, 'initial_schema', '2026-06-24T00:00:00.000Z');
+      INSERT INTO users VALUES
+        ('user-v1-creator', 'google-v1-creator', 'v1-creator@linkshelf.local', 'Creator', 'CREATOR',
+         NULL, NULL, '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z'),
+        ('user-v1-fan', 'google-v1-fan', 'v1-fan@linkshelf.local', 'Fan', 'FAN', NULL,
+         'fan-20', '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z');
+      INSERT INTO creator_profiles VALUES
+        ('creator-v1', 'user-v1-creator', 'v1creator', 'Creator', 'Bio', 'Test',
+         '/legacy-avatar.jpg', '/legacy-cover.jpg', 'creator-20',
+         '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z');
+      INSERT INTO shelves VALUES
+        ('shelf-v1-a', 'creator-v1', 'a', 'A', 'Shelf A', 'Test', 'PUBLISHED', 'minimal',
+         NULL, '/legacy-a.jpg', '2026-06-24T00:00:00.000Z',
+         '2026-06-24T00:00:00.000Z', NULL),
+        ('shelf-v1-b', 'creator-v1', 'b', 'B', 'Shelf B', 'Test', 'PUBLISHED', 'minimal',
+         NULL, '/legacy-b.jpg', '2026-06-24T00:00:00.000Z',
+         '2026-06-24T00:00:00.000Z', NULL);
+      INSERT INTO products VALUES
+        ('product-v1-a', 'shelf-v1-a', 'A', 'Product A', 100, 'USD', 'Amazon',
+         'https://www.amazon.com/dp/B09JZT6YK5', '/legacy-a.jpg', 0, NULL, NULL,
+         '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z'),
+        ('product-v1-b', 'shelf-v1-b', 'B', 'Product B', 100, 'USD', 'Amazon',
+         'https://www.amazon.com/dp/B09XS7JWHH', '/legacy-b.jpg', 0, NULL, NULL,
+         '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z');
+      INSERT INTO shares VALUES
+        ('share-v1-a', 'shelf-v1-a', 'user-v1-fan', 'share-a', 'X',
+         '2026-06-24T00:00:00.000Z');
+    `);
+    db.prepare(
+      `INSERT INTO click_events
+        (id, product_id, shelf_id, share_id, beneficiary, affiliate_tag, destination_url, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).run(
+      "click-invalid-v1",
+      invalidClick.productId,
+      invalidClick.shelfId,
+      invalidClick.shareId,
+      invalidClick.beneficiary,
+      "fixture-20",
+      "https://www.amazon.com/dp/B09JZT6YK5?tag=fixture-20",
+      "2026-06-24T00:00:00.000Z",
+    );
+    db.prepare(
+      `INSERT INTO wallet_entries
+        (id, user_id, click_event_id, amount_cents, type, status, description, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).run(
+      "wallet-invalid-v1",
+      "user-v1-fan",
+      "click-invalid-v1",
+      80,
+      "AFFILIATE_EARNING",
+      "PENDING",
+      "Legacy ledger entry",
+      "2026-06-24T00:00:00.000Z",
+    );
+
+    expect(() => migrate(db)).toThrow(invalidClick.expected);
+    expect(db.prepare("SELECT version, name FROM schema_migrations").all()).toEqual([
+      { version: 1, name: "initial_schema" },
+    ]);
+    expect(db.prepare("SELECT id FROM click_events").all()).toEqual([{ id: "click-invalid-v1" }]);
+    expect(db.prepare("SELECT id FROM wallet_entries").all()).toEqual([{ id: "wallet-invalid-v1" }]);
+    expect(
+      (
+        db
+          .prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE name LIKE '%_v2'")
+          .get() as { count: number }
+      ).count,
+    ).toBe(0);
   });
 
   it("rejects a recorded migration whose name no longer matches its version", () => {
