@@ -4,14 +4,43 @@ import { useEffect, useId, useRef, type ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 
-const FOCUSABLE_SELECTOR = [
+const TABBABLE_SELECTOR = [
   "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  '[tabindex]:not([tabindex="-1"])',
+  "area[href]",
+  "button",
+  "input",
+  "select",
+  "textarea",
+  "iframe",
+  "object",
+  "embed",
+  "[contenteditable]",
+  "[tabindex]",
 ].join(",");
+
+function isVisible(element: HTMLElement) {
+  for (let current: HTMLElement | null = element; current; current = current.parentElement) {
+    const style = window.getComputedStyle(current);
+    if (style.display === "none" || style.visibility === "hidden" || style.visibility === "collapse" || style.opacity === "0") {
+      return false;
+    }
+  }
+
+  return Array.from(element.getClientRects()).some((rect) => rect.width > 0 && rect.height > 0);
+}
+
+function getTabbableElements(container: HTMLElement) {
+  return Array.from(container.querySelectorAll<HTMLElement>(TABBABLE_SELECTOR)).filter((element) => {
+    const inputIsHidden = element instanceof HTMLInputElement && element.type === "hidden";
+    const excludedByAncestor = element.closest('[hidden], [inert], [aria-hidden="true"]');
+
+    return !inputIsHidden
+      && !excludedByAncestor
+      && !element.matches(":disabled")
+      && element.tabIndex >= 0
+      && isVisible(element);
+  });
+}
 
 export interface DialogProps {
   children: ReactNode;
@@ -31,7 +60,7 @@ export function Dialog({ children, className, onClose, open, title }: DialogProp
     }
 
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const firstFocusable = dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+    const firstFocusable = dialogRef.current && getTabbableElements(dialogRef.current).at(0);
     firstFocusable?.focus();
 
     return () => opener?.focus();
@@ -52,7 +81,7 @@ export function Dialog({ children, className, onClose, open, title }: DialogProp
       return;
     }
 
-    const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+    const focusable = getTabbableElements(dialogRef.current);
     const first = focusable.at(0);
     const last = focusable.at(-1);
 
@@ -94,7 +123,7 @@ export function Dialog({ children, className, onClose, open, title }: DialogProp
           </h2>
           <button
             aria-label="Close dialog"
-            className="inline-flex size-10 items-center justify-center rounded-full text-[var(--muted)] hover:bg-[var(--surface-low)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[var(--glow)]"
+            className="inline-flex size-10 items-center justify-center rounded-full text-[var(--muted)] hover:bg-[var(--surface-low)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[var(--teal-700)]"
             onClick={onClose}
             type="button"
           >

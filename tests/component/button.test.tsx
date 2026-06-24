@@ -20,5 +20,6 @@ describe("Button", () => {
     expect(screen.getByRole("button", { name: "Ghost" })).toHaveAttribute("data-variant", "ghost");
     expect(ref.current).toBe(screen.getByRole("button", { name: "Delete" }));
     expect(ref.current).toHaveAttribute("data-variant", "danger");
+    expect(ref.current).toHaveClass("focus-visible:outline-[var(--teal-700)]");
   });
 });

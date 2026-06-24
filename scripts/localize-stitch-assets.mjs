@@ -1,10 +1,12 @@
-import { createHash } from "node:crypto";
-import { access, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
+import { access, mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 const ASSET_URL_PATTERN = /https:\/\/lh3\.googleusercontent\.com\/aida-public\/[A-Za-z0-9_-]+/g;
+const DOWNLOAD_CONCURRENCY = 4;
 const EXTENSIONS = new Set(["png", "jpg", "webp"]);
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
 function extensionForContentType(contentType) {
   const normalized = contentType.split(";", 1)[0].trim().toLowerCase();
@@ -43,6 +45,42 @@ async function readExistingManifest(manifestPath) {
   }
 }
 
+async function runWithConcurrency(items, limit, operation) {
+  let nextIndex = 0;
+
+  async function worker() {
+    while (nextIndex < items.length) {
+      const item = items[nextIndex];
+      nextIndex += 1;
+      await operation(item);
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, () => worker()));
+}
+
+function assertImageSize(contentLength, url) {
+  if (contentLength !== null && Number(contentLength) > MAX_IMAGE_BYTES) {
+    throw new Error(`Image ${url} exceeds 10 MiB`);
+  }
+}
+
+async function writeManifestAtomically(manifestPath, manifest) {
+  const manifestDirectory = path.dirname(manifestPath);
+  const temporaryPath = path.join(
+    manifestDirectory,
+    `.${path.basename(manifestPath)}.${process.pid}.${randomUUID()}.tmp`,
+  );
+
+  await mkdir(manifestDirectory, { recursive: true });
+  try {
+    await writeFile(temporaryPath, `${JSON.stringify(manifest, null, 2)}\n`, { flag: "wx" });
+    await rename(temporaryPath, manifestPath);
+  } finally {
+    await rm(temporaryPath, { force: true });
+  }
+}
+
 export async function collectAssetUrls(sourceDir) {
   const htmlFiles = (await readdir(sourceDir, { withFileTypes: true }))
     .filter((entry) => entry.isFile() && entry.name.endsWith(".html"))
@@ -72,7 +110,7 @@ export async function localizeAssets({
 
   await mkdir(outputDir, { recursive: true });
 
-  await Promise.all(urls.map(async (url) => {
+  await runWithConcurrency(urls, DOWNLOAD_CONCURRENCY, async (url) => {
     const hash = createHash("sha256").update(url).digest("hex");
     const existingPublicPath = existingManifest[url];
     const existingFileName = typeof existingPublicPath === "string" ? path.posix.basename(existingPublicPath) : "";
@@ -92,14 +130,19 @@ export async function localizeAssets({
     }
 
     const extension = extensionForContentType(response.headers.get("content-type") ?? "");
+    assertImageSize(response.headers.get("content-length"), url);
+    const body = new Uint8Array(await response.arrayBuffer());
+    if (body.byteLength > MAX_IMAGE_BYTES) {
+      throw new Error(`Image ${url} exceeds 10 MiB`);
+    }
+
     const fileName = `${hash}.${extension}`;
-    await writeFile(path.join(outputDir, fileName), new Uint8Array(await response.arrayBuffer()));
+    await writeFile(path.join(outputDir, fileName), body);
     manifest[url] = `/stitch/assets/${fileName}`;
-  }));
+  });
 
   const sortedManifest = Object.fromEntries(Object.entries(manifest).sort(([left], [right]) => left.localeCompare(right)));
-  await mkdir(path.dirname(manifestPath), { recursive: true });
-  await writeFile(manifestPath, `${JSON.stringify(sortedManifest, null, 2)}\n`);
+  await writeManifestAtomically(manifestPath, sortedManifest);
   return sortedManifest;
 }
 
