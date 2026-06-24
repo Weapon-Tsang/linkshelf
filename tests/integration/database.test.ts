@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createDatabase } from "@/lib/db/client";
 import { migrate } from "@/lib/db/migrate";
-import { seed } from "@/lib/db/seed";
+import { schemaMigrations } from "@/lib/db/schema";
+import { seed, STITCH_ASSET_SOURCES } from "@/lib/db/seed";
 
 describe("local database", () => {
   const databases: ReturnType<typeof createDatabase>[] = [];
@@ -22,6 +23,12 @@ describe("local database", () => {
     databases.push(db);
     migrate(db);
     return db;
+  }
+
+  function createTemporaryPublicRoot() {
+    const root = mkdtempSync(join(tmpdir(), "linkshelf-public-"));
+    temporaryDirectories.push(root);
+    return root;
   }
 
   it("migrates and seeds idempotently", () => {
@@ -64,7 +71,10 @@ describe("local database", () => {
       .all()
       .map((row) => (row as { name: string }).name);
 
-    expect(migrations).toEqual([{ version: 1, name: "initial_schema" }]);
+    expect(migrations).toEqual([
+      { version: 1, name: "initial_schema" },
+      { version: 2, name: "enforce_data_invariants" },
+    ]);
     expect(tables).toEqual([
       "click_events",
       "comments",
@@ -187,7 +197,7 @@ describe("local database", () => {
 
   it("seeds the approved shelf and engagement fixtures", () => {
     const db = createMigratedDatabase();
-    seed(db);
+    seed(db, { publicRoot: createTemporaryPublicRoot() });
 
     const shelves = db
       .prepare("SELECT id, title, status FROM shelves ORDER BY id")
@@ -197,8 +207,8 @@ describe("local database", () => {
       .get() as {
       handle: string;
       affiliate_tag: string;
-      avatar_url: string;
-      cover_url: string;
+      avatar_url: string | null;
+      cover_url: string | null;
     };
     const channelCounts = db
       .prepare("SELECT enabled, COUNT(*) AS count FROM social_channels GROUP BY enabled ORDER BY enabled")
@@ -213,8 +223,8 @@ describe("local database", () => {
       handle: "liamroberts.photo",
       affiliate_tag: "liamcreator-20",
     });
-    expect(profile.avatar_url).toMatch(/^\/stitch\/assets\//);
-    expect(profile.cover_url).toMatch(/^\/stitch\/assets\//);
+    expect(profile.avatar_url).toBeNull();
+    expect(profile.cover_url).toBeNull();
     expect(channelCounts).toEqual([
       { enabled: 0, count: 1 },
       { enabled: 1, count: 3 },
@@ -357,5 +367,434 @@ describe("local database", () => {
     expect(() => db.prepare("DELETE FROM products WHERE id = ?").run("product-sony-a7iv")).toThrow(
       /FOREIGN KEY constraint failed/,
     );
+  });
+
+  it("stores every domain table in strict mode with non-null text IDs", () => {
+    const db = createMigratedDatabase();
+    const domainTables = [
+      "users",
+      "creator_profiles",
+      "shelves",
+      "products",
+      "social_channels",
+      "saves",
+      "comments",
+      "shares",
+      "click_events",
+      "wallet_entries",
+      "withdrawals",
+    ];
+    const strictTables = new Map(
+      (db.prepare("PRAGMA table_list").all() as Array<{ name: string; strict: number }>).map((row) => [
+        row.name,
+        row.strict,
+      ]),
+    );
+
+    for (const table of domainTables) {
+      const id = db
+        .prepare(`PRAGMA table_info(${table})`)
+        .all()
+        .find((row) => (row as { name: string }).name === "id") as {
+        notnull: number;
+        type: string;
+      };
+      expect(strictTables.get(table), table).toBe(1);
+      expect(id, table).toMatchObject({ notnull: 1, type: "TEXT" });
+    }
+
+    expect(() =>
+      db
+        .prepare(
+          `INSERT INTO users
+            (id, google_subject, email, display_name, role, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          null,
+          "google-null-id",
+          "null-id@linkshelf.local",
+          "Null ID",
+          "FAN",
+          "2026-06-24T00:00:00.000Z",
+          "2026-06-24T00:00:00.000Z",
+        ),
+    ).toThrow(/NOT NULL constraint failed/);
+  });
+
+  it("rejects fractional and text money values plus non-integer positions and hotspots", () => {
+    const db = createMigratedDatabase();
+    seed(db);
+    const insertProduct = db.prepare(
+      `INSERT INTO products
+        (id, shelf_id, title, description, price_cents, currency, merchant, destination_url,
+         image_url, sort_position, hotspot_x, hotspot_y, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+
+    expect(() =>
+      insertProduct.run(
+        "product-fractional-cents",
+        "shelf-travel",
+        "Fractional cents",
+        "Invalid fractional cents",
+        10.5,
+        "USD",
+        "Amazon",
+        "https://www.amazon.com/dp/B09XS7JWHH",
+        null,
+        10,
+        null,
+        null,
+        "2026-06-24T00:00:00.000Z",
+        "2026-06-24T00:00:00.000Z",
+      ),
+    ).toThrow(/CHECK constraint failed/);
+
+    expect(() =>
+      insertProduct.run(
+        "product-text-cents",
+        "shelf-travel",
+        "Text cents",
+        "Invalid text cents",
+        "100",
+        "USD",
+        "Amazon",
+        "https://www.amazon.com/dp/B09XS7JWHH",
+        null,
+        10,
+        null,
+        null,
+        "2026-06-24T00:00:00.000Z",
+        "2026-06-24T00:00:00.000Z",
+      ),
+    ).toThrow(/CHECK constraint failed/);
+
+    expect(() =>
+      insertProduct.run(
+        "product-fractional-position",
+        "shelf-travel",
+        "Fractional position",
+        "Invalid position and hotspot",
+        100,
+        "USD",
+        "Amazon",
+        "https://www.amazon.com/dp/B09XS7JWHH",
+        null,
+        10.5,
+        50.5,
+        50,
+        "2026-06-24T00:00:00.000Z",
+        "2026-06-24T00:00:00.000Z",
+      ),
+    ).toThrow(/CHECK constraint failed/);
+
+    expect(() =>
+      db
+        .prepare(
+          `INSERT INTO wallet_entries
+            (id, user_id, click_event_id, amount_cents, type, status, description, created_at,
+             cleared_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          "wallet-text-cents",
+          "user-fan",
+          null,
+          "500",
+          "ADJUSTMENT",
+          "PENDING",
+          "Text money",
+          "2026-06-24T00:00:00.000Z",
+          null,
+        ),
+    ).toThrow(/CHECK constraint failed/);
+  });
+
+  it("enforces click product, shelf, share, and fan attribution consistency", () => {
+    const db = createMigratedDatabase();
+    seed(db);
+    const insertClick = db.prepare(
+      `INSERT INTO click_events
+        (id, product_id, shelf_id, share_id, beneficiary, affiliate_tag, destination_url, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+
+    expect(() =>
+      insertClick.run(
+        "click-wrong-product-shelf",
+        "product-sony-a7iv",
+        "shelf-travel",
+        null,
+        "CREATOR",
+        "liamcreator-20",
+        "https://www.amazon.com/dp/B09JZT6YK5?tag=liamcreator-20",
+        "2026-06-24T00:00:00.000Z",
+      ),
+    ).toThrow(/product must belong to click shelf/);
+
+    expect(() =>
+      insertClick.run(
+        "click-wrong-share-shelf",
+        "product-headphones",
+        "shelf-travel",
+        "share-jamie-photography",
+        "FAN",
+        "fan-demo-20",
+        "https://www.amazon.com/dp/B09XS7JWHH?tag=fan-demo-20",
+        "2026-06-24T00:00:00.000Z",
+      ),
+    ).toThrow(/share must belong to click shelf/);
+
+    expect(() =>
+      insertClick.run(
+        "click-fan-without-share",
+        "product-headphones",
+        "shelf-travel",
+        null,
+        "FAN",
+        "fan-demo-20",
+        "https://www.amazon.com/dp/B09XS7JWHH?tag=fan-demo-20",
+        "2026-06-24T00:00:00.000Z",
+      ),
+    ).toThrow(/fan beneficiary requires a share/);
+
+    expect(() =>
+      db.prepare("UPDATE click_events SET shelf_id = ? WHERE id = ?").run(
+        "shelf-travel",
+        "click-fan",
+      ),
+    ).toThrow(/product must belong to click shelf/);
+  });
+
+  it("enforces wallet and withdrawal state timestamps on insert and update", () => {
+    const db = createMigratedDatabase();
+    seed(db);
+
+    expect(() =>
+      db
+        .prepare(
+          `INSERT INTO wallet_entries
+            (id, user_id, amount_cents, type, status, description, created_at, cleared_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          "wallet-cleared-without-time",
+          "user-fan",
+          100,
+          "ADJUSTMENT",
+          "CLEARED",
+          "Invalid cleared state",
+          "2026-06-24T00:00:00.000Z",
+          null,
+        ),
+    ).toThrow(/CHECK constraint failed/);
+    expect(() =>
+      db.prepare("UPDATE wallet_entries SET cleared_at = ? WHERE id = ?").run(
+        "2026-06-24T00:00:00.000Z",
+        "wallet-fan-pending",
+      ),
+    ).toThrow(/CHECK constraint failed/);
+
+    expect(() =>
+      db
+        .prepare(
+          `INSERT INTO withdrawals
+            (id, user_id, amount_cents, destination_label, status, reviewer_id, created_at,
+             updated_at, reviewed_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          "withdrawal-approved-without-review",
+          "user-fan",
+          100,
+          "Test destination",
+          "APPROVED",
+          null,
+          "2026-06-24T00:00:00.000Z",
+          "2026-06-24T00:00:00.000Z",
+          null,
+        ),
+    ).toThrow(/CHECK constraint failed/);
+    expect(() =>
+      db.prepare("UPDATE withdrawals SET reviewer_id = ? WHERE id = ?").run(
+        "user-admin",
+        "withdrawal-jamie-pending",
+      ),
+    ).toThrow(/CHECK constraint failed/);
+  });
+
+  it("uses only localized manifest assets that exist and fills them on a later seed", () => {
+    const db = createMigratedDatabase();
+    const publicRoot = createTemporaryPublicRoot();
+    seed(db, { publicRoot });
+    const manifestDirectory = join(publicRoot, "stitch");
+    const assetsDirectory = join(manifestDirectory, "assets");
+    mkdirSync(assetsDirectory, { recursive: true });
+    const manifest = Object.fromEntries(
+      Object.values(STITCH_ASSET_SOURCES).map((source, index) => {
+        const publicPath = `/stitch/assets/${index.toString(16).padStart(64, "0")}.png`;
+        writeFileSync(join(publicRoot, publicPath), Buffer.from([index]));
+        return [source, publicPath];
+      }),
+    );
+    writeFileSync(join(manifestDirectory, "asset-manifest.json"), JSON.stringify(manifest));
+
+    seed(db, { publicRoot });
+
+    const mediaPaths = [
+      ...(db.prepare("SELECT avatar_url, cover_url FROM creator_profiles").all() as Array<{
+        avatar_url: string | null;
+        cover_url: string | null;
+      }>).flatMap((row) => [row.avatar_url, row.cover_url]),
+      ...(db.prepare("SELECT cover_url FROM shelves").all() as Array<{ cover_url: string | null }>).map(
+        (row) => row.cover_url,
+      ),
+      ...(db.prepare("SELECT image_url FROM products").all() as Array<{ image_url: string | null }>).map(
+        (row) => row.image_url,
+      ),
+    ].filter((path): path is string => path !== null);
+
+    expect(mediaPaths).toHaveLength(12);
+    expect(mediaPaths.every((path) => Object.values(manifest).includes(path))).toBe(true);
+    expect(mediaPaths.every((path) => existsSync(join(publicRoot, path)))).toBe(true);
+  });
+
+  it("stores null media when the asset manifest is unavailable", () => {
+    const db = createMigratedDatabase();
+    seed(db, { publicRoot: createTemporaryPublicRoot() });
+
+    expect(
+      (
+        db
+          .prepare(
+            `SELECT
+               (SELECT COUNT(*) FROM users WHERE avatar_url IS NOT NULL) +
+               (SELECT COUNT(*) FROM creator_profiles WHERE avatar_url IS NOT NULL OR cover_url IS NOT NULL) +
+               (SELECT COUNT(*) FROM shelves WHERE cover_url IS NOT NULL) +
+               (SELECT COUNT(*) FROM products WHERE image_url IS NOT NULL) AS count`,
+          )
+          .get() as { count: number }
+      ).count,
+    ).toBe(0);
+  });
+
+  it("rolls back a failed migration without recording or leaking partial schema", () => {
+    const db = createDatabase(":memory:");
+    databases.push(db);
+    db.exec(`
+      CREATE TABLE schema_migrations (
+        version INTEGER PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        applied_at TEXT NOT NULL
+      );
+      ${schemaMigrations[0].sql}
+      INSERT INTO schema_migrations VALUES (1, 'initial_schema', '2026-06-24T00:00:00.000Z');
+      INSERT INTO users VALUES
+        ('user-legacy', 'google-legacy', 'legacy@linkshelf.local', 'Legacy', 'CREATOR', NULL, NULL,
+         '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z');
+      INSERT INTO creator_profiles VALUES
+        ('creator-legacy', 'user-legacy', 'legacy', 'Legacy', 'Legacy profile', 'Test',
+         '/broken-avatar.jpg', '/broken-cover.jpg', 'legacy-20',
+         '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z');
+      INSERT INTO shelves VALUES
+        ('shelf-legacy', 'creator-legacy', 'legacy', 'Legacy', 'Legacy shelf', 'Test', 'DRAFT',
+         'minimal', NULL, '/broken-shelf.jpg', '2026-06-24T00:00:00.000Z',
+         '2026-06-24T00:00:00.000Z', NULL);
+      INSERT INTO products VALUES
+        ('product-legacy', 'shelf-legacy', 'Legacy', 'Legacy product', 10.5, 'USD', 'Amazon',
+         'https://www.amazon.com/dp/B09JZT6YK5', '/broken-product.jpg', 0, NULL, NULL,
+         '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z');
+    `);
+
+    expect(() => migrate(db)).toThrow(/CHECK constraint failed/);
+    expect(
+      db.prepare("SELECT version, name FROM schema_migrations").all(),
+    ).toEqual([{ version: 1, name: "initial_schema" }]);
+    expect(
+      (db.prepare("SELECT price_cents FROM products WHERE id = 'product-legacy'").get() as {
+        price_cents: number;
+      }).price_cents,
+    ).toBe(10.5);
+    expect(
+      (
+        db
+          .prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE name LIKE '%_v2'")
+          .get() as { count: number }
+      ).count,
+    ).toBe(0);
+  });
+
+  it("upgrades populated v1 audit records without losing relationships", () => {
+    const db = createDatabase(":memory:");
+    databases.push(db);
+    db.exec(`
+      CREATE TABLE schema_migrations (
+        version INTEGER PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        applied_at TEXT NOT NULL
+      );
+      ${schemaMigrations[0].sql}
+      INSERT INTO schema_migrations VALUES (1, 'initial_schema', '2026-06-24T00:00:00.000Z');
+      INSERT INTO users VALUES
+        ('user-v1-creator', 'google-v1-creator', 'v1-creator@linkshelf.local', 'Creator', 'CREATOR',
+         NULL, NULL, '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z'),
+        ('user-v1-fan', 'google-v1-fan', 'v1-fan@linkshelf.local', 'Fan', 'FAN', NULL,
+         'fan-20', '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z'),
+        ('user-v1-admin', 'google-v1-admin', 'v1-admin@linkshelf.local', 'Admin', 'ADMIN',
+         NULL, NULL, '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z');
+      INSERT INTO creator_profiles VALUES
+        ('creator-v1', 'user-v1-creator', 'v1creator', 'Creator', 'Bio', 'Test',
+         '/legacy-avatar.jpg', '/legacy-cover.jpg', 'creator-20',
+         '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z');
+      INSERT INTO shelves VALUES
+        ('shelf-v1', 'creator-v1', 'v1', 'V1', 'V1 shelf', 'Test', 'PUBLISHED', 'minimal',
+         NULL, '/legacy-shelf.jpg', '2026-06-24T00:00:00.000Z',
+         '2026-06-24T00:00:00.000Z', NULL);
+      INSERT INTO products VALUES
+        ('product-v1', 'shelf-v1', 'V1 product', 'Product', 100, 'USD', 'Amazon',
+         'https://www.amazon.com/dp/B09JZT6YK5', '/legacy-product.jpg', 0, 10, 20,
+         '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z');
+      INSERT INTO social_channels VALUES
+        ('channel-v1', 'creator-v1', 'X', '@v1', 1, 0, '2026-06-24T00:00:00.000Z',
+         '2026-06-24T00:00:00.000Z');
+      INSERT INTO saves VALUES
+        ('save-v1', 'user-v1-fan', 'SHELF', 'shelf-v1', '2026-06-24T00:00:00.000Z');
+      INSERT INTO comments VALUES
+        ('comment-v1', 'shelf-v1', 'user-v1-fan', NULL, 'V1 comment', 'VISIBLE',
+         '2026-06-24T00:00:00.000Z', '2026-06-24T00:00:00.000Z', NULL);
+      INSERT INTO shares VALUES
+        ('share-v1', 'shelf-v1', 'user-v1-fan', 'v1-share', 'X',
+         '2026-06-24T00:00:00.000Z');
+      INSERT INTO click_events VALUES
+        ('click-v1', 'product-v1', 'shelf-v1', 'share-v1', 'FAN', 'fan-20',
+         'https://www.amazon.com/dp/B09JZT6YK5?tag=fan-20', NULL,
+         '2026-06-24T00:00:00.000Z');
+      INSERT INTO wallet_entries VALUES
+        ('wallet-v1', 'user-v1-fan', 'click-v1', 80, 'AFFILIATE_EARNING', 'CLEARED',
+         'V1 earning', '2026-06-24T00:00:00.000Z', '2026-06-24T01:00:00.000Z');
+      INSERT INTO withdrawals VALUES
+        ('withdrawal-v1', 'user-v1-fan', 50, 'Test', 'APPROVED', 'user-v1-admin',
+         '2026-06-24T00:00:00.000Z', '2026-06-24T01:00:00.000Z',
+         '2026-06-24T01:00:00.000Z');
+    `);
+
+    migrate(db);
+
+    expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
+    expect(db.prepare("SELECT id FROM click_events").all()).toEqual([{ id: "click-v1" }]);
+    expect(db.prepare("SELECT click_event_id FROM wallet_entries").all()).toEqual([
+      { click_event_id: "click-v1" },
+    ]);
+    expect(db.prepare("SELECT reviewer_id FROM withdrawals").all()).toEqual([
+      { reviewer_id: "user-v1-admin" },
+    ]);
+  });
+
+  it("rejects a recorded migration whose name no longer matches its version", () => {
+    const db = createMigratedDatabase();
+    db.prepare("UPDATE schema_migrations SET name = ? WHERE version = ?").run("tampered", 2);
+
+    expect(() => migrate(db)).toThrow(/migration 2.*tampered.*enforce_data_invariants/i);
   });
 });

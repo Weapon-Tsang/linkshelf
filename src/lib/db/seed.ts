@@ -1,80 +1,170 @@
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { join, posix, resolve, sep } from "node:path";
 import type { DatabaseSync } from "node:sqlite";
 
 const CREATED_AT = "2026-06-01T12:00:00.000Z";
 
-export function seed(database: DatabaseSync): void {
+export const STITCH_ASSET_SOURCES = {
+  profileAvatar:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuB6yXZ9XFX1GPQAI3kFISkRWCEayI2tRpGzC3J35idZQbRoXmJy708U7hGywsG3ZNl-l-N0lraWe9zfF4WE6vn7kH6dymwzEHPKWJAWeYuVAl9gd_A1gNEjTnE-1K8PlUkCMgGE-qnmzRXKvfb9NzSPEqCOO2UMCTD08xgGK3f2paZJuW7-CvYEEHs-5Oh8Z4dokyrfYCv4PN1xae0XTaGcHMlU4gN8cy9mfaEqiNy38cJuNeltF83HC4pmC-HzzSjLVcLTL_yvuPk",
+  profileCover:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAf8AcZsiFTBexC90V0RnnElBXCZAb_68Va1o3Jkn-K_9D-Reltc0984Fk62oCMa1iScrPSbunJd-OWi3pem1J-N86PvTxOATjNtAFHzQ8wJM6UowXAvoKHitU9HgnJpDi5Oi0ZElX3JH_b08mdFy-2kYvsr4NNsMt9LmvAJzq-NXAOdF2zfKhyMvgCma2jW7M3ahxPY3_ExRp6TF7NYywpebhFw0cQmFNhx1_lvuPm-VkU_BdaBryuYRR01AtIo1XBDY5ZAO0YzfU",
+  shelfPhotography:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCo__FkVCyBuKAwyzDsvu3zUmEbMwyP27csjao_FpKVRhQiTmM0e9cfb11wNLMJP1tKvEUKRD6J58ImULIP1L3sWJgY3D7oyRyPWpO-I9gNV1vCOTfHlxbFCB2oX3wFGaBPb_mhvcayrjGbiyTzulfi7jAwytGhbWcxi2hLWFZAgFjD6cpK_GwIiq7V_T7ddJtSD62lvRRvSuKO_GX_DitaQiKWG2THlBHaZGOq4BNPIGpobk8MS7gvBEX59MGazc55OBcJbpPf6vQ",
+  shelfDesk:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBos8sNijSLsLTp37l3BNO9eXA3Fmet28h7vVHT4da9DK-3IHg-4IerkJkktiqkFN-0-cio-zLZ8JbSu5eDxFgYKv0BJnEannkf7_Zgo8X7cIJ55wByVWQ0mFUCxrNa92BOMwm843Yw-Sjl1oArJ182KsD2KhvGPkNb4gt51gtG276HJsvGYJCmwwFB83nyIOZfs-lv8vcJsWmfBImaTcCOJKz0LVBmTwwUFQ6cggmmAQpXxLzVpH8al15mXFrbhIeub3LObSvPdR4",
+  shelfTravel:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuC93Qt-tOMYJ3xW0zBl7PEhIy7NhUplkPvFOs-QXay-wcha1u0nDevRe3nMHgG0SwfGEcTFOzp3HMC88OP6-5AwkL6gksoHvlOabfCnD7w18Fhcsysd9xCLO4S9IsRu4-XdMh1tpT9wxgzV9_2E3_Qog9ZzffY1UvbhqpiJpDm0QIE1VAcG3zh4cwlKjr4b5pygL_lyiDojRKQoRQHEnot5Yxe1FA0wQR24aO7Fr9w4MdBmcAiwFl9dLWgI8n7Qn0vu-33hBEP4g3A",
+  productSonyA7iv:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCim82jogH19rZejVSphrFEbLp4y-KAxG5V5LzjNiYTY1JP2-5oNFt_R20no6-XaZePD4jmJniS0dazB6XlnkztJ04PkvTFm_4c1_2Y0ooHavcSYmUUAYlgMfFO9G1PBO6hslT6BKsypBLt8s4gpxl-1lonQXLJ56YNVaZfqwYb60586quCx_SKKzUq2S-WufPZLz6C4AZgD6auSQA8VrkIDwHkCpFrCfzYT62qZxQH44u0oOu_phnckkaYBWKsVcIiy87duuEGXlQ",
+  productSonyLens:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDKHLXHgAcM6Kkm0oQE7yHFq60yUonGuU2MtVx1IWCZ_x5SMSUgrAfVboti40ltI0ztyrw_OOIqtXzyPyQKug_uFnQxyy74PY5Lur8yH3qcaId2KBH_rrXqhCeOmxNEoEjQA1vUgjh4d9uihD_W8o92nQ_hJrKsdkV3ngCaJ-UN5ftlxjo66yBwHcJFLETn0Inn0rFyWeslhYvwvTYtWFYQlRQJXPlFQXgNDFkvdGiVZ1PZOsfQCLlC8jVc4EAty5n8wqChv7VScLs",
+  productPeakTripod:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCz7-aS8rhNEvRVqjJIkePdF66jC5yN7TAn9y65hwc8GxyAZNx9SfyW71OvMx-Fn4TY9w__5h-PEeGco0vmzeJn-swwCazZrYzqKBg5HSjavKTM5WZAIbGryVSa2wSjndYmTjgJyQdAOzHPeiy3rljPNn6yQ24ZhHAHv3J4R8mXq7K-MGGi6bklxyyJp8mUA7D4b2lIt_Bem4GwI0sBBQ_1VMCnkxEsIn1k_gbvzI7KiRgPO4sQ-__TxM2bHZPPHjb-p8iKn_28wdk",
+  productErgotune:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBPsyCx4GuIUqdQB9vp_F3Vdf_As_58KKKCdYJFKM4bUr1yCxfGRd0wdIzZ6_u6-TIPYfybmrcEPoqryLZn-BPvPBonF1faLa8rjBqMYi48NnphRFEbGwBf5Q0C6jsXKz2X-e1yVgv73hmfytRHfrPC-sl3OivfZ0RJpCINem_fsLMBMhW5ligDwUm0CH0XERJyve6Pjp456N-P7rnSwxCehW_77j-fLDPQSl3YyJUVIT9kgFjXZneFXcQZO5utL5NC6ycNJjpsKNE",
+  productKeychron:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBXmdCPpah5NPsg0ra-apcjuWYd_2ltT2l7z_p3Wzjk-vYQyQH_M57o8SuoOHW5NF3YcbPoN7pyHlatDErkpyLrqfO6zPD_EVEECUNvlPH3kgvohu645q-UCqF7qwGGbwleMxbqMoEVgcyk60TH2bfFeZ-8C4gYRZ6dtA2Iq2eVa7E5vblNDGNkI2aTk7LBkUjCl32ZflZqBSnOOC3Nf3-bnz_ff8e-fHJcZLWIfT8Joe1Bc_KVjGfap7yIY4r1fbe3kAl0-tAkxqo",
+  productHeadphones:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCBYr56VXkwly37g11dRCd0IdHIxKZFU5M25VcKilLjqdMdY_SWUni-UgJ9nWzKDcCYBMzBUtBk8v4N0S3M4-mf1s3u3gFzv1kcx7WgTELWS5xYbLQ6TfVoFQt6ox4vixkDTTVVXQ7Wirh_y6IeU0_NoEbZ_JyymWXcBXpIq8c1_wOQzzaqlvdv9arH_2WIEUZUBM-lyUFSpxWWrONHvyH8eCYv1lkn6YZVzfROMs1nU95ZRoxtUDo_gvmXnZoqQW2yUhZJgDOzEK4",
+  productTravelBackpack:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCJZPAUG0W1xXyc-vRnkwf6ci5qupRSRn0Uu9weM0gO-GF0XqNYVpcfvqtjZjR4hbR7TIZAHf8L8M3_EWlu41lj2CNW8tdvdZUzb8rrpcqHDH1zbCA_tS2zrap6jXMoTCiFUzpno9ZGx-Qc_ZY39JY74H2211PG4uXU8iMb4OzKw_W3leBFIt1_qzwxCoUFp2xjA9RhbZyz4l9RX8cuqFCgo_KrJ6CulDk2NlJhjyjBnFWYabgD5dmMfElRjdtRLBPJVq3xZmf4ncM",
+} as const;
+
+export interface SeedOptions {
+  readonly publicRoot?: string;
+}
+
+function readAssetManifest(publicRoot: string): Record<string, unknown> {
+  try {
+    const value = JSON.parse(
+      readFileSync(join(publicRoot, "stitch", "asset-manifest.json"), "utf8"),
+    ) as unknown;
+    return value && typeof value === "object" && !Array.isArray(value)
+      ? (value as Record<string, unknown>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+function resolveManifestAsset(
+  manifest: Record<string, unknown>,
+  publicRoot: string,
+  sourceUrl: string,
+): string | null {
+  const publicPath = manifest[sourceUrl];
+  if (
+    typeof publicPath !== "string" ||
+    !/^\/stitch\/assets\/[a-f0-9]{64}\.(?:jpg|png|webp)$/.test(publicPath) ||
+    posix.normalize(publicPath) !== publicPath
+  ) {
+    return null;
+  }
+
+  const assetsRoot = resolve(publicRoot, "stitch", "assets");
+  const assetPath = resolve(publicRoot, `.${publicPath}`);
+  if (!assetPath.startsWith(`${assetsRoot}${sep}`) || !existsSync(assetPath)) {
+    return null;
+  }
+
+  try {
+    return statSync(assetPath).isFile() ? publicPath : null;
+  } catch {
+    return null;
+  }
+}
+
+function sqlText(value: string | null): string {
+  return value === null ? "NULL" : `'${value.replaceAll("'", "''")}'`;
+}
+
+export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
+  const publicRoot = options.publicRoot ?? join(process.cwd(), "public");
+  const manifest = readAssetManifest(publicRoot);
+  const asset = (sourceUrl: string) =>
+    sqlText(resolveManifestAsset(manifest, publicRoot, sourceUrl));
+
   database.exec("BEGIN IMMEDIATE TRANSACTION");
 
   try {
     database.exec(`
-      INSERT OR IGNORE INTO users
+      INSERT INTO users
         (id, google_subject, email, display_name, role, avatar_url, affiliate_tag, created_at, updated_at)
       VALUES
         ('user-creator', 'google-creator', 'creator@linkshelf.local', 'Alex Rivera', 'CREATOR',
-          '/stitch/assets/avatar-alex-rivera.jpg', NULL, '${CREATED_AT}', '${CREATED_AT}'),
+          NULL, NULL, '${CREATED_AT}', '${CREATED_AT}'),
         ('user-fan', 'google-fan', 'fan@linkshelf.local', 'Jamie Chen', 'FAN',
-          '/stitch/assets/avatar-jamie-chen.jpg', 'fan-demo-20', '${CREATED_AT}', '${CREATED_AT}'),
+          NULL, 'fan-demo-20', '${CREATED_AT}', '${CREATED_AT}'),
         ('user-admin', 'google-admin', 'admin@linkshelf.local', 'Super Admin', 'ADMIN',
-          '/stitch/assets/avatar-super-admin.jpg', NULL, '${CREATED_AT}', '${CREATED_AT}');
+          NULL, NULL, '${CREATED_AT}', '${CREATED_AT}')
+      ON CONFLICT(id) DO UPDATE SET avatar_url = excluded.avatar_url;
 
-      INSERT OR IGNORE INTO creator_profiles
+      INSERT INTO creator_profiles
         (id, user_id, handle, display_name, bio, category, avatar_url, cover_url, affiliate_tag,
          created_at, updated_at)
       VALUES
         ('creator-liam', 'user-creator', 'liamroberts.photo', 'Liam Roberts',
           'Photographer and filmmaker sharing the gear behind every frame.', 'Photography',
-          '/stitch/assets/avatar-liam-roberts.jpg', '/stitch/assets/cover-liam-roberts.jpg',
-          'liamcreator-20', '${CREATED_AT}', '${CREATED_AT}');
+          ${asset(STITCH_ASSET_SOURCES.profileAvatar)},
+          ${asset(STITCH_ASSET_SOURCES.profileCover)}, 'liamcreator-20',
+          '${CREATED_AT}', '${CREATED_AT}')
+      ON CONFLICT(id) DO UPDATE SET
+        avatar_url = excluded.avatar_url,
+        cover_url = excluded.cover_url;
 
-      INSERT OR IGNORE INTO shelves
+      INSERT INTO shelves
         (id, creator_id, slug, title, description, category, status, theme, source_content_url,
          cover_url, created_at, updated_at, deleted_at)
       VALUES
         ('shelf-photography', 'creator-liam', 'photography-kit', 'Photography Kit',
           'My go-to gear for professional shoots and travel vlogs.', 'Photography', 'PUBLISHED',
           'tech', 'https://www.youtube.com/watch?v=linkshelf-photo',
-          '/stitch/assets/shelf-photography-kit.jpg', '${CREATED_AT}', '${CREATED_AT}', NULL),
+          ${asset(STITCH_ASSET_SOURCES.shelfPhotography)}, '${CREATED_AT}', '${CREATED_AT}', NULL),
         ('shelf-desk', 'creator-liam', 'desk-setup-2024', 'Desk Setup 2024',
           'A calm, ergonomic workspace for editing and deep work.', 'Workspace', 'DRAFT',
-          'minimal', NULL, '/stitch/assets/shelf-desk-setup.jpg',
+          'minimal', NULL, ${asset(STITCH_ASSET_SOURCES.shelfDesk)},
           '${CREATED_AT}', '${CREATED_AT}', NULL),
         ('shelf-travel', 'creator-liam', 'travel-essentials', 'Travel Essentials',
           'Compact essentials that make location shoots easier.', 'Travel', 'PUBLISHED',
           'living', 'https://www.youtube.com/watch?v=linkshelf-travel',
-          '/stitch/assets/shelf-travel-essentials.jpg', '${CREATED_AT}', '${CREATED_AT}', NULL);
+          ${asset(STITCH_ASSET_SOURCES.shelfTravel)}, '${CREATED_AT}', '${CREATED_AT}', NULL)
+      ON CONFLICT(id) DO UPDATE SET cover_url = excluded.cover_url;
 
-      INSERT OR IGNORE INTO products
+      INSERT INTO products
         (id, shelf_id, title, description, price_cents, currency, merchant, destination_url,
          image_url, sort_position, hotspot_x, hotspot_y, created_at, updated_at)
       VALUES
         ('product-sony-a7iv', 'shelf-photography', 'Sony A7IV Mirrorless Camera',
           'A versatile full-frame hybrid camera with reliable autofocus.', 249800, 'USD', 'Amazon',
-          'https://www.amazon.com/dp/B09JZT6YK5', '/stitch/assets/product-sony-a7iv.jpg',
+          'https://www.amazon.com/dp/B09JZT6YK5', ${asset(STITCH_ASSET_SOURCES.productSonyA7iv)},
           0, 55, 38, '${CREATED_AT}', '${CREATED_AT}'),
         ('product-sony-lens', 'shelf-photography', 'Sony FE 24-70mm f/2.8 GM II',
           'A fast standard zoom for portraits, travel, and events.', 229800, 'USD', 'Amazon',
-          'https://www.amazon.com/dp/B0B1TQZ99S', '/stitch/assets/product-sony-24-70.jpg',
+          'https://www.amazon.com/dp/B0B1TQZ99S', ${asset(STITCH_ASSET_SOURCES.productSonyLens)},
           1, 25, 20, '${CREATED_AT}', '${CREATED_AT}'),
         ('product-peak-tripod', 'shelf-photography', 'Peak Design Carbon Tripod',
           'A compact carbon travel tripod with a fast setup.', 64995, 'USD', 'Amazon',
-          'https://www.amazon.com/dp/B086YB2Y2F', '/stitch/assets/product-peak-tripod.jpg',
+          'https://www.amazon.com/dp/B086YB2Y2F', ${asset(STITCH_ASSET_SOURCES.productPeakTripod)},
           2, 75, 60, '${CREATED_AT}', '${CREATED_AT}'),
         ('product-ergotune', 'shelf-desk', 'ErgoTune Supreme',
           'An adjustable mesh chair for long editing sessions.', 39900, 'USD', 'Amazon',
-          'https://www.amazon.com/dp/B07Y8V14KQ', '/stitch/assets/product-ergotune-supreme.jpg',
+          'https://www.amazon.com/dp/B07Y8V14KQ', ${asset(STITCH_ASSET_SOURCES.productErgotune)},
           0, NULL, NULL, '${CREATED_AT}', '${CREATED_AT}'),
         ('product-keychron', 'shelf-desk', 'Keychron Q1 Pro',
           'A wireless aluminum mechanical keyboard with tactile switches.', 19900, 'USD', 'Amazon',
-          'https://www.amazon.com/dp/B0BPXXL1DL', '/stitch/assets/product-keychron-q1-pro.jpg',
+          'https://www.amazon.com/dp/B0BPXXL1DL', ${asset(STITCH_ASSET_SOURCES.productKeychron)},
           1, NULL, NULL, '${CREATED_AT}', '${CREATED_AT}'),
         ('product-headphones', 'shelf-travel', 'Sony WH-1000XM5 Headphones',
           'Noise-canceling headphones for flights and focused edits.', 34800, 'USD', 'Amazon',
-          'https://www.amazon.com/dp/B09XS7JWHH', '/stitch/assets/product-sony-headphones.jpg',
+          'https://www.amazon.com/dp/B09XS7JWHH', ${asset(STITCH_ASSET_SOURCES.productHeadphones)},
           0, 34, 44, '${CREATED_AT}', '${CREATED_AT}'),
         ('product-travel-backpack', 'shelf-travel', 'Peak Design Travel Backpack',
           'A durable carry-on backpack with flexible camera organization.', 27995, 'USD', 'Amazon',
-          'https://www.amazon.com/dp/B07ZWFNZBK', '/stitch/assets/product-travel-backpack.jpg',
-          1, 68, 54, '${CREATED_AT}', '${CREATED_AT}');
+          'https://www.amazon.com/dp/B07ZWFNZBK',
+          ${asset(STITCH_ASSET_SOURCES.productTravelBackpack)},
+          1, 68, 54, '${CREATED_AT}', '${CREATED_AT}')
+      ON CONFLICT(id) DO UPDATE SET image_url = excluded.image_url;
 
       INSERT OR IGNORE INTO social_channels
         (id, creator_id, type, value, enabled, sort_position, created_at, updated_at)
