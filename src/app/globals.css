@@ -30,5 +30,104 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Outfit, Arial, Helvetica, sans-serif;
+}
+
+.landing-glass-card {
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 16px 42px rgba(11, 19, 43, 0.055);
+  backdrop-filter: blur(16px);
+}
+
+.landing-glow-card {
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.landing-glow-card:hover,
+.landing-glow-card:focus-within {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 60px rgba(100, 246, 227, 0.22);
+}
+
+.landing-carousel {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.landing-carousel-track {
+  display: inline-flex;
+  animation: landing-scroll 34s linear infinite;
+  will-change: transform;
+}
+
+.landing-carousel:hover .landing-carousel-track,
+.landing-carousel:focus-within .landing-carousel-track {
+  animation-play-state: paused;
+}
+
+.landing-carousel-item {
+  width: min(300px, 78vw);
+  height: 400px;
+  flex: 0 0 auto;
+  transition: transform 300ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.landing-carousel-item:hover,
+.landing-carousel-item:focus-within {
+  transform: translateY(-10px);
+}
+
+.landing-reveal-word {
+  display: inline-block;
+  animation: landing-reveal 700ms cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+.landing-hero-aurora {
+  background:
+    radial-gradient(circle at 82% 26%, rgba(100, 246, 227, 0.24), transparent 31%),
+    radial-gradient(circle at 65% 70%, rgba(219, 225, 255, 0.42), transparent 42%),
+    linear-gradient(135deg, rgba(252, 248, 251, 0), rgba(236, 252, 255, 0.8));
+}
+
+@keyframes landing-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes landing-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .landing-carousel-track,
+  .landing-reveal-word {
+    animation: none !important;
+  }
+
+  .landing-glow-card,
+  .landing-carousel-item {
+    transition: none !important;
+  }
 }
