@@ -7,8 +7,10 @@ import { POST as logout } from "@/app/api/auth/logout/route";
 import { GET as createAdminEntry } from "@/app/api/auth/admin-entry/route";
 import {
   ADMIN_ENTRY_COOKIE_NAME,
+  RESUME_ENTRY_COOKIE_NAME,
   SESSION_COOKIE_NAME,
   createAdminEntryChallenge,
+  consumeResumeEntryCookie,
   readSessionFromRequest,
 } from "@/features/auth/session";
 
@@ -70,6 +72,36 @@ describe("development Google auth route", () => {
     expect(readSessionFromRequest(sessionRequest, SECRET)?.userId).toBe(
       "user-creator",
     );
+  });
+
+  it("mints a same-origin resume marker for fan auth return targets", async () => {
+    const returnTo = "/liamroberts.photo/photography-kit?channel=X&resume=share";
+    const response = await googleLogin(
+      post("/api/auth/google", {
+        role: "fan",
+        returnTo,
+      }),
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe(
+      "http://linkshelf.test/liamroberts.photo/photography-kit?channel=X&resume=share",
+    );
+    const resumeCookie = setCookies(response)
+      .find((cookie) => cookie.startsWith(`${RESUME_ENTRY_COOKIE_NAME}=`))
+      ?.split(";", 1)[0];
+    expect(resumeCookie).toContain(`${RESUME_ENTRY_COOKIE_NAME}=`);
+
+    const token = resumeCookie?.slice(`${RESUME_ENTRY_COOKIE_NAME}=`.length) ?? "";
+    expect(
+      consumeResumeEntryCookie(
+        token,
+        "/liamroberts.photo/photography-kit?resume=share&channel=X",
+        { secret: SECRET },
+      ),
+    ).toMatchObject({
+      returnTo: "/liamroberts.photo/photography-kit?resume=share&channel=X",
+    });
   });
 
   it("rejects an admin role posted without the secret-entry signature", async () => {

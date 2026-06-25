@@ -5,6 +5,8 @@ export const SESSION_COOKIE_NAME = "linkshelf.session";
 export const MAX_SESSION_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 export const ADMIN_ENTRY_COOKIE_NAME = "linkshelf.admin-entry";
 export const MAX_ADMIN_ENTRY_AGE_MS = 5 * 60 * 1000;
+export const RESUME_ENTRY_COOKIE_NAME = "linkshelf.resume-entry";
+export const MAX_RESUME_ENTRY_AGE_MS = 5 * 60 * 1000;
 export const DEVELOPMENT_ONLY_SESSION_SECRET =
   "linkshelf-development-only-never-use-in-production";
 
@@ -74,11 +76,44 @@ export interface AdminEntryChallenge {
   };
 }
 
+export interface ResumeEntryPayload {
+  readonly version: 1;
+  readonly nonce: string;
+  readonly issuedAt: number;
+  readonly expiresAt: number;
+  readonly returnTo: string;
+}
+
+export interface CreateResumeEntryCookieOptions {
+  readonly secret?: string;
+  readonly now?: number;
+  readonly nonce?: string;
+  readonly maxAgeMs?: number;
+  readonly nodeEnv?: string;
+}
+
+export interface VerifyResumeEntryCookieOptions {
+  readonly secret?: string;
+  readonly now?: number;
+  readonly nodeEnv?: string;
+}
+
+export interface ResumeEntryCookie {
+  readonly token: string;
+  readonly payload: ResumeEntryPayload;
+  readonly cookie: {
+    readonly name: typeof RESUME_ENTRY_COOKIE_NAME;
+    readonly value: string;
+    readonly options: SessionCookieOptions;
+  };
+}
+
 function sign(value: string, secret: string): Buffer {
   return createHmac("sha256", secret).update(value).digest();
 }
 
 const consumedAdminEntryNonces = new Map<string, number>();
+const consumedResumeEntryNonces = new Map<string, number>();
 
 function isCanonicalBase64Url(value: string): boolean {
   if (!/^[A-Za-z0-9_-]+$/.test(value)) return false;
@@ -103,6 +138,19 @@ function hasValidShape(value: unknown): value is SessionPayload {
 }
 
 function hasValidAdminEntryShape(value: unknown): value is AdminEntryPayload {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const payload = value as Record<string, unknown>;
+  return (
+    payload.version === 1 &&
+    typeof payload.nonce === "string" &&
+    /^[A-Za-z0-9_-]{43}$/.test(payload.nonce) &&
+    Number.isSafeInteger(payload.issuedAt) &&
+    Number.isSafeInteger(payload.expiresAt) &&
+    typeof payload.returnTo === "string"
+  );
+}
+
+function hasValidResumeEntryShape(value: unknown): value is ResumeEntryPayload {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const payload = value as Record<string, unknown>;
   return (
@@ -193,13 +241,59 @@ export function resolveSessionSecret(
   return environment.authSecret || DEVELOPMENT_ONLY_SESSION_SECRET;
 }
 
-function adminEntrySecret(
-  options: Pick<CreateAdminEntryChallengeOptions, "secret" | "nodeEnv">,
-): string {
+function signedEntrySecret(options: {
+  readonly secret?: string;
+  readonly nodeEnv?: string;
+}): string {
   return resolveSessionSecret({
     nodeEnv: options.nodeEnv ?? process.env.NODE_ENV,
     authSecret: options.secret ?? process.env.AUTH_SECRET,
   });
+}
+
+function adminEntrySecret(
+  options: Pick<CreateAdminEntryChallengeOptions, "secret" | "nodeEnv">,
+): string {
+  return signedEntrySecret(options);
+}
+
+function resumeEntrySecret(
+  options: Pick<CreateResumeEntryCookieOptions, "secret" | "nodeEnv">,
+): string {
+  return signedEntrySecret(options);
+}
+
+const resumableChannels = new Set(["X", "WHATSAPP", "FACEBOOK", "EMAIL", "COPY"]);
+
+function canonicalResumeReturnTo(value: unknown): string | null {
+  const returnTo = safeReturnTo(value, "");
+  if (!returnTo) return null;
+
+  let url: URL;
+  try {
+    url = new URL(returnTo, "https://linkshelf.local");
+  } catch {
+    return null;
+  }
+
+  const resumeValues = url.searchParams.getAll("resume");
+  if (resumeValues.length !== 1) return null;
+  const resume = resumeValues[0]?.trim();
+  if (resume !== "save" && resume !== "share") return null;
+
+  const channelValues = url.searchParams.getAll("channel");
+  if (channelValues.length > 1) return null;
+  if (resume === "save" && channelValues.length > 0) return null;
+
+  const canonicalSearch = new URLSearchParams();
+  canonicalSearch.set("resume", resume);
+  if (resume === "share" && channelValues.length === 1) {
+    const channel = channelValues[0]?.trim();
+    if (!channel || !resumableChannels.has(channel)) return null;
+    canonicalSearch.set("channel", channel);
+  }
+
+  return `${url.pathname}?${canonicalSearch.toString()}`;
 }
 
 export function createAdminEntryChallenge(
@@ -327,6 +421,129 @@ export function consumeAdminEntryChallenge(
   return payload;
 }
 
+export function createResumeEntryCookie(
+  requestedReturnTo: unknown,
+  options: CreateResumeEntryCookieOptions = {},
+): ResumeEntryCookie {
+  const now = options.now ?? Date.now();
+  const maxAgeMs = options.maxAgeMs ?? MAX_RESUME_ENTRY_AGE_MS;
+  if (
+    !Number.isSafeInteger(maxAgeMs) ||
+    maxAgeMs <= 0 ||
+    maxAgeMs > MAX_RESUME_ENTRY_AGE_MS
+  ) {
+    throw new Error("Resume entry max age must be between 1ms and 5 minutes");
+  }
+
+  const nonce = options.nonce ?? randomBytes(32).toString("base64url");
+  if (!/^[A-Za-z0-9_-]{43}$/.test(nonce)) {
+    throw new Error("Resume entry nonce must contain 32 bytes of base64url entropy");
+  }
+
+  const returnTo = canonicalResumeReturnTo(requestedReturnTo);
+  if (!returnTo) {
+    throw new Error("Resume entry requires one safe save or share resume target");
+  }
+
+  const payload: ResumeEntryPayload = {
+    version: 1,
+    nonce,
+    issuedAt: now,
+    expiresAt: now + maxAgeMs,
+    returnTo,
+  };
+  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const signedValue = `v1.${encodedPayload}`;
+  const secret = resumeEntrySecret(options);
+  const token = `${signedValue}.${sign(signedValue, secret).toString("base64url")}`;
+
+  return {
+    token,
+    payload,
+    cookie: {
+      name: RESUME_ENTRY_COOKIE_NAME,
+      value: token,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: (options.nodeEnv ?? process.env.NODE_ENV) === "production",
+        maxAge: maxAgeMs / 1000,
+        expires: new Date(now + maxAgeMs),
+      },
+    },
+  };
+}
+
+export function verifyResumeEntryCookie(
+  token: unknown,
+  expectedReturnTo: unknown,
+  options: VerifyResumeEntryCookieOptions = {},
+): ResumeEntryPayload | null {
+  if (typeof token !== "string") return null;
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
+  const [version, encodedPayload, encodedSignature] = parts;
+  if (
+    version !== "v1" ||
+    !encodedPayload ||
+    !encodedSignature ||
+    !isCanonicalBase64Url(encodedPayload) ||
+    !isCanonicalBase64Url(encodedSignature)
+  ) {
+    return null;
+  }
+
+  const secret = resumeEntrySecret(options);
+  const suppliedSignature = Buffer.from(encodedSignature, "base64url");
+  const expectedSignature = sign(`${version}.${encodedPayload}`, secret);
+  if (
+    suppliedSignature.length !== expectedSignature.length ||
+    !timingSafeEqual(suppliedSignature, expectedSignature)
+  ) {
+    return null;
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(Buffer.from(encodedPayload, "base64url").toString("utf8"));
+  } catch {
+    return null;
+  }
+  if (!hasValidResumeEntryShape(parsed)) return null;
+
+  const now = options.now ?? Date.now();
+  const duration = parsed.expiresAt - parsed.issuedAt;
+  const normalizedExpectedReturnTo = canonicalResumeReturnTo(expectedReturnTo);
+  if (
+    parsed.issuedAt > now ||
+    parsed.expiresAt <= now ||
+    duration <= 0 ||
+    duration > MAX_RESUME_ENTRY_AGE_MS ||
+    canonicalResumeReturnTo(parsed.returnTo) !== parsed.returnTo ||
+    normalizedExpectedReturnTo !== parsed.returnTo
+  ) {
+    return null;
+  }
+  return parsed;
+}
+
+export function consumeResumeEntryCookie(
+  token: unknown,
+  expectedReturnTo: unknown,
+  options: VerifyResumeEntryCookieOptions = {},
+): ResumeEntryPayload | null {
+  const now = options.now ?? Date.now();
+  for (const [nonce, expiresAt] of consumedResumeEntryNonces) {
+    if (expiresAt <= now) consumedResumeEntryNonces.delete(nonce);
+  }
+
+  const payload = verifyResumeEntryCookie(token, expectedReturnTo, options);
+  if (!payload || consumedResumeEntryNonces.has(payload.nonce)) return null;
+  consumedResumeEntryNonces.set(payload.nonce, payload.expiresAt);
+  return payload;
+}
+
 export function createSessionCookie(
   userId: string,
   options: CreateSessionCookieOptions = {},
@@ -392,6 +609,12 @@ export function readAdminEntryCookie(
   request: Pick<Request, "headers">,
 ): string | null {
   return readCookie(request, ADMIN_ENTRY_COOKIE_NAME);
+}
+
+export function readResumeEntryCookie(
+  request: Pick<Request, "headers">,
+): string | null {
+  return readCookie(request, RESUME_ENTRY_COOKIE_NAME);
 }
 
 export function readSessionFromRequest(

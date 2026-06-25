@@ -1,5 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
 import type { AuthSession } from "@/features/auth/adapter";
+import { consumeResumeEntryCookie } from "@/features/auth/session";
 import type { SocialChannelType } from "@/features/shelves/types";
 import { createShare, toggleSave, type CreateShareOptions, type ToggleSaveOptions } from "./actions";
 
@@ -20,6 +21,14 @@ export type ResumeEngagementResult =
       readonly completed: false;
       readonly kind: "none";
     };
+
+interface ResumeEntryOptions {
+  readonly secret?: string;
+  readonly now?: () => Date;
+}
+
+type ResumeShelfOptions = CreateShareOptions & ToggleSaveOptions & ResumeEntryOptions;
+type ResumeCreatorOptions = ToggleSaveOptions & ResumeEntryOptions;
 
 function singleValue(value: ResumeParam): string | null {
   return typeof value === "string" ? value.trim() : null;
@@ -44,6 +53,23 @@ function normalizeChannel(value: ChannelParam): SocialChannelType {
   return "COPY";
 }
 
+function resumeEntryNow(options: ResumeEntryOptions): number {
+  return (options.now ?? (() => new Date()))().getTime();
+}
+
+function hasValidResumeEntry(
+  token: unknown,
+  returnTo: unknown,
+  options: ResumeEntryOptions,
+): boolean {
+  return (
+    consumeResumeEntryCookie(token, returnTo, {
+      secret: options.secret,
+      now: resumeEntryNow(options),
+    }) !== null
+  );
+}
+
 export function resumeShelfEngagement(
   database: DatabaseSync,
   input: {
@@ -51,11 +77,17 @@ export function resumeShelfEngagement(
     readonly channel?: ChannelParam;
     readonly shelfId: string;
     readonly session: AuthSession | null;
+    readonly resumeEntryToken: string | null;
+    readonly returnTo: string;
   },
-  options: CreateShareOptions & ToggleSaveOptions = {},
+  options: ResumeShelfOptions = {},
 ): ResumeEngagementResult {
   const resume = normalizeResume(input.resume);
-  if (!resume || !input.session) {
+  if (
+    !resume ||
+    !input.session ||
+    !hasValidResumeEntry(input.resumeEntryToken, input.returnTo, options)
+  ) {
     return { completed: false, kind: "none" };
   }
 
@@ -94,11 +126,17 @@ export function resumeCreatorEngagement(
     readonly resume: ResumeParam;
     readonly creatorId: string;
     readonly session: AuthSession | null;
+    readonly resumeEntryToken: string | null;
+    readonly returnTo: string;
   },
-  options: ToggleSaveOptions = {},
+  options: ResumeCreatorOptions = {},
 ): ResumeEngagementResult {
   const resume = normalizeResume(input.resume);
-  if (resume !== "save" || !input.session) {
+  if (
+    resume !== "save" ||
+    !input.session ||
+    !hasValidResumeEntry(input.resumeEntryToken, input.returnTo, options)
+  ) {
     return { completed: false, kind: "none" };
   }
 

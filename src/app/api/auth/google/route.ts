@@ -9,6 +9,7 @@ import { hasSameOrigin, safeReturnTo } from "@/features/auth/guards";
 import {
   ADMIN_ENTRY_COOKIE_NAME,
   consumeAdminEntryChallenge,
+  createResumeEntryCookie,
   createSessionCookie,
   readAdminEntryCookie,
 } from "@/features/auth/session";
@@ -25,6 +26,22 @@ function isRoleHint(value: unknown): value is DevelopmentRoleHint {
 
 function redirect(request: Request, pathname: string): NextResponse {
   return NextResponse.redirect(new URL(pathname, request.url), 303);
+}
+
+function setResumeEntryCookieIfNeeded(
+  response: NextResponse,
+  requestedReturnTo: unknown,
+) {
+  try {
+    const resumeEntry = createResumeEntryCookie(requestedReturnTo);
+    response.cookies.set(
+      resumeEntry.cookie.name,
+      resumeEntry.cookie.value,
+      resumeEntry.cookie.options,
+    );
+  } catch {
+    // Most auth submissions are ordinary non-resumable redirects.
+  }
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -50,7 +67,9 @@ export async function POST(request: Request): Promise<Response> {
     const returnTo = safeReturnTo(requestedReturnTo, "/");
     const authUrl = new URL("/api/auth/signin/google", request.url);
     authUrl.searchParams.set("callbackUrl", returnTo);
-    return NextResponse.redirect(authUrl, 303);
+    const response = NextResponse.redirect(authUrl, 303);
+    setResumeEntryCookieIfNeeded(response, requestedReturnTo);
+    return response;
   }
 
   const role = form.get("role");
@@ -80,6 +99,7 @@ export async function POST(request: Request): Promise<Response> {
     const response = redirect(request, destination);
     const cookie = createSessionCookie(user.id);
     response.cookies.set(cookie.name, cookie.value, cookie.options);
+    setResumeEntryCookieIfNeeded(response, requestedReturnTo);
     if (role === "admin") {
       response.cookies.set(ADMIN_ENTRY_COOKIE_NAME, "", {
         httpOnly: true,

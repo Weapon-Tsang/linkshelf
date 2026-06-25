@@ -3,11 +3,15 @@ import {
   DEVELOPMENT_ONLY_SESSION_SECRET,
   ADMIN_ENTRY_COOKIE_NAME,
   MAX_ADMIN_ENTRY_AGE_MS,
+  MAX_RESUME_ENTRY_AGE_MS,
+  RESUME_ENTRY_COOKIE_NAME,
   MAX_SESSION_AGE_MS,
   SESSION_COOKIE_NAME,
   createSessionCookie,
   createAdminEntryChallenge,
+  createResumeEntryCookie,
   consumeAdminEntryChallenge,
+  consumeResumeEntryCookie,
   decodeSession,
   encodeSession,
   readSessionFromRequest,
@@ -279,5 +283,87 @@ describe("one-time admin entry challenges", () => {
     });
 
     expect(challenge.payload.returnTo).toBe("/admin/dashboard");
+  });
+});
+
+describe("one-time resume entry cookies", () => {
+  it("binds a short-lived signed cookie to a canonical resume target", () => {
+    const resume = createResumeEntryCookie(
+      "/liamroberts.photo/photography-kit?channel=X&resume=share",
+      {
+        secret: SECRET,
+        now: NOW,
+        nonce: "x".repeat(43),
+        nodeEnv: "development",
+      },
+    );
+
+    expect(resume.cookie).toMatchObject({
+      name: RESUME_ENTRY_COOKIE_NAME,
+      value: resume.token,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: MAX_RESUME_ENTRY_AGE_MS / 1000,
+      },
+    });
+    expect(resume.payload.returnTo).toBe(
+      "/liamroberts.photo/photography-kit?resume=share&channel=X",
+    );
+    expect(
+      consumeResumeEntryCookie(
+        resume.token,
+        "/liamroberts.photo/photography-kit?resume=share&channel=X",
+        { secret: SECRET, now: NOW },
+      ),
+    ).toMatchObject({ nonce: "x".repeat(43) });
+    expect(
+      consumeResumeEntryCookie(
+        resume.token,
+        "/liamroberts.photo/photography-kit?resume=share&channel=X",
+        { secret: SECRET, now: NOW },
+      ),
+    ).toBeNull();
+  });
+
+  it("rejects missing, ambiguous, expired, and return-mismatched resume entries", () => {
+    expect(() =>
+      createResumeEntryCookie("/liamroberts.photo/photography-kit", {
+        secret: SECRET,
+        now: NOW,
+        nonce: "m".repeat(43),
+      }),
+    ).toThrow(/resume/i);
+
+    expect(() =>
+      createResumeEntryCookie(
+        "/liamroberts.photo/photography-kit?resume=share&resume=save",
+        {
+          secret: SECRET,
+          now: NOW,
+          nonce: "a".repeat(43),
+        },
+      ),
+    ).toThrow(/resume/i);
+
+    const entry = createResumeEntryCookie("/liamroberts.photo?resume=save", {
+      secret: SECRET,
+      now: NOW,
+      nonce: "b".repeat(43),
+    });
+
+    expect(
+      consumeResumeEntryCookie(entry.token, "/liamroberts.photo?resume=save", {
+        secret: SECRET,
+        now: NOW + MAX_RESUME_ENTRY_AGE_MS,
+      }),
+    ).toBeNull();
+    expect(
+      consumeResumeEntryCookie(entry.token, "/other?resume=save", {
+        secret: SECRET,
+        now: NOW,
+      }),
+    ).toBeNull();
   });
 });

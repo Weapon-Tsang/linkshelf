@@ -1,6 +1,7 @@
 import type { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { AuthSession } from "@/features/auth/adapter";
+import { createResumeEntryCookie } from "@/features/auth/session";
 import { addComment, createShare, toggleSave } from "@/features/engagement/actions";
 import { resumeCreatorEngagement, resumeShelfEngagement } from "@/features/engagement/resume";
 import { createDatabase } from "@/lib/db/client";
@@ -8,6 +9,7 @@ import { migrate } from "@/lib/db/migrate";
 import { seed } from "@/lib/db/seed";
 
 const NOW = new Date("2026-06-24T12:00:00.000Z");
+const SECRET = "engagement-resume-secret";
 
 const fanSession: AuthSession = {
   user: {
@@ -179,6 +181,14 @@ describe("engagement actions", () => {
   });
 
   it("executes resumable shelf share and save actions after Google login", () => {
+    const resumeShare = createResumeEntryCookie(
+      "/liamroberts.photo/photography-kit?resume=share&channel=X",
+      {
+        secret: SECRET,
+        now: NOW.getTime(),
+        nonce: "s".repeat(43),
+      },
+    );
     const shared = resumeShelfEngagement(
       database,
       {
@@ -186,11 +196,14 @@ describe("engagement actions", () => {
         channel: "X",
         shelfId: "shelf-photography",
         session: fanSession,
+        resumeEntryToken: resumeShare.token,
+        returnTo: "/liamroberts.photo/photography-kit?resume=share&channel=X",
       },
       {
         createId: () => "share-resume",
         createShortCode: () => "resume-photo",
         now: () => NOW,
+        secret: SECRET,
       },
     );
 
@@ -212,7 +225,16 @@ describe("engagement actions", () => {
         resume: "save",
         shelfId: "shelf-travel",
         session: fanSession,
-      }),
+        resumeEntryToken: createResumeEntryCookie(
+          "/liamroberts.photo/travel-essentials?resume=save",
+          {
+            secret: SECRET,
+            now: NOW.getTime(),
+            nonce: "t".repeat(43),
+          },
+        ).token,
+        returnTo: "/liamroberts.photo/travel-essentials?resume=save",
+      }, { secret: SECRET, now: () => NOW }),
     ).toEqual({
       completed: true,
       kind: "save",
@@ -225,7 +247,13 @@ describe("engagement actions", () => {
         resume: "save",
         creatorId: "creator-liam",
         session: fanSession,
-      }),
+        resumeEntryToken: createResumeEntryCookie("/liamroberts.photo?resume=save", {
+          secret: SECRET,
+          now: NOW.getTime(),
+          nonce: "c".repeat(43),
+        }).token,
+        returnTo: "/liamroberts.photo?resume=save",
+      }, { secret: SECRET, now: () => NOW }),
     ).toEqual({
       completed: true,
       kind: "save",
@@ -235,6 +263,8 @@ describe("engagement actions", () => {
         resume: ["share", "save"],
         shelfId: "shelf-photography",
         session: fanSession,
+        resumeEntryToken: null,
+        returnTo: "/liamroberts.photo/photography-kit?resume=share",
       }),
     ).toEqual({
       completed: false,
@@ -246,6 +276,31 @@ describe("engagement actions", () => {
         channel: "FACEBOOK",
         shelfId: "shelf-photography",
         session: fanSession,
+        resumeEntryToken: createResumeEntryCookie(
+          "/liamroberts.photo/photography-kit?resume=share&channel=FACEBOOK",
+          {
+            secret: SECRET,
+            now: NOW.getTime(),
+            nonce: "f".repeat(43),
+          },
+        ).token,
+        returnTo: "/liamroberts.photo/photography-kit?resume=share&channel=FACEBOOK",
+      }, { secret: SECRET, now: () => NOW }),
+    ).toEqual({
+      completed: false,
+      kind: "none",
+    });
+  });
+
+  it("does not execute resume mutations without the same-origin auth marker", () => {
+    expect(
+      resumeShelfEngagement(database, {
+        resume: "share",
+        channel: "COPY",
+        shelfId: "shelf-photography",
+        session: fanSession,
+        resumeEntryToken: null,
+        returnTo: "/liamroberts.photo/photography-kit?resume=share",
       }),
     ).toEqual({
       completed: false,
