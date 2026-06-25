@@ -220,7 +220,7 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
           '2026-06-06T10:00:00.000Z'),
         ('click-platform', 'product-peak-tripod', 'shelf-photography', NULL,
           'PLATFORM', 'linkshelf-platform-20',
-          'https://www.amazon.com/dp/B086YB2Y2F?tag=linkshelf-platform-20', 'NO_VALID_SHARE',
+          'https://www.amazon.com/dp/B086YB2Y2F?tag=linkshelf-platform-20', 'MISSING_SHARE',
           '2026-06-07T10:00:00.000Z');
 
       INSERT OR IGNORE INTO wallet_entries
