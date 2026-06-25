@@ -18,10 +18,10 @@ interface ShelfRouteProps {
       };
   readonly searchParams?:
     | Promise<{
-        readonly share?: string;
+        readonly share?: string | string[];
       }>
     | {
-        readonly share?: string;
+        readonly share?: string | string[];
       };
 }
 

@@ -139,5 +139,11 @@ describe("public shelf queries", () => {
         shareCode: "   ",
       }),
     ).toBeNull();
+    expect(
+      validatePublicShareCode(database, {
+        shelfId: "shelf-photography",
+        shareCode: ["jamie-photo", "other"],
+      }),
+    ).toBeNull();
   });
 });

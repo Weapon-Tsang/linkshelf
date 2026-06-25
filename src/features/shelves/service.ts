@@ -89,8 +89,14 @@ export function getPublicShelf(
   };
 }
 
-function normalizeShareCode(shareCode: string | null | undefined): string | null {
-  const trimmed = shareCode?.trim() ?? "";
+export type PublicShareCodeInput = string | readonly string[] | null | undefined;
+
+function normalizeShareCode(shareCode: PublicShareCodeInput): string | null {
+  if (typeof shareCode !== "string") {
+    return null;
+  }
+
+  const trimmed = shareCode.trim();
   return trimmed.length > 0 ? trimmed : null;
 }
 
@@ -98,7 +104,7 @@ export function validatePublicShareCode(
   database: DatabaseSync,
   input: {
     readonly shelfId: string;
-    readonly shareCode: string | null | undefined;
+    readonly shareCode: PublicShareCodeInput;
   },
 ): string | null {
   const shareCode = normalizeShareCode(input.shareCode);
