@@ -6,6 +6,12 @@ describe("LandingPage", () => {
   it("routes every primary CTA to creator Google login", () => {
     render(<LandingPage />);
 
+    expect(
+      screen.getByRole("heading", {
+        name: "Stop Killing Your Conversions with Trashy Text Links!",
+      }),
+    ).toBeVisible();
+
     const links = screen.getAllByRole("link", {
       name: /start your shelf|get started|claim your visual shelf/i,
     });

@@ -78,7 +78,7 @@ function PrimaryCta({ children, className = "" }: { children: React.ReactNode; c
 
 function FeatureVisual({ row }: { row: (typeof featureRows)[number] }) {
   return (
-    <div className="relative h-80 w-full overflow-hidden rounded-2xl bg-[#eae7ea] shadow-lg md:w-1/2">
+    <div className="relative h-80 w-full overflow-hidden rounded-2xl bg-[#eae7ea] shadow-lg">
       {"image" in row ? (
         <>
           <div className="absolute inset-0 z-10 bg-gradient-to-tr from-[#64f6e3]/10 to-[#dbe1ff]/20 transition-opacity group-hover:opacity-60" />
@@ -120,14 +120,17 @@ export function LandingPage() {
                 </span>
               </div>
 
-              <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-[-0.03em] text-[#131a33] md:text-6xl">
+              <h1
+                aria-label="Stop Killing Your Conversions with Trashy Text Links!"
+                className="max-w-3xl text-4xl font-bold leading-tight tracking-[-0.03em] text-[#131a33] md:text-6xl"
+              >
                 {["Stop", "Killing", "Your", "Conversions", "with"].map((word, index) => (
                   <span
                     className="landing-reveal-word mr-3"
                     key={word}
                     style={{ animationDelay: `${index * 80}ms` }}
                   >
-                    {word}
+                    {word}{" "}
                   </span>
                 ))}
                 <span className="text-[#006a60]">
@@ -138,6 +141,7 @@ export function LandingPage() {
                       style={{ animationDelay: `${(index + 5) * 80}ms` }}
                     >
                       {word}
+                      {index < 2 ? " " : ""}
                     </span>
                   ))}
                 </span>
@@ -218,7 +222,9 @@ export function LandingPage() {
                   </h2>
                   <p className="text-lg leading-8 text-[var(--muted)]">{row.body}</p>
                 </div>
-                <div className={row.reverse ? "md:order-1" : "md:order-2"}>
+                <div
+                  className={`w-full md:w-1/2 ${row.reverse ? "md:order-1" : "md:order-2"}`}
+                >
                   <FeatureVisual row={row} />
                 </div>
               </article>

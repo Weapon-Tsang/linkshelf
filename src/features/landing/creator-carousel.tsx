@@ -14,26 +14,33 @@ export function CreatorCarousel() {
 
   return (
     <div
-      aria-label="Creator examples"
+      aria-label="Creator examples carousel"
       className="landing-carousel relative py-8"
+      role="region"
       tabIndex={0}
     >
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent md:w-32" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-white to-transparent md:w-32" />
       <div className="landing-carousel-track">
-        {loop.map((src, index) => (
+        {loop.map((src, index) => {
+          const isDuplicate = index >= creatorImages.length;
+          const showcaseNumber = (index % creatorImages.length) + 1;
+
+          return (
           <figure
+            aria-hidden={isDuplicate ? true : undefined}
             className="landing-carousel-item border border-[#c6c6ce]/20 bg-white shadow-sm"
             key={`${src}-${index}`}
           >
             <img
-              alt={`Creator LinkShelf visual showcase ${(index % creatorImages.length) + 1}`}
+              alt={isDuplicate ? "" : `Creator LinkShelf visual showcase ${showcaseNumber}`}
               className="h-full w-full object-cover"
               loading={index < creatorImages.length ? "eager" : "lazy"}
               src={src}
             />
           </figure>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
