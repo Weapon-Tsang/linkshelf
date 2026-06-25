@@ -105,6 +105,10 @@ interface ShelfProductRow {
   readonly hotspotY: number | null;
 }
 
+interface ShareCodeRow {
+  readonly shortCode: string;
+}
+
 function withCreatorFallbacks(row: CreatorRow): PublicCreator {
   const fallback = creatorImageFallbacks[row.id];
 
@@ -203,6 +207,7 @@ export function findPublicProfileShelves(
        FROM shelves
        LEFT JOIN products ON products.shelf_id = shelves.id
        WHERE shelves.creator_id = ?
+         AND shelves.status = 'PUBLISHED'
          AND shelves.deleted_at IS NULL
        GROUP BY shelves.id
        ORDER BY shelves._rowid_`,
@@ -327,4 +332,24 @@ export function findPublicShelfProducts(
     .all(shelfId) as unknown as ShelfProductRow[];
 
   return rows.map(withShelfProductFallback);
+}
+
+export function findPublicShareCode(
+  database: DatabaseSync,
+  input: {
+    readonly shelfId: string;
+    readonly shareCode: string;
+  },
+): string | null {
+  const row = database
+    .prepare(
+      `SELECT short_code AS shortCode
+       FROM shares
+       WHERE shelf_id = ?
+         AND short_code = ?
+       LIMIT 1`,
+    )
+    .get(input.shelfId, input.shareCode) as ShareCodeRow | undefined;
+
+  return row?.shortCode ?? null;
 }

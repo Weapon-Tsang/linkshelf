@@ -2,6 +2,15 @@ import type { PublicShelf } from "@/features/shelves/types";
 import { HotspotHero } from "./hotspot-hero";
 import { ProductCard } from "./product-card";
 
+function safeExternalHref(value: string) {
+  try {
+    const url = new URL(value);
+    return ["http:", "https:"].includes(url.protocol) ? value : "#";
+  } catch {
+    return "#";
+  }
+}
+
 export function ShelfPage({
   shelf,
   shareCode,
@@ -33,7 +42,7 @@ export function ShelfPage({
             <a
               aria-label="Explore the original post & story behind this setup"
               className="mt-8 flex items-center justify-between gap-4 rounded-3xl bg-[#f3f4f6] p-5 text-left text-lg font-bold text-[var(--ink)] transition-colors hover:bg-[#e9ebef]"
-              href={shelf.sourceContentUrl}
+              href={safeExternalHref(shelf.sourceContentUrl)}
             >
               <span className="flex items-center gap-3">
                 <span aria-hidden="true">✨</span>

@@ -16,8 +16,9 @@ export function HotspotHero({ shelf }: { readonly shelf: PublicShelf }) {
 
       <div className="absolute right-5 top-5 z-10 flex items-center gap-3">
         <button
-          aria-label="Save shelf"
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-md transition-colors hover:bg-black"
+          aria-label="Save shelf after fan login"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-black/70 text-white opacity-80 backdrop-blur-md"
+          disabled
           type="button"
         >
           <span aria-hidden="true" className="material-symbols-outlined">

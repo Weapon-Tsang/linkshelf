@@ -30,6 +30,15 @@ function shelfHref(handle: string, shelf: PublicProfileShelf) {
   return `/${handle}/${shelf.slug}`;
 }
 
+function safeExternalHref(value: string) {
+  try {
+    const url = new URL(value);
+    return ["http:", "https:", "mailto:"].includes(url.protocol) ? value : "#";
+  } catch {
+    return "#";
+  }
+}
+
 function channelHref(channel: PublicSocialChannel) {
   if (channel.type === "EMAIL") {
     return channel.value.startsWith("mailto:") ? channel.value : `mailto:${channel.value}`;
@@ -39,7 +48,7 @@ function channelHref(channel: PublicSocialChannel) {
     return `https://x.com/${channel.value.slice(1)}`;
   }
 
-  return channel.value;
+  return safeExternalHref(channel.value);
 }
 
 export function CreatorProfilePage({
@@ -78,8 +87,9 @@ export function CreatorProfilePage({
               Share to earn
             </Link>
             <button
-              aria-label="Save creator"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--ink)] text-white transition-opacity hover:opacity-85"
+              aria-label="Save creator after fan login"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--ink)] text-white opacity-80"
+              disabled
               type="button"
             >
               <span aria-hidden="true" className="material-symbols-outlined">

@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import { ShelfPage } from "@/features/public-profile/shelf-page";
-import { getPublicShelf, getSharedPublicShelvesDatabase } from "@/features/shelves/service";
+import {
+  getPublicShelf,
+  getSharedPublicShelvesDatabase,
+  validatePublicShareCode,
+} from "@/features/shelves/service";
 
 interface ShelfRouteProps {
   readonly params:
@@ -24,7 +28,8 @@ interface ShelfRouteProps {
 export default async function PublicShelfRoute({ params, searchParams }: ShelfRouteProps) {
   const { creatorHandle, shelfId } = await params;
   const search = searchParams ? await searchParams : {};
-  const result = getPublicShelf(getSharedPublicShelvesDatabase(), {
+  const database = getSharedPublicShelvesDatabase();
+  const result = getPublicShelf(database, {
     creatorHandle,
     shelfId,
   });
@@ -33,5 +38,10 @@ export default async function PublicShelfRoute({ params, searchParams }: ShelfRo
     notFound();
   }
 
-  return <ShelfPage shareCode={search.share} shelf={result.shelf} />;
+  const shareCode = validatePublicShareCode(database, {
+    shelfId: result.shelf.id,
+    shareCode: search.share,
+  });
+
+  return <ShelfPage shareCode={shareCode ?? undefined} shelf={result.shelf} />;
 }

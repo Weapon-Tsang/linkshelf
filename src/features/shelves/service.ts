@@ -7,6 +7,7 @@ import {
   findFeaturedPublicProducts,
   findPublicCreator,
   findPublicProfileShelves,
+  findPublicShareCode,
   findPublicShelfByCreator,
   findPublicShelfProducts,
 } from "./repository";
@@ -86,4 +87,27 @@ export function getPublicShelf(
       products: findPublicShelfProducts(database, shelf.id),
     },
   };
+}
+
+function normalizeShareCode(shareCode: string | null | undefined): string | null {
+  const trimmed = shareCode?.trim() ?? "";
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+export function validatePublicShareCode(
+  database: DatabaseSync,
+  input: {
+    readonly shelfId: string;
+    readonly shareCode: string | null | undefined;
+  },
+): string | null {
+  const shareCode = normalizeShareCode(input.shareCode);
+  if (!shareCode) {
+    return null;
+  }
+
+  return findPublicShareCode(database, {
+    shelfId: input.shelfId,
+    shareCode,
+  });
 }
