@@ -148,8 +148,8 @@ export function resolveAffiliateRedirect(
   const clickEventId = (options.createId ?? randomUUID)();
   const createdAt = (options.now ?? (() => new Date()))().toISOString();
 
-  options.database.exec("BEGIN IMMEDIATE TRANSACTION");
   try {
+    options.database.exec("BEGIN IMMEDIATE TRANSACTION");
     insertClickEvent(options.database, {
       id: clickEventId,
       productId: product.id,
@@ -163,7 +163,11 @@ export function resolveAffiliateRedirect(
     });
     options.database.exec("COMMIT");
   } catch {
-    options.database.exec("ROLLBACK");
+    try {
+      options.database.exec("ROLLBACK");
+    } catch {
+      // If BEGIN failed there is no open transaction to roll back.
+    }
     return { ok: false, reason: "PERSISTENCE_FAILED" };
   }
 
