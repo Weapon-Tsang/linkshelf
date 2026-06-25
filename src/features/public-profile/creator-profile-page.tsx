@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { PublicNav } from "@/components/brand/public-nav";
 import { SiteFooter } from "@/components/brand/site-footer";
+import { SaveButton } from "@/features/engagement/save-button";
+import { ShareToEarnButton } from "@/features/engagement/share-dialog";
 import type {
   PublicCreatorProfile,
   PublicProfileShelf,
@@ -77,34 +79,32 @@ export function CreatorProfilePage({
           </div>
 
           <div className="absolute right-4 top-4 flex items-center gap-3">
-            <Link
+            <ShareToEarnButton
               className="hidden items-center gap-2 rounded-full border border-[var(--teal-700)]/20 bg-[var(--teal-700)]/10 px-4 py-2 text-sm font-semibold text-[var(--teal-700)] backdrop-blur-md sm:inline-flex"
-              href={shareHref}
+              returnTo={shareHref}
             >
               <span aria-hidden="true" className="material-symbols-outlined text-lg">
                 monetization_on
               </span>
               Share to earn
-            </Link>
-            <button
-              aria-label="Save creator after fan login"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--ink)] text-white opacity-80"
-              disabled
-              type="button"
-            >
-              <span aria-hidden="true" className="material-symbols-outlined">
-                favorite
-              </span>
-            </button>
-            <Link
+            </ShareToEarnButton>
+            <SaveButton
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--ink)] text-white transition-opacity hover:opacity-85"
+              iconOnly
+              isSaved={false}
+              returnTo={`/${profile.creator.handle}`}
+              targetId={profile.creator.id}
+              targetType="CREATOR"
+            />
+            <ShareToEarnButton
               aria-label="Share creator"
               className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--ink)] text-white transition-opacity hover:opacity-85"
-              href={shareHref}
+              returnTo={shareHref}
             >
               <span aria-hidden="true" className="material-symbols-outlined">
                 share
               </span>
-            </Link>
+            </ShareToEarnButton>
           </div>
 
           <div className="-mt-14 flex flex-col gap-5 px-5 md:-mt-16 md:flex-row md:items-end">

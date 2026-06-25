@@ -102,10 +102,7 @@ describe("public LinkShelf surfaces", () => {
       "href",
       "/liamroberts.photo/photography-kit",
     );
-    expect(screen.getByRole("link", { name: "Share to earn" })).toHaveAttribute(
-      "href",
-      "/liamroberts.photo/photography-kit",
-    );
+    expect(screen.getByRole("button", { name: "Share to earn" })).toBeVisible();
     expect(screen.getByRole("link", { name: "X" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Copy" })).toBeVisible();
     expect(screen.queryByText("FACEBOOK")).not.toBeInTheDocument();
