@@ -32,12 +32,14 @@ export function ShareDialog({
   shortUrl,
   channels,
   onClose,
+  onChannelSelect,
 }: {
   readonly open: boolean;
   readonly shelfId: string;
   readonly shortUrl: string;
   readonly channels: readonly ShareDialogChannel[];
   readonly onClose: () => void;
+  readonly onChannelSelect?: (channel: SocialChannelType) => void;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -114,6 +116,7 @@ export function ShareDialog({
               aria-label={`Share on ${channelLabels[channel.type]}`}
               className="flex min-w-16 flex-col items-center gap-2 text-sm font-semibold text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
               key={channel.type}
+              onClick={() => onChannelSelect?.(channel.type)}
               type="button"
             >
               <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] shadow-sm">

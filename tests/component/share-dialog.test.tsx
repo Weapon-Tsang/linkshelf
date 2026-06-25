@@ -51,6 +51,25 @@ describe("ShareDialog", () => {
     expect(writeText).toHaveBeenCalledWith("https://link.sh/s/demo");
     expect(screen.getByText("Link copied")).toBeVisible();
   });
+
+  it("notifies the selected enabled share channel", async () => {
+    const onChannelSelect = vi.fn();
+
+    render(
+      <ShareDialog
+        channels={[{ type: "X", enabled: true }]}
+        onChannelSelect={onChannelSelect}
+        onClose={() => undefined}
+        open
+        shelfId="shelf-photo"
+        shortUrl="https://link.sh/s/demo"
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Share on X" }));
+
+    expect(onChannelSelect).toHaveBeenCalledWith("X");
+  });
 });
 
 describe("FanAuthDialog", () => {

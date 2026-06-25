@@ -1,4 +1,8 @@
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
+import { getAuthSession } from "@/features/auth/adapter";
+import { resumeShelfEngagement } from "@/features/engagement/resume";
 import { ShelfPage } from "@/features/public-profile/shelf-page";
 import {
   getPublicShelf,
@@ -19,10 +23,19 @@ interface ShelfRouteProps {
   readonly searchParams?:
     | Promise<{
         readonly share?: string | string[];
+        readonly resume?: string | string[];
+        readonly channel?: string | string[];
       }>
     | {
         readonly share?: string | string[];
+        readonly resume?: string | string[];
+        readonly channel?: string | string[];
       };
+}
+
+function shelfPath(handle: string, slug: string, shareCode?: string | null) {
+  const path = `/${handle}/${slug}`;
+  return shareCode ? `${path}?share=${encodeURIComponent(shareCode)}` : path;
 }
 
 export default async function PublicShelfRoute({ params, searchParams }: ShelfRouteProps) {
@@ -36,6 +49,24 @@ export default async function PublicShelfRoute({ params, searchParams }: ShelfRo
 
   if (!result.ok) {
     notFound();
+  }
+
+  const session = getAuthSession(database, { headers: await headers() });
+  const resume = resumeShelfEngagement(database, {
+    resume: search.resume,
+    channel: search.channel,
+    shelfId: result.shelf.id,
+    session,
+  });
+  if (resume.completed) {
+    const existingShareCode = typeof search.share === "string" ? search.share : null;
+    redirect(
+      shelfPath(
+        result.shelf.creator.handle,
+        result.shelf.slug,
+        resume.kind === "share" ? resume.shareCode : existingShareCode,
+      ),
+    );
   }
 
   const shareCode = validatePublicShareCode(database, {

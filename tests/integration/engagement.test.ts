@@ -2,6 +2,7 @@ import type { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { AuthSession } from "@/features/auth/adapter";
 import { addComment, createShare, toggleSave } from "@/features/engagement/actions";
+import { resumeCreatorEngagement, resumeShelfEngagement } from "@/features/engagement/resume";
 import { createDatabase } from "@/lib/db/client";
 import { migrate } from "@/lib/db/migrate";
 import { seed } from "@/lib/db/seed";
@@ -174,6 +175,81 @@ describe("engagement actions", () => {
     expect(addComment(database, { shelfId: "shelf-photography", body: " " }, fanSession)).toEqual({
       ok: false,
       reason: "INVALID_INPUT",
+    });
+  });
+
+  it("executes resumable shelf share and save actions after Google login", () => {
+    const shared = resumeShelfEngagement(
+      database,
+      {
+        resume: "share",
+        channel: "X",
+        shelfId: "shelf-photography",
+        session: fanSession,
+      },
+      {
+        createId: () => "share-resume",
+        createShortCode: () => "resume-photo",
+        now: () => NOW,
+      },
+    );
+
+    expect(shared).toEqual({
+      completed: true,
+      kind: "share",
+      shareCode: "resume-photo",
+    });
+    expect(
+      (
+        database
+          .prepare("SELECT channel FROM shares WHERE id = ?")
+          .get("share-resume") as { channel: string }
+      ).channel,
+    ).toBe("X");
+
+    expect(
+      resumeShelfEngagement(database, {
+        resume: "save",
+        shelfId: "shelf-travel",
+        session: fanSession,
+      }),
+    ).toEqual({
+      completed: true,
+      kind: "save",
+    });
+  });
+
+  it("executes creator save resume and ignores ambiguous resume params", () => {
+    expect(
+      resumeCreatorEngagement(database, {
+        resume: "save",
+        creatorId: "creator-liam",
+        session: fanSession,
+      }),
+    ).toEqual({
+      completed: true,
+      kind: "save",
+    });
+    expect(
+      resumeShelfEngagement(database, {
+        resume: ["share", "save"],
+        shelfId: "shelf-photography",
+        session: fanSession,
+      }),
+    ).toEqual({
+      completed: false,
+      kind: "none",
+    });
+    expect(
+      resumeShelfEngagement(database, {
+        resume: "share",
+        channel: "FACEBOOK",
+        shelfId: "shelf-photography",
+        session: fanSession,
+      }),
+    ).toEqual({
+      completed: false,
+      kind: "none",
     });
   });
 });
