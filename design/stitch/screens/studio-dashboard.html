@@ -1,0 +1,273 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>LinkShelf Studio - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#fcf8fb",
+                        "on-tertiary-fixed": "#1b192e",
+                        "on-surface": "#1b1b1d",
+                        "on-secondary-fixed": "#00201c",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#e5dffd",
+                        "on-tertiary-container": "#85819b",
+                        "tertiary-fixed-dim": "#c8c3e0",
+                        "surface": "#fcf8fb",
+                        "on-primary-fixed": "#131a33",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#47445c",
+                        "surface-container-high": "#eae7ea",
+                        "primary": "#000000",
+                        "primary-container": "#131a33",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#303032",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#565d79",
+                        "secondary-fixed": "#68f9e6",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#006a60",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f6f3f5",
+                        "on-surface-variant": "#45464d",
+                        "on-secondary-fixed-variant": "#005048",
+                        "tertiary": "#000000",
+                        "secondary-container": "#64f6e3",
+                        "on-secondary-container": "#006f65",
+                        "background": "#fcf8fb",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-fixed-variant": "#3e4660",
+                        "surface-variant": "#e4e2e4",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#bec5e5",
+                        "surface-container": "#f0edef",
+                        "inverse-primary": "#bec5e5",
+                        "surface-container-highest": "#e4e2e4",
+                        "secondary-fixed-dim": "#44dcca",
+                        "outline-variant": "#c6c6ce",
+                        "on-primary-container": "#7b83a0",
+                        "tertiary-container": "#1b192e",
+                        "outline": "#76767e",
+                        "on-background": "#1b1b1d",
+                        "surface-dim": "#dcd9dc",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Outfit"],
+                        "headline-xl": ["Outfit"],
+                        "headline-md": ["Outfit"],
+                        "body-md": ["Outfit"],
+                        "body-lg": ["Outfit"],
+                        "label-md": ["Outfit"],
+                        "headline-xl-mobile": ["Outfit"],
+                        "headline-lg": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-xl-mobile": ["32px", { "lineHeight": "38px", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+</head>
+<body class="bg-background min-h-screen text-on-background flex">
+<!-- SideNavBar Component -->
+<nav class="hidden md:flex fixed docked left-0 h-screen w-64 flex-col bg-surface-container-lowest dark:bg-surface-container-lowest shadow-[0px_4px_20px_rgba(11,19,43,0.04)] z-50">
+<div class="h-full py-stack-lg flex flex-col justify-between px-4">
+<div class="px-6 pb-8">
+<div class="px-2 flex items-center space-x-3 mb-4">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center text-on-secondary shadow-sm">
+<span class="material-symbols-outlined">dataset</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-secondary dark:text-secondary-fixed">LinkShelf&nbsp;</h1>
+<p class="text-xs text-on-surface-variant">Creator Management</p>
+</div>
+</div>
+<ul class="flex flex-col space-y-2 flex-grow">
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-xl shadow-sm active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: &quot;wght&quot; 300;">dashboard</span>
+<span class="">Dashboard</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared" style="font-variation-settings: &quot;wght&quot; 300;">folder_shared</span>
+<span class="">Shelves</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="insights" style="font-variation-settings: &quot;wght&quot; 300;">insights</span>
+<span class="">Analytics</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="forum" style="font-variation-settings: &quot;wght&quot; 300;">forum</span>
+<span class="">Comments</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings" style="font-variation-settings: &quot;wght&quot; 300;">settings</span>
+<span class="">Settings</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto px-2 pb-4">
+<div class="flex items-center space-x-3 p-2 hover:bg-surface-container-high rounded-xl cursor-pointer transition-colors">
+<img alt="User Profile" class="w-10 h-10 rounded-full object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbDYqClzPjIgUCFPj6wtj9NKy9fYed3Q6bABSOgAa3mQKvMlc7dVxhOgGizMn9fZnrcL28zwNJYHPo9ReludmmnIGISgk6Vs5nr60v7ZM1mcpFK6xLOVOIVQNrTHKiGc00ErarUxRtFV8XFH859xkt1l5W5Idpx-OpvVMCOx01YEjWj7dQLHxQqENgXZBzVBZbXwGK5OYTTI_-SQqK-UqnkX3Ff0tAut7FZBDdVCOe5R3wjFmQNWMBr1rQxVVZo_dwCr5LQCItpEY">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Alex Rivera</span>
+<span class="text-xs text-on-surface-variant">Pro Plan</span>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 w-full relative pb-12">
+<!-- TopAppBar Component -->
+<header class="hidden md:flex justify-between items-center w-full px-margin-desktop py-stack-md sticky top-0 bg-transparent z-40">
+<div class="flex-1"></div>
+
+</header>
+<div class="max-w-[container-max] mx-auto px-margin-mobile md:px-margin-desktop pt-8 md:pt-0">
+<!-- Header Section with Button & Stats -->
+<div class="flex flex-col xl:flex-row gap-6 mb-12">
+<!-- Create Button Card -->
+<div class="xl:w-1/2 rounded-2xl bg-secondary-fixed shadow-[0px_12px_32px_rgba(11,19,43,0.08)] p-8 flex items-center justify-between cursor-pointer hover:scale-[1.02] transition-transform duration-300 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-r from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<div class="flex flex-col gap-2 relative z-10">
+<span class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-secondary-fixed">Create New Shelf</span>
+<span class="font-body-md text-body-md text-on-secondary-fixed-variant opacity-80">Organize and share your next collection.</span>
+</div>
+<div class="w-16 h-16 rounded-full bg-on-secondary-fixed text-secondary-fixed flex items-center justify-center relative z-10 shadow-lg">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: &quot;FILL&quot; 1;">bolt</span>
+</div>
+</div>
+<!-- Stats Cards -->
+<div class="xl:w-1/2 grid grid-cols-2 gap-6">
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0px_4px_20px_rgba(11,19,43,0.04)] flex flex-col justify-between">
+<div class="flex items-center gap-3 mb-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary">trending_up</span>
+<span class="font-label-md text-label-md">Today's Clicks</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">1,248</span>
+<span class="font-label-sm text-label-sm text-secondary bg-secondary-fixed/20 px-2 py-1 rounded-full">+12%</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0px_4px_20px_rgba(11,19,43,0.04)] flex flex-col justify-between">
+<div class="flex items-center gap-3 mb-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary-fixed-dim">bookmark_added</span>
+<span class="font-label-md text-label-md">New Saves</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">342</span>
+<span class="font-label-sm text-label-sm text-secondary bg-secondary-fixed/20 px-2 py-1 rounded-full">+5%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activities Section -->
+<section>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">history</span>
+                    Recent Activities
+                </h2>
+<div class="flex flex-col gap-4">
+<!-- Activity Item 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0px_4px_20px_rgba(11,19,43,0.04)] flex items-center gap-4 hover:shadow-[0px_12px_32px_rgba(11,19,43,0.08)] transition-shadow duration-300">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed/20 flex shrink-0 items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">add_photo_alternate</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md text-body-md text-on-surface truncate">
+<span class="font-semibold">Alex</span> added a new item to <span class="text-secondary font-medium">Photography Kit</span>
+</p>
+</div>
+<span class="font-label-sm text-label-sm text-on-primary-container shrink-0">10 min ago</span>
+</div>
+<!-- Activity Item 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0px_4px_20px_rgba(11,19,43,0.04)] flex items-center gap-4 hover:shadow-[0px_12px_32px_rgba(11,19,43,0.08)] transition-shadow duration-300">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed/30 flex shrink-0 items-center justify-center text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">visibility</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md text-body-md text-on-surface truncate">
+<span class="font-semibold">Minimal Desk Setup</span> shelf reached 1,000 views.
+                            </p>
+</div>
+<span class="font-label-sm text-label-sm text-on-primary-container shrink-0">2 hours ago</span>
+</div>
+<!-- Activity Item 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0px_4px_20px_rgba(11,19,43,0.04)] flex items-center gap-4 hover:shadow-[0px_12px_32px_rgba(11,19,43,0.08)] transition-shadow duration-300">
+<div class="w-12 h-12 rounded-full shrink-0 overflow-hidden shadow-sm">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A high quality, softly lit profile picture of a cheerful user in a modern vibrant setting, reflecting the app's clean aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfDnye7j07fmzv8-FgRluU3wYngohZM2voo1W6FqukJA3Ue-SUXUi5YGWWV4_J7jT62BHm8SJwwUbZ-1fksHVZTXJBVLmjAjigdTA1fkBnsxxDze95TCc59Lnl0stxbKr7JspauhbuWGuDdE72M4Ljrgz0o6cbyiQBgGAr_1SIVAZmbYYI6hPEnk2lENx0AjSX0IJZ9SVoEc_INONv33hOhfhTeOh0crfTuIW3rr7fTRNVrBRwdJd96rcH_xC9Rtq_M4oFqjoMVLs">
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md text-body-md text-on-surface truncate">
+<span class="font-semibold">Sarah J.</span> saved your <span class="text-secondary font-medium">UI Resources</span> shelf.
+                            </p>
+</div>
+<span class="font-label-sm text-label-sm text-on-primary-container shrink-0">Yesterday</span>
+</div>
+<!-- Activity Item 4 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0px_4px_20px_rgba(11,19,43,0.04)] flex items-center gap-4 hover:shadow-[0px_12px_32px_rgba(11,19,43,0.08)] transition-shadow duration-300">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex shrink-0 items-center justify-center text-outline">
+<span class="material-symbols-outlined">edit</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md text-body-md text-on-surface truncate">
+                                You updated the description for <span class="text-secondary font-medium">Favorite Fonts</span>.
+                            </p>
+</div>
+<span class="font-label-sm text-label-sm text-on-primary-container shrink-0">Yesterday</span>
+</div>
+<button class="mt-4 text-center font-label-md text-label-md text-secondary hover:text-on-secondary-container transition-colors py-2">
+                        View All Activity
+                    </button>
+</div>
+</section>
+</div>
+</main>
+
+
+</body></html>

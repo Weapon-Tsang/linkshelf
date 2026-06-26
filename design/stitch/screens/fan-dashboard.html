@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fan Dashboard - My Hub | LinkShelf</title>
+<!-- Google Fonts: Outfit -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#c6c6ce",
+                    "tertiary": "#000000",
+                    "primary-fixed-dim": "#bec5e5",
+                    "secondary-fixed-dim": "#44dcca",
+                    "on-secondary-fixed": "#00201c",
+                    "secondary": "#006a60",
+                    "surface-tint": "#565d79",
+                    "inverse-surface": "#303032",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed-variant": "#005048",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#c8c3e0",
+                    "primary": "#000000",
+                    "inverse-on-surface": "#f3f0f2",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface": "#fcf8fb",
+                    "background": "#fcf8fb",
+                    "surface-bright": "#fcf8fb",
+                    "on-primary-fixed": "#131a33",
+                    "tertiary-container": "#1b192e",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#dbe1ff",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#bec5e5",
+                    "surface-variant": "#e4e2e4",
+                    "on-tertiary-fixed-variant": "#47445c",
+                    "on-primary-container": "#7b83a0",
+                    "on-surface-variant": "#45464d",
+                    "on-background": "#1b1b1d",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#f6f3f5",
+                    "surface-container-highest": "#e4e2e4",
+                    "secondary-container": "#64f6e3",
+                    "on-surface": "#1b1b1d",
+                    "on-tertiary-container": "#85819b",
+                    "on-tertiary": "#ffffff",
+                    "primary-container": "#131a33",
+                    "surface-dim": "#dcd9dc",
+                    "on-primary-fixed-variant": "#3e4660",
+                    "on-tertiary-fixed": "#1b192e",
+                    "surface-container": "#f0edef",
+                    "secondary-fixed": "#68f9e6",
+                    "on-secondary-container": "#006f65",
+                    "surface-container-high": "#eae7ea",
+                    "outline": "#76767e",
+                    "tertiary-fixed": "#e5dffd",
+                    "vibrant-teal": "#00BFAE",
+                    "deep-navy": "#0B132B"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "container-max": "1280px",
+                    "stack-sm": "8px",
+                    "stack-lg": "32px",
+                    "margin-mobile": "20px",
+                    "gutter": "24px",
+                    "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Outfit"],
+                    "headline-md": ["Outfit"],
+                    "label-sm": ["Outfit"],
+                    "label-md": ["Outfit"],
+                    "body-lg": ["Outfit"],
+                    "headline-xl-mobile": ["Outfit"],
+                    "headline-lg": ["Outfit"],
+                    "body-md": ["Outfit"]
+            },
+            "fontSize": {
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-xl-mobile": ["32px", {"lineHeight": "38px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .vibrant-shadow {
+        box-shadow: 0px 4px 20px rgba(11, 19, 43, 0.04);
+      }
+      .vibrant-shadow-lifted {
+        box-shadow: 0px 12px 32px rgba(11, 19, 43, 0.08);
+      }
+      body {
+        font-family: 'Outfit', sans-serif;
+        background-color: #fcf8fb;
+      }
+    </style>
+</head>
+<body class="text-on-background">
+<!-- Top Navigation Anchor -->
+<header class="w-full sticky top-0 z-40 bg-surface/80 backdrop-blur-md shadow-[0px_4px_20px_rgba(11,19,43,0.04)]">
+<div class="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">My Hub</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex gap-8 items-center">
+<span class="text-secondary font-semibold cursor-pointer">Dashboard</span>
+<span class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-2 py-1 rounded cursor-pointer">Explore</span>
+<span class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-2 py-1 rounded cursor-pointer">Analytics</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-low rounded-full transition-all">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-low rounded-full transition-all">settings</button>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest ring-2 ring-primary/5">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist profile portrait of a young creator with a friendly expression. The background is a soft, out-of-focus modern studio with hints of vibrant teal and warm lighting. The aesthetic is professional, modern, and perfectly aligned with a high-end digital platform for influencers." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRXPB08xsBKqF-CGA8tVBA0_IKUXPt-gfrRbdcR2Z0bpQmMPbzd1deOKGfMgEvftF7lIRJXMpnIFynNywmCbWvHmyimaYZGvqzu663YFotzn1mhsTcgZYZb_S9bGWrK2ZpNoS4yOQcgHYRHFWc-fU737JQEP3V3JjKGn6s27vZMYCRKISUQzqFngqvT3buppv-wbaNk-babd_shnAVpI3wN5iHBGXZwApY-KwkXU2a4LkCbxnRzt0kU8bleoERKQzGWns6oGM35Ro"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Predicted COMPONENT_94) -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-surface glass-card shadow-[0px_4px_20px_rgba(11,19,43,0.04)] flex flex-col py-stack-lg px-stack-md">
+<div class="mb-10 px-4">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">LinkShelf</h1>
+<p class="text-on-surface-variant text-label-md">Creator Economy</p>
+</div>
+<nav class="flex-1 space-y-2">
+<div class="flex items-center gap-4 px-4 py-3 bg-secondary-container/10 text-secondary border-r-4 border-secondary font-bold transition-all cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="text-label-md font-label-md">Wallet</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low transition-all cursor-pointer">
+<span class="material-symbols-outlined">share</span>
+<span class="text-label-md font-label-md">My Shares</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low transition-all cursor-pointer">
+<span class="material-symbols-outlined">bookmark</span>
+<span class="text-label-md font-label-md">Saved</span>
+</div>
+</nav>
+<div class="mt-auto px-4">
+<button class="w-full bg-vibrant-teal text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 vibrant-shadow hover:scale-[1.02] active:scale-95 transition-all">
+<span class="material-symbols-outlined">add</span>
+                New Link
+            </button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 min-h-screen p-margin-desktop bg-surface-container-low/30">
+<div class="max-w-container-max mx-auto space-y-gutter">
+<!-- Affiliate ID Binding Module -->
+<section class="bg-white rounded-2xl p-stack-lg vibrant-shadow">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-gutter">
+<div class="max-w-xl">
+<h2 class="text-headline-md font-headline-md text-primary mb-2">Affiliate ID Binding</h2>
+<p class="text-body-md text-on-surface-variant">Configure your Amazon Tracking ID to earn directly. If left blank, the platform's default ID will be used automatically, and earnings will accumulate in your platform wallet.</p>
+</div>
+<div class="flex-1 max-w-sm">
+<div class="relative group">
+<input class="w-full h-14 px-6 rounded-xl border border-outline-variant bg-surface focus:border-vibrant-teal focus:ring-2 focus:ring-vibrant-teal/20 transition-all outline-none text-body-md" placeholder="Your Amazon Tracking ID" type="text"/>
+<span class="absolute right-4 top-4 material-symbols-outlined text-outline">info</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Wallet & Withdraw Module -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Balance & Withdraw Card -->
+<div class="lg:col-span-4 bg-white rounded-2xl p-stack-lg vibrant-shadow-lifted relative overflow-hidden h-full flex flex-col justify-between">
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-secondary-container/10 rounded-full blur-3xl"></div>
+<div>
+<div class="flex items-center justify-between mb-8">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Available Balance</span>
+<span class="material-symbols-outlined text-secondary bg-secondary-container/20 p-2 rounded-xl">account_balance_wallet</span>
+</div>
+<div class="mb-10">
+<span class="text-headline-xl font-headline-xl text-primary">$128.50</span>
+<p class="text-label-sm text-on-secondary-container mt-1">+ $12.30 pending clearance</p>
+</div>
+</div>
+<button class="w-full bg-vibrant-teal text-white h-14 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#00a89a] transition-colors">
+                        Withdraw Funds
+                    </button>
+</div>
+<!-- Rewards History Table -->
+<div class="lg:col-span-8 bg-white rounded-2xl p-stack-lg vibrant-shadow overflow-hidden">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-headline-md font-headline-md text-primary">Rewards History</h3>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-surface-container-low text-label-md rounded-lg hover:bg-surface-container transition-colors">Download CSV</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-surface-container-highest">
+<th class="pb-4 font-label-md text-on-surface-variant">Date</th>
+<th class="pb-4 font-label-md text-on-surface-variant">Source</th>
+<th class="pb-4 font-label-md text-on-surface-variant">Type</th>
+<th class="pb-4 font-label-md text-on-surface-variant">Amount</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low">
+<tr class="group hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 text-body-md text-on-surface">Oct 24, 2023</td>
+<td class="py-4 text-body-md text-on-surface">Tech Collection</td>
+<td class="py-4"><span class="px-3 py-1 bg-secondary-container/30 text-on-secondary-container rounded-full text-label-sm">Platform Default</span></td>
+<td class="py-4 font-bold text-primary">+$12.40</td>
+</tr>
+<tr class="group hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 text-body-md text-on-surface">Oct 22, 2023</td>
+<td class="py-4 text-body-md text-on-surface">Home Office Gear</td>
+<td class="py-4"><span class="px-3 py-1 bg-secondary-container/30 text-on-secondary-container rounded-full text-label-sm">Platform Default</span></td>
+<td class="py-4 font-bold text-primary">+$4.15</td>
+</tr>
+<tr class="group hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 text-body-md text-on-surface">Oct 19, 2023</td>
+<td class="py-4 text-body-md text-on-surface">Fall Essentials</td>
+<td class="py-4"><span class="px-3 py-1 bg-secondary-container/30 text-on-secondary-container rounded-full text-label-sm">Platform Default</span></td>
+<td class="py-4 font-bold text-primary">+$28.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Shares & Saved Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- My Shared Shelves -->
+<section class="space-y-stack-md">
+<div class="flex items-center justify-between">
+<h3 class="text-headline-md font-headline-md text-primary">My Shared Shelves</h3>
+<button class="text-secondary text-label-md font-bold hover:underline">View All</button>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Shelf Item 1 -->
+<div class="bg-white p-4 rounded-2xl vibrant-shadow flex items-center gap-4 hover:translate-x-1 transition-transform cursor-pointer">
+<div class="w-20 h-20 rounded-xl bg-tertiary-fixed overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A stylish flat-lay of modern workspace accessories including a sleek mechanical keyboard, a wireless mouse, and a minimalist desk lamp. The lighting is soft and directional, creating elegant shadows on a light wood texture. The mood is productive and sophisticated, with a color palette of whites, grays, and a pop of teal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDvrAb2jD7VtsS147Vz1lwCSzKfiIX4WS48D-2qIrME2AAWlItEeJkDPwnebAS1_qf6nESgiineyZvbnbp39Yl-tCZLVyHibLCg3v_GdirMDlZDMN-HplLqFDm5VO0jLu1-kHIwmPiNrowEPiyGYH0Rcj9r8f1RppmCplamJdAYlkhIykkgGT7z73wMtQ58Vwrp59SGnpgbKUUJKSIv0CL9lfIFzTju1F626GPsgU_KEYeCD7AhhtW3UYOOGdGd4B54ISdO8HKs18"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-primary text-body-md">Minimalist Setup v2</h4>
+<div class="flex gap-4 mt-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">mouse</span>
+<span class="text-label-sm">1.2k Clicks</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span class="text-label-sm">342 Shares</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Shelf Item 2 -->
+<div class="bg-white p-4 rounded-2xl vibrant-shadow flex items-center gap-4 hover:translate-x-1 transition-transform cursor-pointer">
+<div class="w-20 h-20 rounded-xl bg-secondary-fixed-dim overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A high-end designer bookshelf filled with curated art books, a small ceramic vase, and a lush green plant. The aesthetic is clean and contemporary, shot in a bright room with natural daylight streaming in. The image exudes a sense of curated lifestyle and artistic inspiration, utilizing a soft, light-mode color profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3tAE6Afh6YCI1v-kTFvmG4XgggVJOodV3egaa_Osw8yUYzxT3VF2TT9to3DtSYIihWYwxQaZRmDGIt4tgUc_e9K6kUjKp0ApqHECA3pd2HIdkF5QetTQEHG5sStS8Xx3tMJ4V_xE3NquVPCacuMWgZ3DyfAUxCEa-N6uMmDsnCDmTwZmHuGmF7Gx2REwvq33jk9OpJZvQWcjNyNPaDXkhVTknS4kmBtaNnED3S_1FrzQlC8hPRHZT4ez64EtV9IAsL62e2nFmVHk"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-primary text-body-md">Fall Reading List</h4>
+<div class="flex gap-4 mt-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">mouse</span>
+<span class="text-label-sm">840 Clicks</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span class="text-label-sm">128 Shares</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Saved Collections -->
+<section class="space-y-stack-md">
+<div class="flex items-center justify-between">
+<h3 class="text-headline-md font-headline-md text-primary">Saved Collections</h3>
+<button class="text-secondary text-label-md font-bold hover:underline">Explore More</button>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Saved Card 1 -->
+<div class="bg-white rounded-2xl overflow-hidden vibrant-shadow group cursor-pointer">
+<div class="h-32 bg-surface-variant overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A vibrant and energetic collection of outdoor gear, including a high-tech backpack, a sturdy water bottle, and trail running shoes. The setting is a bright, sunlit forest path with a crisp focus on the products. The visual style is adventurous yet clean, featuring high-contrast colors and a modern, high-key lighting setup." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJZPAUG0W1xXyc-vRnkwf6ci5qupRSRn0Uu9weM0gO-GF0XqNYVpcfvqtjZjR4hbR7TIZAHf8L8M3_EWlu41lj2CNW8tdvdZUzb8rrpcqHDH1zbCA_tS2zrap6jXMoTCiFUzpno9ZGx-Qc_ZY39JY74H2211PG4uXU8iMb4OzKw_W3leBFIt1_qzwxCoUFp2xjA9RhbZyz4l9RX8cuqFCgo_KrJ6CulDk2NlJhjyjBnFWYabgD5dmMfElRjdtRLBPJVq3xZmf4ncM"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-3 left-3 text-white">
+<p class="text-label-sm font-bold">@AlexGear</p>
+</div>
+</div>
+<div class="p-3">
+<h4 class="font-bold text-primary text-label-md truncate">Outdoor Adventure</h4>
+<p class="text-label-sm text-on-surface-variant">14 Items Saved</p>
+</div>
+</div>
+<!-- Saved Card 2 -->
+<div class="bg-white rounded-2xl overflow-hidden vibrant-shadow group cursor-pointer">
+<div class="h-32 bg-surface-variant overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A minimalist and chic interior design scene featuring a neutral-toned sofa, a sculptural coffee table, and a large piece of abstract art on a white wall. The room is flooded with soft morning light, emphasizing clean lines and luxurious textures. The mood is peaceful and high-end, aligning with a premium lifestyle aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn3XW_-dxJS-aj2sfTiFf4wknCIdo6jYnLu-MZV0-8PDQE-CxxLkhQxjQ5F2MNkByEi5viZ1wRTNPdXxpdu3qobjKpnu-whGbOoC6SOFiNlv_WiRTiHYL8ML85VZ2xcJhKmw09PB3oGDnjv0g2aGKoY5I6MFGndk8NUFc4Vk-afwAt6yCxaXrGp-PrxJPiKOzcyEYtAcV0tyDhqSToVuZ0q4q0kfAru6LLQRloHosztB2_3lFIsUfi7D4C-PaJ49_5YbwKlWoZxtQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-3 left-3 text-white">
+<p class="text-label-sm font-bold">@HomeInspo</p>
+</div>
+</div>
+<div class="p-3">
+<h4 class="font-bold text-primary text-label-md truncate">Dream Home</h4>
+<p class="text-label-sm text-on-surface-variant">28 Items Saved</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Bottom Nav for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-md px-6 py-3 flex justify-around items-center z-50 border-t border-surface-container-highest">
+<button class="flex flex-col items-center gap-1 text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="text-[10px] font-bold">Wallet</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">share</span>
+<span class="text-[10px]">Shares</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">bookmark</span>
+<span class="text-[10px]">Saved</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px]">Profile</span>
+</button>
+</nav>
+<script>
+        // Micro-interactions for the Dashboard
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.parentElement.classList.add('scale-[1.01]');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.parentElement.classList.remove('scale-[1.01]');
+            });
+        });
+
+        // Simple button active state handler
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+        });
+    </script>
+</body></html>

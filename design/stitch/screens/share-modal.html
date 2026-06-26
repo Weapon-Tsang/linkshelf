@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Liam Roberts - Photography Kit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1b1b1d",
+                        "on-background": "#1b1b1d",
+                        "secondary-container": "#64f6e3",
+                        "on-secondary-fixed-variant": "#005048",
+                        "secondary-fixed-dim": "#44dcca",
+                        "on-secondary-fixed": "#00201c",
+                        "background": "#fcf8fb",
+                        "inverse-primary": "#bec5e5",
+                        "outline": "#76767e",
+                        "tertiary-container": "#1b192e",
+                        "surface-container": "#f0edef",
+                        "surface-bright": "#fcf8fb",
+                        "inverse-surface": "#303032",
+                        "on-secondary-container": "#006f65",
+                        "surface": "#fcf8fb",
+                        "on-surface-variant": "#45464d",
+                        "on-primary-fixed": "#131a33",
+                        "inverse-on-surface": "#f3f0f2",
+                        "tertiary": "#000000",
+                        "surface-tint": "#565d79",
+                        "surface-container-highest": "#e4e2e4",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#1b192e",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#85819b",
+                        "secondary-fixed": "#68f9e6",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f6f3f5",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#131a33",
+                        "surface-variant": "#e4e2e4",
+                        "secondary": "#006a60",
+                        "on-tertiary-fixed-variant": "#47445c",
+                        "on-primary-container": "#7b83a0",
+                        "surface-dim": "#dcd9dc",
+                        "primary-fixed": "#dbe1ff",
+                        "on-error-container": "#93000a",
+                        "primary": "#000000",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c6c6ce",
+                        "primary-fixed-dim": "#bec5e5",
+                        "on-primary-fixed-variant": "#3e4660",
+                        "tertiary-fixed-dim": "#c8c3e0",
+                        "tertiary-fixed": "#e5dffd",
+                        "surface-container-high": "#eae7ea"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "40px",
+                        "stack-md": "16px",
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-xl-mobile": ["Outfit"],
+                        "body-md": ["Outfit"],
+                        "label-sm": ["Outfit"],
+                        "headline-md": ["Outfit"],
+                        "headline-lg": ["Outfit"],
+                        "body-lg": ["Outfit"],
+                        "label-md": ["Outfit"],
+                        "headline-xl": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "headline-xl-mobile": ["32px", { "lineHeight": "38px", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom gradient mask for the cover image */
+        .cover-gradient-mask {
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+        
+        /* Modal Animations */
+        @keyframes slide-up {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-slide-up {
+            animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-fade-in {
+            animation: fade-in 0.2s ease-out forwards;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen pb-margin-mobile">
+<!-- Header Section (Cover Image & Profile) -->
+<header class="relative w-full h-[574px] max-h-[600px] min-h-[400px]">
+<!-- Full Bleed Cover Image with Gradient Fade -->
+<div class="absolute inset-0 w-full h-full cover-gradient-mask">
+<div class="w-full h-full bg-cover bg-center bg-no-repeat" data-alt="A meticulously organized flat-lay photography desk setup viewed from directly above. A modern full-frame mirrorless camera sits centrally alongside interchangeable lenses, a sleek mechanical keyboard, and a minimalist wireless mouse. Soft, diffused natural light washes over a premium dark wood desk surface, creating subtle highlights and deep, rich shadows. The scene embodies a clean, professional, and highly curated aesthetic typical of a high-end creator's workspace." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAXZFtlvf8gscCWtwL4L7hX3Adtjq6B4cL5BQsioRvI1kHgcpDYJaZwjpbOBlgNtLau2F2R91F2TgDfx86gKIEq2txNFB0rQvqgPAGxftoFYp9cKrgbmquFyU6tpS8rzAviFkkwtpq4kj8ac96s1xuB12Qjqx9RPPr2ksENe92OwIcHd0q0axGpxNkhf04vy8ySz2zOrrQpr3pHXY4GxX6KfPLM27TpDFRNSbVzvfi9G0YiMRptBvpuvAKCI3OPAxd1nheAJlzlR4g')"></div>
+</div>
+<!-- Top Right Interaction Icons -->
+<div class="absolute top-6 right-6 flex gap-stack-sm z-10 items-center">
+<button class="w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/70 transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+</button>
+<div class="relative group flex items-center">
+<div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-secondary/10 border border-secondary/20 text-secondary px-3 py-1 rounded-full whitespace-nowrap font-label-sm text-xs backdrop-blur-md shadow-sm">Share to earn</div>
+<button class="w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/70 transition-colors" onclick="document.getElementById('shareModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[20px]" data-icon="ios_share">ios_share</span>
+</button>
+</div>
+</div>
+<!-- Interactive Hotspots on Cover Image -->
+<!-- Hotspot 1 -->
+<button class="absolute top-[35%] left-[45%] w-8 h-8 bg-secondary text-on-secondary rounded-full flex items-center justify-center font-label-sm text-label-sm shadow-[0px_4px_20px_rgba(11,19,43,0.2)] border-2 border-surface-container-lowest z-10 transform -translate-x-1/2 -translate-y-1/2 hover:scale-110 transition-transform">
+            1
+        </button>
+<!-- Hotspot 2 -->
+<button class="absolute top-[60%] left-[25%] w-8 h-8 bg-secondary text-on-secondary rounded-full flex items-center justify-center font-label-sm text-label-sm shadow-[0px_4px_20px_rgba(11,19,43,0.2)] border-2 border-surface-container-lowest z-10 transform -translate-x-1/2 -translate-y-1/2 hover:scale-110 transition-transform">
+            2
+        </button>
+<!-- Hotspot 3 -->
+<button class="absolute top-[50%] left-[75%] w-8 h-8 bg-secondary text-on-secondary rounded-full flex items-center justify-center font-label-sm text-label-sm shadow-[0px_4px_20px_rgba(11,19,43,0.2)] border-2 border-surface-container-lowest z-10 transform -translate-x-1/2 -translate-y-1/2 hover:scale-110 transition-transform">
+            3
+        </button>
+<!-- Floating Profile Info (Bottom Left Overlay) -->
+<div class="absolute bottom-[15%] left-margin-mobile z-10">
+<h1 class="font-headline-xl-mobile text-headline-xl-mobile text-on-tertiary drop-shadow-md">Liam Roberts</h1>
+<div class="flex items-center gap-stack-sm mt-1">
+<span class="font-body-md text-body-md text-on-tertiary/90 drop-shadow-md">@liamshoots</span>
+<div class="flex gap-2 text-on-tertiary/80 ml-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="tag">tag</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="photo_camera">photo_camera</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="px-margin-mobile -mt-8 relative z-20">
+<!-- Shelf Title & Description -->
+<section class="mb-stack-lg text-center">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Photography Kit</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-prose mx-auto">
+                My daily driver setup for hybrid shooting. Balancing ergonomics with top-tier image quality for long studio sessions and quick location hits.
+            </p>
+</section>
+<!-- Source Content Card -->
+<a class="block bg-[#F3F4F6] rounded-xl p-stack-md mb-stack-lg flex items-center justify-between transition-all hover:bg-gray-200" href="#">
+<div class="flex items-center gap-3">
+<span class="text-xl">✨</span>
+<span class="font-label-md text-label-md text-on-surface">Explore the original post &amp; story behind this setup</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="arrow_outward">arrow_outward</span>
+</a>
+<!-- Product List -->
+<section class="flex flex-col gap-stack-md">
+<!-- Product Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl p-stack-md flex gap-stack-md relative shadow-[0px_4px_20px_rgba(11,19,43,0.04)] hover:shadow-[0px_12px_32px_rgba(11,19,43,0.08)] transition-shadow">
+<!-- Badge linking to hotspot -->
+<div class="absolute -top-3 -left-3 w-8 h-8 bg-secondary text-on-secondary rounded-full flex items-center justify-center font-label-sm text-label-sm shadow-sm border-2 border-surface-container-lowest">
+                    1
+                </div>
+<!-- Product Image -->
+<div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-surface-container">
+<img alt="Sony A7IV" class="w-full h-full object-cover" data-alt="A close-up studio shot of a high-end Sony A7IV mirrorless camera body sitting on a clean white surface. The camera is sleek, black, and professional, capturing the intricate details of its dials and texture. Soft, indirect lighting creates a premium, clinical, and minimalist product photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCim82jogH19rZejVSphrFEbLp4y-KAxG5V5LzjNiYTY1JP2-5oNFt_R20no6-XaZePD4jmJniS0dazB6XlnkztJ04PkvTFm_4c1_2Y0ooHavcSYmUUAYlgMfFO9G1PBO6hslT6BKsypBLt8s4gpxl-1lonQXLJ56YNVaZfqwYb60586quCx_SKKzUq2S-WufPZLz6C4AZgD6auSQA8VrkIDwHkCpFrCfzYT62qZxQH44u0oOu_phnckkaYBWKsVcIiy87duuEGXlQ"/>
+</div>
+<!-- Product Details -->
+<div class="flex-1 flex flex-col justify-between py-1">
+<div>
+<h3 class="font-headline-md text-[20px] leading-[26px] font-semibold text-on-surface mb-1">Sony A7IV</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">The perfect hybrid body. Unmatched autofocus and dynamic range for both stills and video.</p>
+</div>
+<div class="flex items-center justify-between mt-2">
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">$2,498</span>
+<button class="bg-surface-container-high text-on-surface hover:bg-surface-dim px-3 py-1.5 rounded-full font-label-sm text-label-sm transition-colors flex items-center gap-1">
+                            Get it <span class="material-symbols-outlined text-[14px]" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl p-stack-md flex gap-stack-md relative shadow-[0px_4px_20px_rgba(11,19,43,0.04)] hover:shadow-[0px_12px_32px_rgba(11,19,43,0.08)] transition-shadow">
+<!-- Badge linking to hotspot -->
+<div class="absolute -top-3 -left-3 w-8 h-8 bg-secondary text-on-secondary rounded-full flex items-center justify-center font-label-sm text-label-sm shadow-sm border-2 border-surface-container-lowest">
+                    2
+                </div>
+<!-- Product Image -->
+<div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-surface-container">
+<img alt="ErgoTune Supreme" class="w-full h-full object-cover" data-alt="A sleek, modern ergonomic office chair (ErgoTune Supreme) isolated against a soft light-gray background. The chair features a breathable mesh backrest, adjustable headrest, and highly technical support mechanisms visible in the frame. The lighting is soft and studio-quality, emphasizing the premium build materials and comfortable design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPsyCx4GuIUqdQB9vp_F3Vdf_As_58KKKCdYJFKM4bUr1yCxfGRd0wdIzZ6_u6-TIPYfybmrcEPoqryLZn-BPvPBonF1faLa8rjBqMYi48NnphRFEbGwBf5Q0C6jsXKz2X-e1yVgv73hmfytRHfrPC-sl3OivfZ0RJpCINem_fsLMBMhW5ligDwUm0CH0XERJyve6Pjp456N-P7rnSwxCehW_77j-fLDPQSl3YyJUVIT9kgFjXZneFXcQZO5utL5NC6ycNJjpsKNE"/>
+</div>
+<!-- Product Details -->
+<div class="flex-1 flex flex-col justify-between py-1">
+<div>
+<h3 class="font-headline-md text-[20px] leading-[26px] font-semibold text-on-surface mb-1">ErgoTune Supreme</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Essential for long editing sessions. Totally customizable support for every part of your back.</p>
+</div>
+<div class="flex items-center justify-between mt-2">
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">$399</span>
+<button class="bg-surface-container-high text-on-surface hover:bg-surface-dim px-3 py-1.5 rounded-full font-label-sm text-label-sm transition-colors flex items-center gap-1">
+                            Get it <span class="material-symbols-outlined text-[14px]" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product Card 3 -->
+<article class="bg-surface-container-lowest rounded-xl p-stack-md flex gap-stack-md relative shadow-[0px_4px_20px_rgba(11,19,43,0.04)] hover:shadow-[0px_12px_32px_rgba(11,19,43,0.08)] transition-shadow">
+<!-- Badge linking to hotspot -->
+<div class="absolute -top-3 -left-3 w-8 h-8 bg-secondary text-on-secondary rounded-full flex items-center justify-center font-label-sm text-label-sm shadow-sm border-2 border-surface-container-lowest">
+                    3
+                </div>
+<!-- Product Image -->
+<div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-surface-container">
+<img alt="Keychron Q1 Pro" class="w-full h-full object-cover" data-alt="A top-down angle of a custom mechanical keyboard (Keychron Q1 Pro) resting on a minimalist desk pad. The keyboard features a heavy aluminum chassis and distinctive, retro-styled keycaps in a mix of soft greys and a single vibrant red accent key. The lighting highlights the machined texture of the case and the soft matte finish of the keys." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXmdCPpah5NPsg0ra-apcjuWYd_2ltT2l7z_p3Wzjk-vYQyQH_M57o8SuoOHW5NF3YcbPoN7pyHlatDErkpyLrqfO6zPD_EVEECUNvlPH3kgvohu645q-UCqF7qwGGbwleMxbqMoEVgcyk60TH2bfFeZ-8C4gYRZ6dtA2Iq2eVa7E5vblNDGNkI2aTk7LBkUjCl32ZflZqBSnOOC3Nf3-bnz_ff8e-fHJcZLWIfT8Joe1Bc_KVjGfap7yIY4r1fbe3kAl0-tAkxqo"/>
+</div>
+<!-- Product Details -->
+<div class="flex-1 flex flex-col justify-between py-1">
+<div>
+<h3 class="font-headline-md text-[20px] leading-[26px] font-semibold text-on-surface mb-1">Keychron Q1 Pro</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Wireless custom mechanical keyboard. The aluminum body and tactile switches make typing a joy.</p>
+</div>
+<div class="flex items-center justify-between mt-2">
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">$199</span>
+<button class="bg-surface-container-high text-on-surface hover:bg-surface-dim px-3 py-1.5 rounded-full font-label-sm text-label-sm transition-colors flex items-center gap-1">
+                            Get it <span class="material-symbols-outlined text-[14px]" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</div>
+</article>
+</section>
+</main>
+<!-- Minimal Footer -->
+<footer class="mt-stack-lg pt-stack-md border-t border-outline-variant/30 text-center pb-margin-mobile">
+<p class="font-label-sm text-label-sm text-outline flex items-center justify-center gap-1">
+            Powered by <span class="font-semibold text-on-surface-variant">LinkShelf</span>
+</p>
+</footer>
+<!-- Integrated Share Modal (Bottom Sheet) -->
+<div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center hidden" id="shareModal">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onclick="document.getElementById('shareModal').classList.add('hidden')"></div>
+<!-- Bottom Sheet Panel -->
+<div class="relative w-full max-w-md bg-surface rounded-t-[32px] sm:rounded-3xl shadow-2xl animate-slide-up flex flex-col max-h-[90vh]">
+<!-- Mobile Handle -->
+<div class="w-full flex justify-center pt-3 pb-1 sm:hidden">
+<div class="w-12 h-1.5 bg-outline-variant/40 rounded-full"></div>
+</div>
+<div class="p-6 overflow-y-auto">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h2 class="text-headline-md font-semibold text-on-surface">Share Shelf</h2>
+<p class="text-body-md text-on-surface-variant mt-1">Earn when someone buys from your link</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-dim flex items-center justify-center text-on-surface transition-colors shrink-0 ml-4" onclick="document.getElementById('shareModal').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div><div class="mb-6">
+<span class="text-label-sm font-semibold text-on-surface-variant block mb-2">Or copy your unique link</span>
+<div class="flex items-center gap-2 bg-surface-container-low border border-outline-variant/30 rounded-xl p-1.5 pl-4 relative group"><span class="text-body-md text-on-surface-variant truncate flex-1 font-mono text-sm select-all">linkshelf.page/alex/cup?ref=fan123</span><button class="bg-[#00bfae] text-white hover:opacity-90 px-4 py-2.5 rounded-lg font-bold transition-all active:scale-95 whitespace-nowrap flex items-center gap-1.5">Copy Link</button></div>
+</div>
+<!-- Commission Split Visualization -->
+<!-- Dynamic Social Icons Row -->
+<div class="flex gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide justify-center"><button class="flex flex-col items-center gap-2 min-w-[64px] group/x">
+<div class="w-14 h-14 rounded-full bg-white border border-outline-variant/30 flex items-center justify-center text-black shadow-sm transition-all duration-300 hover:bg-black hover:text-white hover:border-black">
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+</div>
+<span class="text-label-sm font-medium text-on-surface-variant">X</span>
+</button><button class="flex flex-col items-center gap-2 min-w-[64px] group/wa">
+<div class="w-14 h-14 rounded-full bg-white border border-outline-variant/30 flex items-center justify-center text-black shadow-sm transition-all duration-300 hover:bg-[#25D366] hover:text-white hover:border-[#25D366]">
+<svg class="w-7 h-7 fill-current" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"></path></svg>
+</div>
+<span class="text-label-sm font-medium text-on-surface-variant">WhatsApp</span>
+</button><button class="flex flex-col items-center gap-2 min-w-[64px] group/pin">
+<div class="w-14 h-14 rounded-full bg-white border border-outline-variant/30 flex items-center justify-center text-black shadow-sm transition-all duration-300 hover:bg-[#BD081C] hover:text-white hover:border-[#BD081C]">
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.08 3.16 9.41 7.63 11.13-.1-.95-.19-2.41.04-3.45.21-.94 1.35-5.72 1.35-5.72s-.34-.69-.34-1.71c0-1.61.93-2.81 2.09-2.81 1 0 1.48.75 1.48 1.64 0 1-.64 2.5-.97 3.89-.28 1.17.58 2.12 1.73 2.12 2.08 0 3.67-2.19 3.67-5.36 0-2.8-2.01-4.76-4.89-4.76-3.33 0-5.29 2.5-5.29 5.08 0 1.01.39 2.09.87 2.67.1.12.11.22.08.34-.09.37-.29 1.18-.33 1.34-.05.21-.17.26-.39.16-1.46-.68-2.37-2.81-2.37-4.52 0-3.68 2.67-7.06 7.71-7.06 4.05 0 7.19 2.88 7.19 6.74 0 4.02-2.54 7.26-6.06 7.26-1.18 0-2.3-.61-2.68-1.34l-.73 2.78c-.26 1.01-.98 2.27-1.46 3.05C10.1 23.85 11.03 24 12 24c6.63 0 12-5.37 12-12S18.63 0 12 0z"></path></svg>
+</div>
+<span class="text-label-sm font-medium text-on-surface-variant">Pinterest</span>
+</button></div>
+<!-- Copy Link Section -->
+<div class="rounded-2xl p-5 border border-outline-variant/20 bg-surface-container-lowest"><div class="flex justify-between items-start mb-4"><p class="text-label-sm text-on-surface-variant leading-relaxed pr-8">Connect your own Amazon Tracking ID in your dashboard to claim your 80% affiliate share directly. If unlinked, our system ID handles the allocation, and earnings are credited directly to your account balance (20% automatically to the creator).</p><span class="text-headline-md font-bold text-[#00bfae] shrink-0">80/20</span></div><div class="h-3 w-full bg-surface-variant rounded-full overflow-hidden flex mb-2"><div class="h-full bg-secondary" style="width: 80%"></div><div class="h-full bg-on-tertiary-container" style="width: 20%"></div></div><div class="flex justify-between text-label-sm font-semibold"><span class="text-secondary">80% You</span><span class="text-on-tertiary-container">20% Creator</span></div></div></div>
+</div>
+</div>
+</body></html>

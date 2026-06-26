@@ -93,6 +93,24 @@ describe("FanAuthDialog", () => {
     );
     expect(screen.queryByText(/github|continue with x/i)).not.toBeInTheDocument();
   });
+
+  it("renders the overlay outside the trigger container so page overflow cannot clip it", () => {
+    const { container } = render(
+      <div className="overflow-hidden">
+        <FanAuthDialog
+          onClose={() => undefined}
+          open
+          pendingAction="share"
+          returnTo="/liamroberts.photo/photography-kit"
+        />
+      </div>,
+    );
+
+    const dialog = screen.getByRole("dialog", { name: "Fan Authentication" });
+
+    expect(container.contains(dialog)).toBe(false);
+    expect(document.body).toContainElement(dialog);
+  });
 });
 
 describe("ShareToEarnButton", () => {

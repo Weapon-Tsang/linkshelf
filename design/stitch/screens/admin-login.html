@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LinkShelf Admin Portal | Secure Access</title>
+<!-- Google Fonts: Outfit for typography -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols for icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#006a60",
+                    "on-secondary-container": "#006f65",
+                    "surface-variant": "#e4e2e4",
+                    "outline-variant": "#c6c6ce",
+                    "background": "#fcf8fb",
+                    "on-surface-variant": "#45464d",
+                    "surface-dim": "#dcd9dc",
+                    "surface-container": "#f0edef",
+                    "surface": "#fcf8fb",
+                    "surface-tint": "#565d79",
+                    "secondary-fixed": "#68f9e6",
+                    "on-secondary-fixed-variant": "#005048",
+                    "on-tertiary-container": "#85819b",
+                    "tertiary-container": "#1b192e",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#64f6e3",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed-dim": "#c8c3e0",
+                    "primary-fixed": "#dbe1ff",
+                    "on-surface": "#1b1b1d",
+                    "on-error-container": "#93000a",
+                    "primary-fixed-dim": "#bec5e5",
+                    "inverse-on-surface": "#f3f0f2",
+                    "on-primary-fixed-variant": "#3e4660",
+                    "on-background": "#1b1b1d",
+                    "on-tertiary-fixed": "#1b192e",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#303032",
+                    "surface-bright": "#fcf8fb",
+                    "on-tertiary-fixed-variant": "#47445c",
+                    "on-primary-fixed": "#131a33",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e4e2e4",
+                    "outline": "#76767e",
+                    "primary-container": "#131a33",
+                    "error-container": "#ffdad6",
+                    "inverse-primary": "#bec5e5",
+                    "secondary-fixed-dim": "#44dcca",
+                    "surface-container-low": "#f6f3f5",
+                    "on-secondary-fixed": "#00201c",
+                    "tertiary-fixed": "#e5dffd",
+                    "on-primary-container": "#7b83a0",
+                    "surface-container-high": "#eae7ea",
+                    "tertiary": "#000000",
+                    "primary": "#000000"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "stack-sm": "8px",
+                    "stack-lg": "32px",
+                    "margin-desktop": "40px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Outfit"],
+                    "body-md": ["Outfit"],
+                    "headline-lg": ["Outfit"],
+                    "headline-xl": ["Outfit"],
+                    "label-sm": ["Outfit"],
+                    "body-lg": ["Outfit"],
+                    "label-md": ["Outfit"],
+                    "headline-xl-mobile": ["Outfit"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "headline-xl-mobile": ["32px", {"lineHeight": "38px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #F2F4F7; /* Surface Level (0) from Brand Style Guidance */
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .soft-focus-shadow {
+            box-shadow: 0px 4px 20px rgba(11, 19, 43, 0.04);
+        }
+
+        .lifted-shadow {
+            box-shadow: 0px 12px 32px rgba(11, 19, 43, 0.08);
+        }
+
+        /* Material Symbols weight handling */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* 2FA Input specific styling for spacing */
+        .otp-input:focus {
+            outline: none;
+            border-color: #00BFAE; /* Teal from buttons */
+            box-shadow: 0 0 0 4px rgba(0, 191, 174, 0.1);
+        }
+        
+        /* Subtle transition for background patterns */
+        .bg-mesh-gradient {
+            background: radial-gradient(at 0% 0%, rgba(0, 106, 96, 0.03) 0, transparent 50%), 
+                        radial-gradient(at 50% 0%, rgba(200, 195, 224, 0.05) 0, transparent 50%);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen bg-mesh-gradient font-body-md text-on-surface">
+<!-- Header Section (Suppressed per "Transactional" rule, but using TopAppBar properties for brand alignment) -->
+<header class="w-full flex justify-center pt-12 pb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[32px]" data-icon="shield" style="font-variation-settings: 'FILL' 1;">shield</span>
+<h1 class="font-headline-md text-headline-md tracking-tight text-on-surface">
+                LinkShelf Admin Portal
+            </h1>
+</div>
+</header>
+<!-- Main Content: Login Card -->
+<main class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop">
+<div class="w-full max-w-[440px] bg-surface-container-lowest rounded-xl soft-focus-shadow p-8 md:p-10 border border-outline-variant/30 relative overflow-hidden">
+<!-- Subtle accent bar -->
+<div class="absolute top-0 left-0 w-full h-1 bg-secondary"></div>
+<div class="space-y-stack-lg">
+<div class="space-y-stack-sm text-center">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">System Authentication</p>
+</div>
+<form class="space-y-6" onsubmit="return false;">
+<!-- Admin ID -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant px-1" for="admin-id">Admin ID</label>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline transition-colors group-focus-within:text-secondary" data-icon="person">person</span>
+<input class="w-full pl-12 pr-4 py-4 rounded-lg border border-outline-variant bg-surface hover:bg-surface-container-low focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none font-body-md" id="admin-id" placeholder="Enter identification" type="text"/>
+</div>
+</div>
+<!-- Password -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant px-1" for="password">Password</label>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline transition-colors group-focus-within:text-secondary" data-icon="lock">lock</span>
+<input class="w-full pl-12 pr-4 py-4 rounded-lg border border-outline-variant bg-surface hover:bg-surface-container-low focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none font-body-md" id="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- 2FA Field -->
+<div class="space-y-3">
+<div class="flex justify-between items-center px-1">
+<label class="font-label-md text-label-md text-on-surface-variant" for="2fa">6-Digit 2FA Code</label>
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="google">google</span> Google Authenticator
+                            </span>
+</div>
+<div class="flex gap-2 justify-between" id="otp-container">
+<!-- Optimized for single numeric input mask logic -->
+<input class="w-full text-center py-4 rounded-lg border border-outline-variant bg-surface tracking-[0.75em] font-bold text-headline-md focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none" id="2fa" maxlength="6" placeholder="000000" type="text"/>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full py-4 px-6 bg-secondary text-on-secondary font-bold rounded-lg lifted-shadow hover:brightness-110 active:scale-[0.98] transition-all flex justify-center items-center gap-2 group" type="submit">
+<span>Secure Access</span>
+<span class="material-symbols-outlined transition-transform group-hover:translate-x-1" data-icon="login">login</span>
+</button>
+</form>
+<div class="pt-4 text-center">
+<p class="font-label-sm text-label-sm text-outline flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="info">info</span>
+                        Encrypted SSL Session Active
+                    </p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer: Shared Component Style Mapping -->
+<footer class="w-full py-8 px-margin-mobile md:px-margin-desktop flex flex-col items-center gap-4">
+<div class="h-px w-16 bg-outline-variant/30"></div>
+<p class="font-label-sm text-label-sm text-on-surface-variant tracking-wider uppercase">
+            Admin Console Access Only
+        </p>
+<div class="flex gap-stack-lg text-outline-variant">
+<span class="material-symbols-outlined text-[20px]" data-icon="verified_user">verified_user</span>
+<span class="material-symbols-outlined text-[20px]" data-icon="terminal">terminal</span>
+<span class="material-symbols-outlined text-[20px]" data-icon="fingerprint">fingerprint</span>
+</div>
+<p class="font-label-sm text-label-sm text-outline-variant/60 mt-2">
+            © 2024 LinkShelf Global Matrix. Secure Access Protocol.
+        </p>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+        // Interactive 2FA masking simulation
+        const otpInput = document.getElementById('2fa');
+        otpInput.addEventListener('input', (e) => {
+            const value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+            
+            if (value.length === 6) {
+                otpInput.classList.add('border-secondary');
+            } else {
+                otpInput.classList.remove('border-secondary');
+            }
+        });
+
+        // Form submission animation
+        const form = document.querySelector('form');
+        const submitBtn = form.querySelector('button');
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const originalContent = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Authorizing...</span>
+            `;
+            
+            setTimeout(() => {
+                submitBtn.classList.remove('bg-secondary');
+                submitBtn.classList.add('bg-error');
+                submitBtn.innerHTML = `
+                    <span class="material-symbols-outlined" data-icon="error">error</span>
+                    <span>Invalid Credentials</span>
+                `;
+                setTimeout(() => {
+                    submitBtn.classList.remove('bg-error');
+                    submitBtn.classList.add('bg-secondary');
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.disabled = false;
+                }, 2000);
+            }, 1500);
+        });
+    </script>
+</body></html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LinkShelf Creator Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#006a60",
+                    "on-secondary-container": "#006f65",
+                    "surface-variant": "#e4e2e4",
+                    "outline-variant": "#c6c6ce",
+                    "background": "#fcf8fb",
+                    "on-surface-variant": "#45464d",
+                    "surface-dim": "#dcd9dc",
+                    "surface-container": "#f0edef",
+                    "surface": "#fcf8fb",
+                    "surface-tint": "#565d79",
+                    "secondary-fixed": "#68f9e6",
+                    "on-secondary-fixed-variant": "#005048",
+                    "on-tertiary-container": "#85819b",
+                    "tertiary-container": "#1b192e",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#64f6e3",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed-dim": "#c8c3e0",
+                    "primary-fixed": "#dbe1ff",
+                    "on-surface": "#1b1b1d",
+                    "on-error-container": "#93000a",
+                    "primary-fixed-dim": "#bec5e5",
+                    "inverse-on-surface": "#f3f0f2",
+                    "on-primary-fixed-variant": "#3e4660",
+                    "on-background": "#1b1b1d",
+                    "on-tertiary-fixed": "#1b192e",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#303032",
+                    "surface-bright": "#fcf8fb",
+                    "on-tertiary-fixed-variant": "#47445c",
+                    "on-primary-fixed": "#131a33",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e4e2e4",
+                    "outline": "#76767e",
+                    "primary-container": "#131a33",
+                    "error-container": "#ffdad6",
+                    "inverse-primary": "#bec5e5",
+                    "secondary-fixed-dim": "#44dcca",
+                    "surface-container-low": "#f6f3f5",
+                    "on-secondary-fixed": "#00201c",
+                    "tertiary-fixed": "#e5dffd",
+                    "on-primary-container": "#7b83a0",
+                    "surface-container-high": "#eae7ea",
+                    "tertiary": "#000000",
+                    "primary": "#000000"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "stack-sm": "8px",
+                    "stack-lg": "32px",
+                    "margin-desktop": "40px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Outfit"],
+                    "body-md": ["Outfit"],
+                    "headline-lg": ["Outfit"],
+                    "headline-xl": ["Outfit"],
+                    "label-sm": ["Outfit"],
+                    "body-lg": ["Outfit"],
+                    "label-md": ["Outfit"],
+                    "headline-xl-mobile": ["Outfit"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "headline-xl-mobile": ["32px", {"lineHeight": "38px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #fcf8fb;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+        }
+
+        .aurora-gradient {
+            background: linear-gradient(135deg, #e0f7fa 0%, #e8f5e9 50%, #f1f8e9 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .aurora-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+            animation: drift 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes drift {
+            from { transform: translate(-10%, -10%) scale(1); }
+            to { transform: translate(20%, 20%) scale(1.2); }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 106, 96, 0.05);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="h-screen flex items-stretch text-on-surface">
+<!-- Left Side: Aesthetic Product Showcase -->
+<section class="hidden lg:flex flex-1 aurora-gradient relative items-center justify-center p-margin-desktop overflow-hidden">
+<!-- Aurora Animated Blobs -->
+<div class="aurora-orb bg-secondary-fixed w-[500px] h-[500px] -top-20 -left-20"></div>
+<div class="aurora-orb bg-primary-fixed-dim w-[600px] h-[600px] -bottom-40 -right-20" style="animation-delay: -5s;"></div>
+<div class="aurora-orb bg-secondary-container w-[400px] h-[400px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style="animation-delay: -10s;"></div>
+<div class="relative z-10 w-full max-w-2xl space-y-stack-lg">
+<header class="space-y-stack-sm">
+<span class="inline-block px-4 py-1 rounded-full bg-secondary-container text-on-secondary-fixed text-label-md font-label-md">
+                    Creator Portal v2.0
+                </span>
+<h1 class="font-headline-xl text-headline-xl text-primary leading-tight">
+                    Your entire digital presence,<br/>organized on one shelf.
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+                    Join 50,000+ creators who use LinkShelf to centralize their influence and monetize their audience.
+                </p>
+</header>
+<!-- Bento Preview Visual -->
+<div class="grid grid-cols-6 grid-rows-2 gap-4 h-[400px]">
+<div class="col-span-4 row-span-2 glass-card rounded-xl p-6 flex flex-col justify-between group cursor-pointer transition-transform hover:scale-[1.02]">
+<div class="flex justify-between items-start">
+<div class="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<span class="text-label-sm font-label-sm text-secondary bg-secondary-container/30 px-3 py-1 rounded-full">+12% this week</span>
+</div>
+<div class="space-y-2">
+<div class="h-4 w-3/4 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[65%] animate-pulse"></div>
+</div>
+<div class="h-4 w-1/2 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary-fixed w-[40%]"></div>
+</div>
+</div>
+<div class="w-full h-32 bg-cover bg-center rounded-lg mt-4 opacity-80 group-hover:opacity-100 transition-opacity" data-alt="A professional dashboard UI interface showing elegant analytics graphs with soft teal and light green accents. The aesthetic is clean, high-end, and minimalist, featuring rounded cards and vibrant data visualizations that represent creator growth and engagement metrics in a modern digital-first style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAMZeOWQ-hdzCuUfCvPr1Mp73mlPNjCET7o00O777e2tbGcG6ohtZuuyGzUY00p-6oV38U-ow2JhWSzusXTZeNXFcV-ktSrBY1DC0HqoXC3qwDLus8JcGPPCo1OKFbm708BeNO1uvGQBSXXruywaq3OasqpTjAmdi2QoojYS0_HWaXjHb9R_4hgHp13XdV5gzXOccqqEDNZUc5Kjzgg6bq2lDKWkxDKTr-47eSVL31t267MArljD6AFLSp3FCtGHrShPCsoK_6QuI8')"></div>
+</div>
+<div class="col-span-2 row-span-1 glass-card rounded-xl p-4 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-secondary">share</span>
+</div>
+<div class="col-span-2 row-span-1 glass-card rounded-xl p-4 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-secondary">payments</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Side: Minimalist Login Card -->
+<main class="w-full lg:w-[540px] flex flex-col bg-surface items-center justify-center p-margin-mobile md:p-margin-desktop relative">
+<!-- Mobile Header (Logo only) -->
+<div class="absolute top-8 left-margin-mobile lg:left-margin-desktop flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">shelves</span>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary">LinkShelf</span>
+</div>
+<div class="w-full max-w-sm space-y-stack-lg">
+<div class="space-y-stack-sm">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Creator Login</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Welcome back! Please enter your details.</p>
+</div>
+<!-- SSO Button -->
+<button class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-outline-variant bg-white hover:bg-surface-container transition-colors font-label-md text-label-md text-on-surface">
+<svg height="20" viewbox="0 0 24 24" width="20">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.27.81-.57z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+                Continue with Google
+            </button>
+<div class="relative py-2">
+<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant"></div></div>
+<div class="relative flex justify-center"><span class="bg-surface px-4 text-label-sm font-label-sm text-on-surface-variant">OR EMAIL</span></div>
+</div>
+<!-- Login Form -->
+<form class="space-y-stack-md" onsubmit="event.preventDefault();">
+<div class="space-y-stack-sm">
+<label class="font-label-md text-label-md text-on-surface" for="email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
+<input class="w-full pl-12 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all font-body-md text-body-md" id="email" placeholder="hello@creator.com" type="email"/>
+</div>
+</div>
+<div class="space-y-stack-sm">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface" for="password">Password</label>
+<a class="text-label-sm font-label-sm text-secondary hover:underline" href="#">Forgot password?</a>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
+<input class="w-full pl-12 pr-12 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all font-body-md text-body-md" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-2 py-2">
+<input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary" id="remember" type="checkbox"/>
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="remember">Remember me for 30 days</label>
+</div>
+<button class="w-full py-4 rounded-xl bg-secondary text-white font-headline-md text-headline-md hover:bg-on-secondary-container active:scale-[0.98] transition-all shadow-lg shadow-secondary/10" type="submit">
+                    Sign In
+                </button>
+</form>
+<p class="text-center font-label-md text-label-md text-on-surface-variant">
+                Don't have an account? 
+                <a class="text-secondary font-bold hover:underline" href="#">Create for free</a>
+</p>
+</div>
+<!-- Footer Audit Text from JSON Guidance -->
+<footer class="absolute bottom-8 w-full px-margin-mobile lg:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-2 opacity-50">
+<span class="font-label-sm text-label-sm">© 2024 LinkShelf Global Matrix</span>
+<div class="flex gap-4">
+<a class="font-label-sm text-label-sm hover:text-secondary" href="#">Security Audit</a>
+<a class="font-label-sm text-label-sm hover:text-secondary" href="#">Privacy</a>
+</div>
+</footer>
+</main>
+<script>
+        // Simple Interaction logic
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('scale-[1.01]');
+                input.parentElement.classList.add('transition-transform');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('scale-[1.01]');
+            });
+        });
+
+        // Toggle password visibility
+        const togglePass = document.querySelector('button .material-symbols-outlined:contains("visibility")');
+        if (togglePass) {
+            togglePass.parentElement.addEventListener('click', () => {
+                const passInput = document.getElementById('password');
+                if (passInput.type === 'password') {
+                    passInput.type = 'text';
+                    togglePass.textContent = 'visibility_off';
+                } else {
+                    passInput.type = 'password';
+                    togglePass.textContent = 'visibility';
+                }
+            });
+        }
+    </script>
+</body></html>

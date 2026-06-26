@@ -1,48 +1,111 @@
 # LinkShelf design QA
 
-Status: automated release gates passed; side-by-side Stitch visual comparison remains pending.
+Status: blocked after current-run Stitch side-by-side visual QA.
 
-This file tracks the release-gate comparison between the implemented LinkShelf routes and the 15 Stitch source screens. Automated functional, accessibility, responsive, build, and smoke gates now pass. The final visual result remains pending until each implemented screen is placed side-by-side with its source reference in `design/stitch/screens/` at matching viewport/state.
+This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the current local app at `http://127.0.0.1:3000` on 2026-06-26.
 
-## Source coverage
+## Evidence summary
 
-| Stitch reference | Implemented route or state | QA status |
+Source visual truth path: `design/stitch/screens/`
+
+Implementation screenshot path: `test-results/design-qa/latest/impl/`
+
+Full-view comparison evidence: `test-results/design-qa/latest/compare/`
+
+Capture notes: `test-results/design-qa/latest/capture-notes.json`
+
+Focused region comparison evidence: not generated in this pass because full-view comparisons already expose actionable P1/P2 blockers. Focused crops should be added after the major information-architecture/layout alignment pass.
+
+## Screen coverage
+
+| Stitch reference | Implemented route or state | Viewport | Current QA status |
+| --- | --- | --- | --- |
+| `landing-page.jpg` | `/` | `1280x1600@2` | Captured; P2 visual drift remains |
+| `creator-profile.png` | `/liamroberts.photo` | `1280x1600@2` | Captured; P2 content/layout drift remains |
+| `creator-login.png` | `/login?returnTo=/studio/dashboard` | `1280x1024@2` | Captured; Google-only login is intentional per product direction |
+| `studio-dashboard.jpg` | `/studio/dashboard` | `1280x1024@2` | Captured; P1 information-architecture/layout mismatch remains |
+| `studio-management-expanded.jpg` | `/studio/shelves` | `1280x1024@2` | Captured; P1 management layout mismatch remains |
+| `studio-management-one-column.jpg` | `/studio/shelves` | `1280x1024@2` | Captured; P1 state mismatch remains |
+| `studio-create-shelf.jpg` | `/studio/create` | `1280x1024@2` | Captured; P1 editor/workbench mismatch remains |
+| `studio-settings.jpg` | `/studio/settings` | `728x1024@2` | Captured after serialization fix; P2 layout/content drift remains |
+| `studio-analytics.jpg` | `/studio/analytics` | `1280x1024@2` | Captured; P2 metrics/content drift remains |
+| `studio-comments.jpg` | `/studio/comments` | `1280x1024@2` | Captured after serialization fix; P2 content/layout drift remains |
+| `fan-dashboard.png` | `/hub/dashboard` | `1280x1024@2` | Captured; P1 dashboard content mismatch remains |
+| `fan-auth-overlay.png` | public shelf + fan auth overlay | `1280x1024@2` | Captured after portal fix; P2 visual/provider drift remains |
+| `admin-login.png` | admin secret Google gate | `1280x1024@2` | Captured; Google-only auth is intentional per product direction |
+| `super-admin.png` | `/admin/dashboard` | `1280x1024@2` | Captured; P2 data-density/layout drift remains |
+| `share-modal.png` | public shelf share dialog | n/a | Blocked: no live route or trigger opens `ShareDialog` |
+
+## Findings
+
+- [P1] Share modal Stitch screen is not reachable in the running app
+  Location: public shelf sharing flow / `src/features/engagement/share-dialog.tsx`.
+  Evidence: `design/stitch/screens/share-modal.png` defines a full share modal state, but the current public shelf share action opens `FanAuthDialog`; `ShareDialog` exists only as a component-level implementation and test target.
+  Impact: one of the 15 requested designed screens cannot be verified as a real product state.
+  Fix: wire the post-auth share flow so a fan can open `ShareDialog`, then capture `share-modal` at the matching mobile viewport.
+
+- [P1] Creator Studio shell and management pages do not match the Stitch information architecture
+  Location: `studio-dashboard`, `studio-management-expanded`, `studio-management-one-column`, `studio-create-shelf`.
+  Evidence: Stitch uses a compact creator-management sidebar, activity-first dashboard, card-grid shelf manager, AI Link Workbench, detected item editor, and preview blocks. The implementation uses a different beige shell, different sidebar cards, list-based shelf manager, simplified editor form, and different preview/content hierarchy.
+  Impact: core creator workflow is functional, but it is not visually faithful to the designed Studio experience.
+  Fix: align the Studio shell/sidebar and rebuild the dashboard, shelves, and create-shelf content modules from the Stitch reference structure before doing polish-level spacing work.
+
+- [P1] Fan dashboard is a different product state than the Stitch source
+  Location: `/hub/dashboard`.
+  Evidence: Stitch shows wallet binding, available balance, rewards history, shared shelves, saved collections, and creator-economy navigation. The implementation shows reward summary cards, tabs, tracking ID, and withdrawal form but omits the main shared/saved content areas visible in the reference.
+  Impact: the fan hub does not communicate the designed “My Hub” value proposition yet.
+  Fix: add the missing shared shelves and saved collections sections, then align wallet/rewards layout and navigation density.
+
+- [P2] Public fan-auth overlay is now usable but still visually diverges
+  Location: public shelf share overlay.
+  Evidence: latest comparison shows the dialog is no longer clipped by product cards after portal rendering. Remaining differences: Stitch has three auth providers and a larger centered modal; implementation intentionally uses Google-only auth and a smaller card.
+  Impact: no longer a usability blocker, but it remains visually different from the Stitch source. Provider count is an accepted product deviation from the user’s Google-only direction.
+  Fix: keep Google-only behavior, but optionally tune modal size, blur strength, glow placement, and vertical position to match the source more closely.
+
+- [P2] Several screens use the right brand direction but different copy/data density
+  Location: landing, creator profile, studio analytics, studio comments, super admin.
+  Evidence: teal/navy palette, rounded cards, soft shadows, and LinkShelf branding are present. However, text, metric values, card density, supporting sections, avatar/photo choices, and per-screen navigation differ across the side-by-side comparisons.
+  Impact: the app feels coherent, but not yet like a faithful Stitch export implementation.
+  Fix: after P1 structure gaps are closed, do a pass on copy, mock data, card density, image usage, and spacing per screen.
+
+## Required fidelity surfaces
+
+- Fonts and typography: broadly consistent bold rounded sans style, but hierarchy and optical sizes diverge on Studio/Fan/Admin pages.
+- Spacing and layout rhythm: major layout drift remains in Studio, Fan Hub, and create-shelf screens; landing/profile are closer but still not pixel-aligned.
+- Colors and visual tokens: teal/navy/soft surface language is consistent; beige app shell differs from several Stitch white/pink surfaces.
+- Image quality and asset fidelity: localized Stitch/source assets render on public pages; several admin/studio mock sections use simplified content rather than exact reference imagery or thumbnails.
+- Copy and app-specific content: product-level copy is present, but many screen headings, data values, labels, and content modules differ from the Stitch references.
+
+## Patches made during this QA pass
+
+- Added `scripts/capture-design-qa.mjs` to capture implementation screenshots and generate side-by-side comparison evidence.
+- Fixed `/studio/comments` serialization by mapping SQLite comment rows to plain objects before passing them to a Client Component.
+- Added a regression test for plain serializable comments.
+- Fixed `/studio/settings` serialization by mapping the creator profile row to a plain object before passing it to a Client Component.
+- Added a regression test for plain serializable settings.
+- Portaled `FanAuthDialog` to `document.body` so the overlay is not clipped or overlapped by the public shelf hero container.
+- Added a regression test that verifies the fan-auth overlay renders outside its trigger container.
+- Added hydration guards to Admin Dashboard export controls and Fan Hub interactive controls so clicks cannot be lost before Client Components finish hydrating.
+
+## Verification run evidence
+
+| Gate | Command | Result |
 | --- | --- | --- |
-| `landing-page` | `/` | E2E screenshot captured; side-by-side visual diff pending |
-| `creator-profile` | `/liamroberts.photo` | E2E route/axe covered; side-by-side visual diff pending |
-| `studio-create-shelf` | `/studio/create` | E2E route covered; side-by-side visual diff pending |
-| `studio-management-expanded` | `/studio/shelves` and `/studio/shelves/shelf-photography/edit` | E2E route covered; side-by-side visual diff pending |
-| `studio-dashboard` | `/studio/dashboard` | E2E route/axe/responsive covered; side-by-side visual diff pending |
-| `studio-settings` | `/studio/settings` | Smoke/build route covered; side-by-side visual diff pending |
-| `studio-analytics` | `/studio/analytics` | Smoke/build route covered; side-by-side visual diff pending |
-| `studio-management-one-column` | Responsive shelf management state | Responsive E2E covered at 390/780/1280/2560; side-by-side visual diff pending |
-| `studio-comments` | `/studio/comments` | Smoke/build route covered; side-by-side visual diff pending |
-| `share-modal` | Public shelf share dialog | E2E public shelf covered; modal side-by-side visual diff pending |
-| `fan-dashboard` | `/hub/dashboard` | E2E route/axe covered; side-by-side visual diff pending |
-| `super-admin` | `/admin/dashboard` | E2E route covered; side-by-side visual diff pending |
-| `fan-auth-overlay` | Fan login continuation from public shelf | Auth/resume routes covered by integration; overlay visual diff pending |
-| `admin-login` | `/admin-secret` and admin entry challenge | E2E route covered; side-by-side visual diff pending |
-| `creator-login` | `/login?returnTo=/studio/dashboard` | E2E route/axe covered; side-by-side visual diff pending |
+| Comment/settings serialization regressions | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/integration/comment-actions.test.ts` | Passed: 5 tests |
+| Fan auth portal regression | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/share-dialog.test.tsx` | Passed: 7 tests |
+| TypeScript | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit` | Passed |
+| Lint | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint .` | Passed |
+| Unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 215 tests across 33 files |
+| End-to-end suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 11 tests |
+| Production build | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
+| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 14 states; `share-modal` blocked as unreachable |
 
-## Automated gates
+## Implementation checklist
 
-| Gate | Command | Status |
-| --- | --- | --- |
-| Lint | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint .` | Passed on 2026-06-26 |
-| Typecheck | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit` | Passed on 2026-06-26 |
-| Unit/integration/component tests | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed on 2026-06-26: 33 files, 212 tests |
-| End-to-end journeys | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/playwright test` | Passed on 2026-06-26: 11 tests |
-| Production build | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed on 2026-06-26 with one non-fatal Turbopack NFT warning |
-| Route smoke test | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node scripts/smoke-routes.mjs` | Passed on 2026-06-26: 8 checks |
+1. Wire the authenticated/post-auth share modal flow and capture `share-modal`.
+2. Align Creator Studio shell, dashboard, shelf manager, and create-shelf editor to the Stitch IA.
+3. Add Fan Hub shared shelves and saved collections sections to match the reference.
+4. Tune fan-auth overlay visual treatment while preserving Google-only auth.
+5. Do a second full visual QA pass and add focused crops for typography/card/detail fidelity.
 
-## Current findings
-
-- Fixed release-gate findings from the first browser run:
-  - Development auth redirects now preserve the browser loopback origin, so session cookies survive `127.0.0.1`/`localhost` aliasing.
-  - Admin entry redirects now preserve the browser host header, so challenge cookies survive the secret-entry hop.
-  - SQLite-derived rows passed to Client Components are converted to plain serializable objects.
-  - Landing CTA and dashboard shell helper cards meet axe color-contrast checks.
-  - Playwright uses the installed Google Chrome channel because bundled Chromium download was unavailable.
-- Remaining visual QA work: perform side-by-side comparison for each Stitch source screen and record any P0/P1/P2/P3 visual deltas.
-
-final result: automated gates passed; side-by-side Stitch visual comparison pending
+final result: blocked

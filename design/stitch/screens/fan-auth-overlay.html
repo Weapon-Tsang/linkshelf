@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fan Authentication | LinkShelf</title>
+<!-- Google Fonts: Outfit -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .soft-shadow {
+            box-shadow: 0px 12px 32px rgba(11, 19, 43, 0.08);
+        }
+        @keyframes fade-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-modal {
+            animation: fade-in 0.3s ease-out forwards;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary": "#006a60",
+                      "on-secondary-container": "#006f65",
+                      "surface-variant": "#e4e2e4",
+                      "outline-variant": "#c6c6ce",
+                      "background": "#fcf8fb",
+                      "on-surface-variant": "#45464d",
+                      "surface-dim": "#dcd9dc",
+                      "surface-container": "#f0edef",
+                      "surface": "#fcf8fb",
+                      "surface-tint": "#565d79",
+                      "secondary-fixed": "#68f9e6",
+                      "on-secondary-fixed-variant": "#005048",
+                      "on-tertiary-container": "#85819b",
+                      "tertiary-container": "#1b192e",
+                      "on-tertiary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "secondary-container": "#64f6e3",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed-dim": "#c8c3e0",
+                      "primary-fixed": "#dbe1ff",
+                      "on-surface": "#1b1b1d",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#bec5e5",
+                      "inverse-on-surface": "#f3f0f2",
+                      "on-primary-fixed-variant": "#3e4660",
+                      "on-background": "#1b1b1d",
+                      "on-tertiary-fixed": "#1b192e",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#303032",
+                      "surface-bright": "#fcf8fb",
+                      "on-tertiary-fixed-variant": "#47445c",
+                      "on-primary-fixed": "#131a33",
+                      "on-secondary": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "surface-container-highest": "#e4e2e4",
+                      "outline": "#76767e",
+                      "primary-container": "#131a33",
+                      "error-container": "#ffdad6",
+                      "inverse-primary": "#bec5e5",
+                      "secondary-fixed-dim": "#44dcca",
+                      "surface-container-low": "#f6f3f5",
+                      "on-secondary-fixed": "#00201c",
+                      "tertiary-fixed": "#e5dffd",
+                      "on-primary-container": "#7b83a0",
+                      "surface-container-high": "#eae7ea",
+                      "tertiary": "#000000",
+                      "primary": "#000000"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "stack-md": "16px",
+                      "margin-mobile": "20px",
+                      "stack-sm": "8px",
+                      "stack-lg": "32px",
+                      "margin-desktop": "40px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Outfit"],
+                      "body-md": ["Outfit"],
+                      "headline-lg": ["Outfit"],
+                      "headline-xl": ["Outfit"],
+                      "label-sm": ["Outfit"],
+                      "body-lg": ["Outfit"],
+                      "label-md": ["Outfit"],
+                      "headline-xl-mobile": ["Outfit"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "headline-xl-mobile": ["32px", {"lineHeight": "38px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background font-body-md text-on-background antialiased overflow-hidden">
+<!-- Background Layer: Blurred Public Profile -->
+<main aria-hidden="true" class="fixed inset-0 w-full h-full overflow-y-auto filter blur-md select-none pointer-events-none">
+<!-- Top App Bar (Mock) -->
+<header class="fixed top-0 left-0 w-full z-10 flex justify-between items-center px-margin-desktop py-4">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">LinkShelf</span>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest"></div>
+</div>
+</header>
+<!-- Profile Content (Mock) -->
+<div class="max-w-container-max mx-auto px-margin-desktop pt-32 pb-20">
+<div class="flex flex-col items-center text-center gap-stack-md">
+<div class="w-32 h-32 rounded-full bg-secondary-container soft-shadow"></div>
+<h1 class="font-headline-xl text-headline-xl">Sarah Creative</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Digital Artist &amp; Curator sharing the best creative assets in the ecosystem.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter w-full mt-stack-lg">
+<div class="h-48 bg-white rounded-xl soft-shadow"></div>
+<div class="h-48 bg-white rounded-xl soft-shadow"></div>
+<div class="h-48 bg-white rounded-xl soft-shadow"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- Overlay / Scrim -->
+<div class="fixed inset-0 bg-black/5 backdrop-blur-[2px] z-[60] flex items-center justify-center p-margin-mobile md:p-margin-desktop">
+<!-- Auth Modal -->
+<section class="animate-modal glass-effect w-full max-w-md rounded-[2rem] p-8 md:p-10 soft-shadow flex flex-col items-center gap-stack-lg relative overflow-hidden">
+<!-- Ambient Glow -->
+<div class="absolute -top-24 -right-24 w-48 h-48 bg-secondary/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-24 -left-24 w-48 h-48 bg-secondary-container/20 rounded-full blur-3xl"></div>
+<!-- Content -->
+<div class="text-center z-10">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary-container text-on-secondary-container mb-6">
+<span class="material-symbols-outlined text-[32px]">group</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Fan Authentication</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Connect to Earn &amp; Save</p>
+</div>
+<!-- Social Auth Buttons -->
+<div class="w-full flex flex-col gap-4 z-10">
+<!-- Google -->
+<button class="flex items-center justify-center gap-3 w-full py-4 px-6 bg-white border border-outline-variant hover:bg-surface-container-low transition-all duration-200 rounded-xl group" onclick="handleLogin('Google')">
+<svg class="w-5 h-5" viewbox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" fill="#EA4335"></path>
+</svg>
+<span class="font-label-md text-label-md text-on-surface">Continue with Google</span>
+</button>
+<!-- GitHub -->
+<button class="flex items-center justify-center gap-3 w-full py-4 px-6 bg-[#24292e] text-white hover:bg-black transition-all duration-200 rounded-xl" onclick="handleLogin('GitHub')">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.11.82-.26.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.31 24 12c0-6.63-5.37-12-12-12z"></path>
+</svg>
+<span class="font-label-md text-label-md">Continue with GitHub</span>
+</button>
+<!-- X (formerly Twitter) -->
+<button class="flex items-center justify-center gap-3 w-full py-4 px-6 bg-white border-2 border-black hover:bg-surface-variant/20 transition-all duration-200 rounded-xl group" onclick="handleLogin('X')">
+<svg class="w-5 h-5 fill-black" viewbox="0 0 24 24">
+<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+</svg>
+<span class="font-label-md text-label-md text-on-surface">Continue with X</span>
+</button>
+</div>
+<!-- Footer Section of Modal -->
+<div class="flex flex-col items-center gap-4 z-10">
+<p class="font-label-sm text-label-sm text-on-surface-variant">
+                    By connecting, you agree to our 
+                    <a class="text-secondary hover:underline transition-all" href="#">Terms of Service</a>.
+                </p>
+<div class="flex items-center gap-2 py-2 px-4 rounded-full bg-surface-container-low text-secondary border border-secondary/10">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span class="font-label-sm text-label-sm">Secure 256-bit encryption</span>
+</div>
+</div>
+<!-- Close Action -->
+<button class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors group" onclick="window.history.back()">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-on-surface">close</span>
+</button>
+</section>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        function handleLogin(provider) {
+            console.log(`Initiating login with ${provider}...`);
+            // Add visual feedback
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.style.opacity = '0.5');
+            event.currentTarget.style.opacity = '1';
+            event.currentTarget.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="font-label-md">Connecting...</span>
+                </div>
+            `;
+            
+            // Artificial delay to simulate redirection
+            setTimeout(() => {
+                alert(`Redirecting to ${provider} secure login portal...`);
+                location.reload();
+            }, 1200);
+        }
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.history.back();
+            }
+        });
+    </script>
+</body></html>

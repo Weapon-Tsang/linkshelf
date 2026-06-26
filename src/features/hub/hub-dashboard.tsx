@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SocialChannelType } from "@/features/shelves/types";
 import { cn } from "@/lib/cn";
 
@@ -61,6 +61,12 @@ export function HubDashboard({
   const [withdrawalAmount, setWithdrawalAmount] = useState("50");
   const [destination, setDestination] = useState("");
   const [csvReady, setCsvReady] = useState(false);
+  const [isInteractive, setIsInteractive] = useState(false);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => setIsInteractive(true), 0);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   return (
     <div>
@@ -78,8 +84,10 @@ export function HubDashboard({
           </p>
         </div>
         <button
-          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--teal-700)] px-6 text-sm font-bold text-white"
+          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--teal-700)] px-6 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={!isInteractive}
           onClick={() => {
+            if (!isInteractive) return;
             const exportedCsv = onExportCsv?.() ?? csv;
             void exportedCsv;
             setCsvReady(true);
@@ -121,9 +129,14 @@ export function HubDashboard({
             className={cn(
               "rounded-full border border-[var(--line)] bg-white px-5 py-2 text-sm font-bold",
               active === section && "border-[var(--teal-700)] bg-[var(--teal-700)] text-white",
+              !isInteractive && "cursor-not-allowed opacity-60",
             )}
+            disabled={!isInteractive}
             key={section}
-            onClick={() => setActive(section)}
+            onClick={() => {
+              if (!isInteractive) return;
+              setActive(section);
+            }}
             type="button"
           >
             {section}
@@ -143,8 +156,10 @@ export function HubDashboard({
               />
             </label>
             <button
-              className="min-h-12 rounded-full border border-[var(--line)] px-5 text-sm font-bold"
+              className="min-h-12 rounded-full border border-[var(--line)] px-5 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={!isInteractive}
               onClick={() => {
+                if (!isInteractive) return;
                 void onSaveTrackingId?.(affiliateTag);
               }}
               type="button"
@@ -152,8 +167,12 @@ export function HubDashboard({
               Save tracking ID
             </button>
             <button
-              className="min-h-12 rounded-full bg-[var(--ink)] px-5 text-sm font-bold text-white"
-              onClick={() => setWithdrawalOpen(true)}
+              className="min-h-12 rounded-full bg-[var(--ink)] px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={!isInteractive}
+              onClick={() => {
+                if (!isInteractive) return;
+                setWithdrawalOpen(true);
+              }}
               type="button"
             >
               Request withdrawal

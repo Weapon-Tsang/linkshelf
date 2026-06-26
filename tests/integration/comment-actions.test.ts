@@ -4,6 +4,8 @@ import type { AuthSession } from "@/features/auth/adapter";
 import { findAuthUserById } from "@/features/auth/adapter";
 import {
   deleteCreatorAccount,
+  getStudioSettings,
+  listStudioComments,
   replyToComment,
   saveCreatorProfile,
   saveCreatorTrackingId,
@@ -71,6 +73,29 @@ describe("studio comment and settings actions", () => {
           .get("comment-jamie-camera") as { status: string; deletedAt: string | null }
       ),
     ).toEqual({ status: "HIDDEN", deletedAt: NOW.toISOString() });
+  });
+
+  it("returns plain serializable comments for server-to-client rendering", () => {
+    const result = listStudioComments(database, creatorSession);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    for (const comment of result.comments) {
+      expect(Object.getPrototypeOf(comment)).toBe(Object.prototype);
+    }
+  });
+
+  it("returns plain serializable settings for server-to-client rendering", () => {
+    const result = getStudioSettings(database, creatorSession);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(Object.getPrototypeOf(result.creator)).toBe(Object.prototype);
+    for (const channel of result.channels) {
+      expect(Object.getPrototypeOf(channel)).toBe(Object.prototype);
+    }
   });
 
   it("saves profile, simulated tracking ID, and share channel toggles", () => {

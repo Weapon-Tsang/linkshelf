@@ -12,26 +12,15 @@ import {
 } from "@/features/shelves/service";
 
 interface ShelfRouteProps {
-  readonly params:
-    | Promise<{
-        readonly creatorHandle: string;
-        readonly shelfId: string;
-      }>
-    | {
-        readonly creatorHandle: string;
-        readonly shelfId: string;
-      };
-  readonly searchParams?:
-    | Promise<{
-        readonly share?: string | string[];
-        readonly resume?: string | string[];
-        readonly channel?: string | string[];
-      }>
-    | {
-        readonly share?: string | string[];
-        readonly resume?: string | string[];
-        readonly channel?: string | string[];
-      };
+  readonly params: Promise<{
+    readonly creatorHandle: string;
+    readonly shelfId: string;
+  }>;
+  readonly searchParams?: Promise<{
+    readonly share?: string | string[];
+    readonly resume?: string | string[];
+    readonly channel?: string | string[];
+  }>;
 }
 
 function shelfPath(handle: string, slug: string, shareCode?: string | null) {

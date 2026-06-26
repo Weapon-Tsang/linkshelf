@@ -162,7 +162,19 @@ export function listStudioComments(
     )
     .all(...params) as unknown as StudioCommentRow[];
 
-  return { ok: true, comments: rows };
+  return {
+    ok: true,
+    comments: rows.map((row) => ({
+      id: row.id,
+      shelfId: row.shelfId,
+      shelfTitle: row.shelfTitle,
+      authorName: row.authorName,
+      body: row.body,
+      status: row.status,
+      createdAt: row.createdAt,
+      parentId: row.parentId,
+    })),
+  };
 }
 
 export function replyToComment(
@@ -333,7 +345,13 @@ export function getStudioSettings(
 
   return {
     ok: true,
-    creator: creator.creator,
+    creator: {
+      id: creator.creator.id,
+      displayName: creator.creator.displayName,
+      bio: creator.creator.bio,
+      category: creator.creator.category,
+      affiliateTag: creator.creator.affiliateTag,
+    },
     channels: channels.map((channel) => ({
       type: channel.type,
       value: channel.value,

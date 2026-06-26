@@ -1,0 +1,759 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>LinkShelf - Visual Link Pages for Creators</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-secondary-container": "#006f65",
+                "on-primary-container": "#7b83a0",
+                "error-container": "#ffdad6",
+                "on-error-container": "#93000a",
+                "on-primary-fixed-variant": "#3e4660",
+                "surface-container-low": "#f6f3f5",
+                "surface-container-lowest": "#ffffff",
+                "inverse-primary": "#bec5e5",
+                "primary": "#000000",
+                "tertiary": "#000000",
+                "on-tertiary-container": "#85819b",
+                "surface-dim": "#dcd9dc",
+                "outline-variant": "#c6c6ce",
+                "on-tertiary-fixed-variant": "#47445c",
+                "tertiary-fixed-dim": "#c8c3e0",
+                "on-surface-variant": "#45464d",
+                "on-primary-fixed": "#131a33",
+                "primary-fixed-dim": "#bec5e5",
+                "tertiary-fixed": "#e5dffd",
+                "surface-tint": "#565d79",
+                "on-tertiary": "#ffffff",
+                "secondary-fixed-dim": "#44dcca",
+                "primary-fixed": "#dbe1ff",
+                "surface-container-highest": "#e4e2e4",
+                "on-background": "#1b1b1d",
+                "on-secondary-fixed-variant": "#005048",
+                "error": "#ba1a1a",
+                "background": "#fcf8fb",
+                "secondary": "#006a60",
+                "surface-bright": "#fcf8fb",
+                "on-primary": "#ffffff",
+                "outline": "#76767e",
+                "secondary-fixed": "#68f9e6",
+                "on-surface": "#1b1b1d",
+                "surface-container": "#f0edef",
+                "on-error": "#ffffff",
+                "on-secondary-fixed": "#00201c",
+                "surface": "#fcf8fb",
+                "primary-container": "#131a33",
+                "inverse-surface": "#303032",
+                "inverse-on-surface": "#f3f0f2",
+                "surface-container-high": "#eae7ea",
+                "on-secondary": "#ffffff",
+                "tertiary-container": "#1b192e",
+                "on-tertiary-fixed": "#1b192e",
+                "secondary-container": "#64f6e3",
+                "surface-variant": "#e4e2e4"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "stack-sm": "8px",
+                "stack-lg": "32px",
+                "gutter": "24px",
+                "stack-md": "16px",
+                "container-max": "1280px",
+                "margin-mobile": "20px",
+                "margin-desktop": "40px"
+        },
+        "fontFamily": {
+                "label-sm": [
+                        "Outfit"
+                ],
+                "label-md": [
+                        "Outfit"
+                ],
+                "body-md": [
+                        "Outfit"
+                ],
+                "headline-xl-mobile": [
+                        "Outfit"
+                ],
+                "headline-md": [
+                        "Outfit"
+                ],
+                "headline-xl": [
+                        "Outfit"
+                ],
+                "headline-lg": [
+                        "Outfit"
+                ],
+                "body-lg": [
+                        "Outfit"
+                ]
+        },
+        "fontSize": {
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-xl-mobile": [
+                        "32px",
+                        {
+                                "lineHeight": "38px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-xl": [
+                        "40px",
+                        {
+                                "lineHeight": "48px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0px 4px 20px rgba(11, 19, 43, 0.04);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 20px rgba(100, 246, 227, 0.4);
+            transform: translateY(-4px);
+            transition: all 0.3s ease;
+        }
+        
+        /* Seamless Carousel Styles */
+        .carousel-container {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+        .carousel-track {
+            display: inline-flex;
+            animation: scroll-seamless 30s linear infinite;
+        }
+        .carousel-track:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scroll-seamless {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .carousel-item {
+            width: 300px;
+            height: 400px;
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .carousel-item:hover {
+            transform: translateY(-10px);
+            z-index: 10;
+        }
+
+        .magnetic-wrap {
+            perspective: 1000px;
+            display: inline-block;
+        }
+        .magnetic-inner {
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Staggered Text Reveal */
+        .reveal-text span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: reveal 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        @keyframes reveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Scroll Parallax */
+        .parallax-section {
+            transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        .parallax-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Button Ripple Effect */
+        .ripple-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopNavBar -->
+<nav class="bg-surface/80 dark:bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm fixed top-0 w-full z-50 transition-all duration-300">
+<div class="flex items-center justify-between px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[32px]" style="font-variation-settings: &quot;FILL&quot; 1;">dataset</span>
+<span class="font-headline-md text-headline-md font-bold text-primary-container">LinkShelf</span>
+</div>
+<div class="hidden md:flex items-center gap-gutter">
+<a class="font-label-md text-label-md text-primary dark:text-secondary-fixed-dim font-semibold border-b-2 border-primary pb-1 active:scale-95 transition-transform" href="#">Explore</a>
+
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors hover:opacity-80 duration-300 active:scale-95" href="#">Pricing</a>
+</div>
+<div>
+<a class="hidden md:inline-flex items-center justify-center px-6 py-2 bg-primary-container text-on-primary rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity active:scale-95" href="#">Get Started</a>
+<button class="md:hidden text-on-surface p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</nav>
+<main class="pt-24">
+<!-- Section 1: Hero -->
+<section class="relative min-h-[921px] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<!-- STITCH_THREEJS_START:ANIMATION_86 class="absolute inset-0 w-full h-full" -->
+<div class="absolute inset-0 w-full h-full" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_86" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_86');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  (function() {
+    const container = document.getElementById('threejs-container-ANIMATION_N');
+    const width = container.clientWidth || window.innerWidth;
+    const height = container.clientHeight || window.innerHeight;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    // Group for the floating cards to represent "Shelves"
+    const group = new THREE.Group();
+    scene.add(group);
+
+    const geometry = new THREE.BoxGeometry(3.5, 4.5, 0.1);
+    
+    // Mock image textures using high-end colors from the palette
+    const colors = [0x00BFAE, 0x0B132B, 0xFF7A00]; // Teal, Navy, Orange
+    
+    for(let i = 0; i < 3; i++) {
+        const material = new THREE.MeshPhongMaterial({ 
+            color: colors[i % colors.length], 
+            transparent: true, 
+            opacity: 0.9,
+            shininess: 100 
+        });
+        const card = new THREE.Mesh(geometry, material);
+        card.position.set(i * 1.8 - 1.8, i * 0.6 - 0.6, -i * 1.0);
+        card.rotation.y = -0.3;
+        card.rotation.z = i * 0.1 - 0.1;
+        group.add(card);
+    }
+
+    const light = new THREE.DirectionalLight(0xffffff, 1.2);
+    light.position.set(5, 5, 10);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0x404040, 0.8));
+
+    camera.position.z = 10;
+
+    const mouse = new THREE.Vector2();
+    window.addEventListener('mousemove', (event) => {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    });
+
+    function animate() {
+        requestAnimationFrame(animate);
+        
+        // Advanced Magnetic Tilt Logic
+        group.rotation.y += (mouse.x * 0.25 - group.rotation.y) * 0.05;
+        group.rotation.x += (-mouse.y * 0.25 - group.rotation.x) * 0.05;
+        
+        // Smooth floating motion
+        const time = Date.now() * 0.001;
+        group.position.y = Math.sin(time * 0.8) * 0.15;
+        group.children.forEach((card, i) => {
+            card.position.y += Math.cos(time + i) * 0.02;
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+        const w = container.clientWidth || window.innerWidth;
+        const h = container.clientHeight || window.innerHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    });
+
+    animate();
+})();
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_86 -->
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-background/90"></div>
+</div>
+<div class="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col lg:flex-row items-center gap-stack-lg">
+<div class="w-full lg:w-1/2 flex flex-col gap-stack-md text-center lg:text-left pt-12 lg:pt-0">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-low border border-outline-variant/50 rounded-full w-fit mx-auto lg:mx-0">
+<span class="material-symbols-outlined text-secondary text-sm">rocket_launch</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">The new standard for creators</span>
+</div>
+<h1 class="font-headline-xl-mobile text-headline-xl-mobile md:font-headline-xl md:text-headline-xl text-primary-container reveal-text" id="hero-headline">
+                        <span class="">Stop</span> <span class="">Killing</span> <span class="">Your</span> <span class="">Conversions</span> <span class="">with</span> <span class="text-secondary"><span class="">Trashy</span> <span class="">Text</span> <span class="">Links!</span></span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto lg:mx-0">
+                        Turn dead URLs into stunning, high-converting visual showcases in seconds. Build a premium aesthetic space tailored for your gear and your audience.
+                    </p>
+<div class="flex flex-col sm:flex-row items-center gap-4 mt-4 justify-center lg:justify-start">
+<div class="magnetic-wrap" id="cta-magnetic">
+<button class="magnetic-inner w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#00BFAE] to-[#006a60] text-white rounded-xl font-label-md text-label-md font-bold shadow-[0_0_15px_rgba(0,191,174,0.5)] hover:shadow-[0_0_25px_rgba(0,191,174,0.7)] transition-all duration-300" style="transform: translate(0px, 0px);">
+                                Start Your Shelf
+                            </button>
+</div>
+<button class="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-primary-container text-primary-container rounded-xl font-label-md text-label-md font-bold hover:bg-primary-container hover:text-white transition-all duration-300 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">play_circle</span>
+                            View Demo
+                        </button>
+</div>
+</div>
+<div class="w-full lg:w-1/2 h-[500px] lg:h-[600px] relative">
+<!-- STITCH_SHADER_START:ANIMATION_87 class="absolute inset-0 w-full h-full" -->
+<div class="absolute inset-0 w-full h-full" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_87" style="display:block;width:100%;height:100%" width="584" height="600"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_87');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+varying vec2 v_texCoord;
+
+void main() {
+    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+    
+    // Vibrant Lumina Aurora Palette
+    vec3 color1 = vec3(0.0, 0.749, 0.682); // Brand Teal #00BFAE
+    vec3 color2 = vec3(0.85, 0.95, 1.0);    // Light Blue/Cyan
+    vec3 color3 = vec3(0.988, 0.973, 0.984); // Surface #fcf8fb
+    
+    float noise = sin(uv.x * 2.0 + u_time * 0.4) * cos(uv.y * 1.5 - u_time * 0.2);
+    noise += sin(uv.y * 3.0 + u_time * 0.15) * 0.5;
+    
+    vec3 finalColor = mix(color3, color2, clamp(noise * 0.4 + 0.3, 0.0, 1.0));
+    finalColor = mix(finalColor, color1, clamp(uv.x * 0.5 + uv.y * 0.5 - 0.7, 0.0, 1.0) * 0.2);
+    
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_87 -->
+</div>
+</div>
+</section>
+<!-- Section 2: Features -->
+<section class="py-24 bg-surface-container-lowest relative z-10">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-primary-container mb-4">Pure Layout Bliss</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">Everything you need to build the perfect showcase, powered by intelligent automation.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col gap-4 glow-hover group cursor-pointer relative overflow-hidden">
+<div class="w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-[28px]">auto_awesome</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary-container text-[20px]">Instant AI Collection</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm flex-grow">Stop manual pasting. Input any product link, and our AI instantly pulls high-res imagery, live pricing, and luxury details to auto-build cards.</p>
+</div>
+<!-- Card 2 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col gap-4 glow-hover group cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-[28px]">dashboard_customize</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary-container text-[20px]">Pure Layout Bliss</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm flex-grow">Arrange into thematic visual shelves by Desk Setup, Camera Gear, or OOTD. Perfectly satisfies your inner aesthetic perfectionist.</p>
+</div>
+<!-- Card 3 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col gap-4 glow-hover group cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary-container group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-[28px]">devices</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary-container text-[20px]">Seamless Omnichannel</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm flex-grow">One tap to distribute. Perfectly optimized for mobile, tablet, and desktop to guarantee an uncompromised user experience everywhere.</p>
+</div>
+<!-- Card 4 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col gap-4 glow-hover group cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-error-container/50 flex items-center justify-center text-on-error-container group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-[28px]">payments</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary-container text-[20px]">Monetize Effortlessly</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm flex-grow">Turn every single touchpoint into hard cash. Seamlessly integrate your affiliate tracking for pure, automated revenue on every click.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Parallax Features -->
+<section class="py-24 bg-surface relative overflow-hidden">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col gap-32">
+<!-- Row 1 -->
+<div class="flex flex-col md:flex-row items-center gap-12 lg:gap-24 parallax-section is-visible">
+<div class="w-full md:w-1/2 flex flex-col gap-6 order-2 md:order-1">
+<h2 class="font-headline-lg text-headline-lg text-primary-container">Turn Clicks into Affiliate Revenue.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Stop leaving money on the table. With interactive image hotspots mapping directly to your gear list, fans buy instantly—driving trust and skyrocketing click-through rates by 300%.</p>
+</div>
+<div class="w-full md:w-1/2 order-1 md:order-2 h-80 rounded-2xl overflow-hidden shadow-lg relative group">
+<div class="absolute inset-0 bg-gradient-to-tr from-secondary-container to-primary-fixed opacity-20 group-hover:opacity-40 transition-opacity"></div>
+<img class="w-full h-full object-cover" data-alt="A clean, modern dashboard interface showing interactive image hotspots on a premium camera setup." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABGg01-XzRTsmO7SRwczbmp6Rdcr26_X573iFrqDtLIrNb3K14EzEzTYi_14tbg7iLnlRJOUROEStVXIvHiaQiInTb17nBxjdKlhjr613Y42-T1Tiqkemb4h46KFCQiIYwKCfYMz3KSbSl2lYfACujpD6pq7wSifYemRNFZqkX7GhO3IZVvU7WgZ1LXkJ-mqU_VuM8tJfdi1EuBKHeCjQT3z8uZR_FA3X3uMp1YKMRpNCCceVF8fjh06EFMt2cHWM4Jd81ro0hp-8">
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex flex-col md:flex-row items-center gap-12 lg:gap-24 parallax-section is-visible">
+<div class="w-full md:w-1/2 h-80 rounded-2xl overflow-hidden shadow-lg relative group">
+<div class="absolute inset-0 bg-gradient-to-tr from-tertiary-fixed to-surface-variant opacity-20 group-hover:opacity-40 transition-opacity"></div>
+<img class="w-full h-full object-cover" data-alt="A sleek multi-device mockup showing a unified dashboard syncing a single product link across screens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIMtL43netm0sCMDy6JJ5gPtNKO8INV4CS5DOMEeRSf6m1-Blrn2Z3T615TW4tQNDE3sg92fQelutkeGdGXa6jilvdB9aGLs1bXGT4392q7483zO1vjQzbyBliObqX_El3Jhs2npN52Rp213BN9Xn7Xj7ybtlkFa_RRtCPI_R3TfHurgURihGRfRfhK-8QYnuepRFR0hcem_Hx3_BFNrCniEiR0xRqyc2AD0WJ6MA75LyED3D1Cpbvss4_CkBLMXcE2rMzSEV-DaA">
+</div>
+<div class="w-full md:w-1/2 flex flex-col gap-6">
+<h2 class="font-headline-lg text-headline-lg text-primary-container">Stop Wasting Time on Multiple Platforms.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Stop wasting your life updating dead links. Edit a product link in your unified dashboard, and it instantly syncs across YouTube, Instagram, X, and TikTok.</p>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex flex-col md:flex-row items-center gap-12 lg:gap-24 parallax-section is-visible">
+<div class="w-full md:w-1/2 flex flex-col gap-6 order-2 md:order-1">
+<h2 class="font-headline-lg text-headline-lg text-primary-container">Never Compromise Your Aesthetics.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Your brand deserves better than a generic list. Customize colors, layouts, and typography to perfectly match your visual identity and keep your audience immersed.</p>
+</div>
+<div class="w-full md:w-1/2 order-1 md:order-2 h-80 rounded-2xl overflow-hidden shadow-lg relative group bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl text-primary-container/30">palette</span>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="flex flex-col md:flex-row items-center gap-12 lg:gap-24 parallax-section is-visible">
+<div class="w-full md:w-1/2 h-80 rounded-2xl overflow-hidden shadow-lg relative group bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl text-primary-container/30">campaign</span>
+</div>
+<div class="w-full md:w-1/2 flex flex-col gap-6">
+<h2 class="font-headline-lg text-headline-lg text-primary-container">Let Your Fans Do the Marketing.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Enable easy sharing and watch your shelves go viral. Built-in social sharing tools make it effortless for your audience to spread the word about their favorite gear.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Seamless Showcase Wall -->
+<section class="py-24 bg-surface-container-lowest overflow-hidden">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-12 text-center">
+<h2 class="font-headline-lg text-headline-lg text-primary-container">Built for Top Creators</h2>
+</div>
+<div class="carousel-container py-8 relative">
+<!-- Fade edges -->
+<div class="absolute top-0 bottom-0 left-0 w-32 bg-gradient-to-r from-surface-container-lowest to-transparent z-10 pointer-events-none"></div>
+<div class="absolute top-0 bottom-0 right-0 w-32 bg-gradient-to-l from-surface-container-lowest to-transparent z-10 pointer-events-none"></div>
+<div class="carousel-track">
+<!-- Set 1 -->
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2JGRNjdtUdJYE1jioJ4FEjQHunrTvQDwLqQaPfENWZKdslWlgYIllps7UMcutxVU_B0En3pchvOWSBlgcuGQCcPn279l6-yUo0KvP94vKBPNLU2nmukUsDSJkUa_DgC9Zwihv72UobkjUlRZ8DHJJEr2A3BM3ufS1XBjVDtQJn66s-Q1fEu-4PcbWWSZeTybf8Q-qdqns3kVmH5zA37Iiq4M2J_nBE3bIa6jXapWP4vDirz89V7B037FP9TMIG6_aumvuSoGOxGc">
+</div>
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHtDEGd2Bi_i5NPvcu-eujkYfDzsjUtRHCF2hwnPB5o28TQ9Dj_yTqY9i7i-8qSpAiG05HiSMxIHXgo8rkE4gK34sbNhBzMPF86APAsbIah-4ll-T4M_vGOXPaYQlSPwDp2C3UqS-PM45TRYhctWk4AVArbCFyEhUqwvJM9xUm0ICHCWvsKdku1bojtqjCm709YMW1J7ZUuO4twfk4V8md2FLYYFrxHV5PZaRyKAQPD-7Sf2SeGmbmdNGPRENcYWbeovFfqapiTbg">
+</div>
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 3" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD88AQBGMePK3hvU3OU2ih09jCORhIP0wxqYWNYS8oU64ojRP--MrLaR8hdUZTu0Gm-DUASJjEnow7URKpC6qYWHbeZYiTUzCEs3rSeKJ-5yL-Pe51K8olHoESAS7-DINz0Hsxn8KgI86TOXG4jnZRfidycgp0DTLbD2Ri6zAUxddw2bqCIz-GgRiTsoO0XKzZCiBp-qQiUpmFtvI3Lsxn7R5VNENJfZ1Fy0LR3RsjrTISjZQ3rrhxZqpYkX5AXy7G6ok5B-COymoM">
+</div>
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvzI6IFS5uh-TgJxfMHqQSN6zYsRpjid9xTPMuZM4gL21TO-1JT4uKsJ_IN4vNTz2djcxsRLCrfDd52V_ZTHYqt4aTF7ko9sfTwcIHAuvj5kyO2on-W5U3CYkW4DC3_KF0ceD6mtCRuaXNxuIgDBPT132eOsfEKfxo6EsgqNCDQQU7liI7wISmf18yOQhYmYvCaB6irq78Z8RojCqQBENZgksOhsvu9xpvrfWmyV0PieqSgTe8xhtcIFqlZwtMlv1BqB7tdh2h6vE">
+</div>
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHtDEGd2Bi_i5NPvcu-eujkYfDzsjUtRHCF2hwnPB5o28TQ9Dj_yTqY9i7i-8qSpAiG05HiSMxIHXgo8rkE4gK34sbNhBzMPF86APAsbIah-4ll-T4M_vGOXPaYQlSPwDp2C3UqS-PM45TRYhctWk4AVArbCFyEhUqwvJM9xUm0ICHCWvsKdku1bojtqjCm709YMW1J7ZUuO4twfk4V8md2FLYYFrxHV5PZaRyKAQPD-7Sf2SeGmbmdNGPRENcYWbeovFfqapiTbg">
+</div>
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD88AQBGMePK3hvU3OU2ih09jCORhIP0wxqYWNYS8oU64ojRP--MrLaR8hdUZTu0Gm-DUASJjEnow7URKpC6qYWHbeZYiTUzCEs3rSeKJ-5yL-Pe51K8olHoESAS7-DINz0Hsxn8KgI86TOXG4jnZRfidycgp0DTLbD2Ri6zAUxddw2bqCIz-GgRiTsoO0XKzZCiBp-qQiUpmFtvI3Lsxn7R5VNENJfZ1Fy0LR3RsjrTISjZQ3rrhxZqpYkX5AXy7G6ok5B-COymoM">
+</div>
+<!-- Set 2 (Duplicated for seamless loop) -->
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2JGRNjdtUdJYE1jioJ4FEjQHunrTvQDwLqQaPfENWZKdslWlgYIllps7UMcutxVU_B0En3pchvOWSBlgcuGQCcPn279l6-yUo0KvP94vKBPNLU2nmukUsDSJkUa_DgC9Zwihv72UobkjUlRZ8DHJJEr2A3BM3ufS1XBjVDtQJn66s-Q1fEu-4PcbWWSZeTybf8Q-qdqns3kVmH5zA37Iiq4M2J_nBE3bIa6jXapWP4vDirz89V7B037FP9TMIG6_aumvuSoGOxGc">
+</div>
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHtDEGd2Bi_i5NPvcu-eujkYfDzsjUtRHCF2hwnPB5o28TQ9Dj_yTqY9i7i-8qSpAiG05HiSMxIHXgo8rkE4gK34sbNhBzMPF86APAsbIah-4ll-T4M_vGOXPaYQlSPwDp2C3UqS-PM45TRYhctWk4AVArbCFyEhUqwvJM9xUm0ICHCWvsKdku1bojtqjCm709YMW1J7ZUuO4twfk4V8md2FLYYFrxHV5PZaRyKAQPD-7Sf2SeGmbmdNGPRENcYWbeovFfqapiTbg">
+</div>
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 3" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD88AQBGMePK3hvU3OU2ih09jCORhIP0wxqYWNYS8oU64ojRP--MrLaR8hdUZTu0Gm-DUASJjEnow7URKpC6qYWHbeZYiTUzCEs3rSeKJ-5yL-Pe51K8olHoESAS7-DINz0Hsxn8KgI86TOXG4jnZRfidycgp0DTLbD2Ri6zAUxddw2bqCIz-GgRiTsoO0XKzZCiBp-qQiUpmFtvI3Lsxn7R5VNENJfZ1Fy0LR3RsjrTISjZQ3rrhxZqpYkX5AXy7G6ok5B-COymoM">
+</div>
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvzI6IFS5uh-TgJxfMHqQSN6zYsRpjid9xTPMuZM4gL21TO-1JT4uKsJ_IN4vNTz2djcxsRLCrfDd52V_ZTHYqt4aTF7ko9sfTwcIHAuvj5kyO2on-W5U3CYkW4DC3_KF0ceD6mtCRuaXNxuIgDBPT132eOsfEKfxo6EsgqNCDQQU7liI7wISmf18yOQhYmYvCaB6irq78Z8RojCqQBENZgksOhsvu9xpvrfWmyV0PieqSgTe8xhtcIFqlZwtMlv1BqB7tdh2h6vE">
+</div>
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHtDEGd2Bi_i5NPvcu-eujkYfDzsjUtRHCF2hwnPB5o28TQ9Dj_yTqY9i7i-8qSpAiG05HiSMxIHXgo8rkE4gK34sbNhBzMPF86APAsbIah-4ll-T4M_vGOXPaYQlSPwDp2C3UqS-PM45TRYhctWk4AVArbCFyEhUqwvJM9xUm0ICHCWvsKdku1bojtqjCm709YMW1J7ZUuO4twfk4V8md2FLYYFrxHV5PZaRyKAQPD-7Sf2SeGmbmdNGPRENcYWbeovFfqapiTbg">
+</div>
+<div class="carousel-item relative group cursor-pointer border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="Creator profile 6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD88AQBGMePK3hvU3OU2ih09jCORhIP0wxqYWNYS8oU64ojRP--MrLaR8hdUZTu0Gm-DUASJjEnow7URKpC6qYWHbeZYiTUzCEs3rSeKJ-5yL-Pe51K8olHoESAS7-DINz0Hsxn8KgI86TOXG4jnZRfidycgp0DTLbD2Ri6zAUxddw2bqCIz-GgRiTsoO0XKzZCiBp-qQiUpmFtvI3Lsxn7R5VNENJfZ1Fy0LR3RsjrTISjZQ3rrhxZqpYkX5AXy7G6ok5B-COymoM">
+</div>
+</div>
+</div>
+</section>
+<!-- Section 5: Footer CTA -->
+<section class="relative py-32 overflow-hidden bg-gradient-to-b from-[#0B132B] to-black text-white">
+<div class="relative z-10 max-w-3xl mx-auto px-margin-mobile text-center flex flex-col gap-8 items-center">
+<h2 class="font-headline-xl text-headline-xl">Are you still wasting your hard-earned traffic?</h2>
+<p class="font-body-lg text-body-lg text-gray-300">Turn your link-in-bio into a 24/7 automated monetization engine in just 60 seconds.</p>
+<button class="ripple-btn mt-4 px-10 py-5 bg-[#00e5ff] text-[#0B132B] rounded-full font-label-md text-label-md font-bold text-lg shadow-[0_0_20px_rgba(0,229,255,0.6)] hover:shadow-[0_0_40px_rgba(0,229,255,1)] hover:bg-[#b3fbff] transition-all duration-300 relative overflow-hidden group">
+<span class="relative z-10 flex items-center gap-2">
+                        Claim Your Visual Shelf Now
+                        <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-background dark:bg-background border-t border-outline-variant/20 w-full transition-all ease-in-out">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop py-12 max-w-container-max mx-auto gap-stack-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: &quot;FILL&quot; 1;">dataset</span>
+<span class="font-headline-md text-headline-md font-bold text-on-surface">LinkShelf</span>
+</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Cookie Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Contact</a>
+</div>
+<div class="font-label-md text-label-md text-on-surface-variant text-sm">
+                © 2024 LinkShelf Inc. All rights reserved.
+            </div>
+</div>
+</footer>
+<script>
+        // Staggered text reveal
+        document.addEventListener('DOMContentLoaded', () => {
+            const headline = document.getElementById('hero-headline');
+            if (headline) {
+                const words = headline.innerHTML.split(/(\s+|<[^>]+>)/).filter(w => w.trim().length > 0 && !w.startsWith('<'));
+                let newHTML = headline.innerHTML;
+                let delay = 0;
+                words.forEach(word => {
+                   newHTML = newHTML.replace(word, `<span style="animation-delay: ${delay}s">${word}</span>`);
+                   delay += 0.1;
+                });
+                headline.innerHTML = newHTML;
+            }
+
+            // Magnetic Button
+            const magneticWraps = document.querySelectorAll('.magnetic-wrap');
+            magneticWraps.forEach(wrap => {
+                const inner = wrap.querySelector('.magnetic-inner');
+                if(wrap && inner) {
+                    wrap.addEventListener('mousemove', (e) => {
+                        const rect = wrap.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        
+                        const moveX = (x - centerX) * 0.2;
+                        const moveY = (y - centerY) * 0.2;
+                        
+                        inner.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                    });
+                    
+                    wrap.addEventListener('mouseleave', () => {
+                        inner.style.transform = `translate(0px, 0px)`;
+                    });
+                }
+            });
+
+            // Scroll Parallax
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.parallax-section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Button Ripple
+            const buttons = document.querySelectorAll('.ripple-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    let x = e.clientX - e.target.offsetLeft;
+                    let y = e.clientY - e.target.offsetTop;
+                    let ripples = document.createElement('span');
+                    ripples.style.left = x + 'px';
+                    ripples.style.top = y + 'px';
+                    ripples.classList.add('ripple');
+                    this.appendChild(ripples);
+                    setTimeout(() => {
+                        ripples.remove();
+                    }, 600);
+                });
+            });
+        });
+    </script>
+
+
+</body></html>

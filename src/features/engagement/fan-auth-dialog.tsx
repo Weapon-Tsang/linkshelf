@@ -1,5 +1,6 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import { GoogleLoginButton } from "@/features/auth/google-login-button";
 import { safeReturnTo } from "@/features/auth/guards";
 
@@ -25,7 +26,7 @@ export function FanAuthDialog({
 }) {
   if (!open) return null;
 
-  return (
+  const dialog = (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#efe9ef]/75 px-5 backdrop-blur-xl">
       <section
         aria-labelledby="fan-auth-title"
@@ -84,4 +85,6 @@ export function FanAuthDialog({
       </section>
     </div>
   );
+
+  return typeof document === "undefined" ? dialog : createPortal(dialog, document.body);
 }

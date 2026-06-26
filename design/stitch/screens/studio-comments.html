@@ -1,0 +1,320 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>LinkShelf Studio - Comments</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-bright": "#fcf8fb",
+                        "on-tertiary-fixed": "#1b192e",
+                        "on-surface": "#1b1b1d",
+                        "on-secondary-fixed": "#00201c",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#e5dffd",
+                        "on-tertiary-container": "#85819b",
+                        "tertiary-fixed-dim": "#c8c3e0",
+                        "surface": "#fcf8fb",
+                        "on-primary-fixed": "#131a33",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#47445c",
+                        "surface-container-high": "#eae7ea",
+                        "primary": "#000000",
+                        "primary-container": "#131a33",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#303032",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#565d79",
+                        "secondary-fixed": "#68f9e6",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#006a60",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f6f3f5",
+                        "on-surface-variant": "#45464d",
+                        "on-secondary-fixed-variant": "#005048",
+                        "tertiary": "#000000",
+                        "secondary-container": "#64f6e3",
+                        "on-secondary-container": "#006f65",
+                        "background": "#fcf8fb",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-fixed-variant": "#3e4660",
+                        "surface-variant": "#e4e2e4",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#bec5e5",
+                        "surface-container": "#f0edef",
+                        "inverse-primary": "#bec5e5",
+                        "surface-container-highest": "#e4e2e4",
+                        "secondary-fixed-dim": "#44dcca",
+                        "outline-variant": "#c6c6ce",
+                        "on-primary-container": "#7b83a0",
+                        "tertiary-container": "#1b192e",
+                        "outline": "#76767e",
+                        "on-background": "#1b1b1d",
+                        "surface-dim": "#dcd9dc",
+                        "on-primary": "#ffffff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "margin-desktop": "40px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "gutter": "24px"
+                    },
+                    fontFamily: {
+                        "label-sm": ["Outfit"],
+                        "headline-xl": ["Outfit"],
+                        "headline-md": ["Outfit"],
+                        "body-md": ["Outfit"],
+                        "body-lg": ["Outfit"],
+                        "label-md": ["Outfit"],
+                        "headline-xl-mobile": ["Outfit"],
+                        "headline-lg": ["Outfit"]
+                    },
+                    fontSize: {
+                        "label-sm": ["12px", { lineHeight: "16px", fontWeight: "600" }],
+                        "headline-xl": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "label-md": ["14px", { lineHeight: "20px", fontWeight: "500" }],
+                        "headline-xl-mobile": ["32px", { lineHeight: "38px", fontWeight: "700" }],
+                        "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #fcf8fb; /* background color from config */
+            color: #1b1b1d; /* on-background */
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen bg-background font-body-md text-on-background">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-64 flex flex-col bg-surface-container-lowest shadow-[0px_4px_20px_rgba(11,19,43,0.04)] z-50 hidden md:flex">
+<div class="h-full py-stack-lg flex flex-col justify-between px-4">
+<div>
+<!-- Brand Profile -->
+<div class="px-2 flex items-center space-x-3 mb-4">
+<div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center text-on-secondary shadow-sm">
+<span class="material-symbols-outlined">dataset</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-secondary">LinkShelf&nbsp;</h1>
+<p class="text-xs text-on-surface-variant">Creator Management</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-2"><ul class="flex flex-col space-y-2 flex-grow">
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="">Dashboard</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">shelves</span>
+<span class="">Shelves</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="">Analytics</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-xl shadow-sm active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="">Comments</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="">Settings</span>
+</a>
+</li>
+</ul></nav>
+</div>
+<div class="mt-auto px-2 pb-4">
+<div class="flex items-center space-x-3 p-2 hover:bg-surface-container-high rounded-xl cursor-pointer transition-colors">
+<img alt="User Profile" class="w-10 h-10 rounded-full object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuIamWJrFJXXPLeyA9kei-DXwR3nJLJGROhxD1Dsu3HcUsmVvZirKrAygH84MBTCHAn9I8NEbeMgT2HklCg-kWL7mgBcmXKTmFjZzYl0mLTyUjEcZy8S0UhBWMA0DdUz3_mfX5mtlq8ZwCx0l6w6TvB3yOL-xZt_yL3sQUx3-kSwlkAn4M2e55WyGP9aTsvRtBHS32ZmqPsd9ELBWiw3YDy_A3knCoufdqViJNuQcqkAa5tW2eY-L5bg0ySD98jWuynro1j8CV0zc">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Alex River</span>
+<span class="text-xs text-on-surface-variant">Pro Plan</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-40 bg-background/80 backdrop-blur-md flex justify-between items-center px-margin-desktop py-stack-md">
+<div>
+
+<button class="md:hidden text-on-surface">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+
+</header>
+<!-- Comments Content -->
+<div class="p-gutter md:p-margin-desktop max-w-container-max mx-auto w-full flex-1">
+<div class="flex justify-between items-end mb-stack-lg">
+<div>
+<h2 class="font-headline-xl text-headline-xl text-on-surface mb-2">Recent Comments</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Manage interactions across your shelves.</p>
+</div>
+<div class="hidden sm:flex gap-2">
+<select class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-label-md text-label-md text-on-surface focus:border-secondary focus:ring-secondary shadow-[0px_4px_20px_rgba(11,19,43,0.04)]">
+<option>All Shelves</option>
+<option>Design Resources</option>
+<option>Tech Setup</option>
+</select>
+<select class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-label-md text-label-md text-on-surface focus:border-secondary focus:ring-secondary shadow-[0px_4px_20px_rgba(11,19,43,0.04)]">
+<option>Newest First</option>
+<option>Oldest First</option>
+<option>Unread</option>
+</select>
+</div>
+</div>
+<!-- Comments List -->
+<div class="flex flex-col gap-4">
+<!-- Comment Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0px_4px_20px_rgba(11,19,43,0.04)] hover:shadow-[0px_12px_32px_rgba(11,19,43,0.08)] transition-shadow duration-300 flex items-start gap-4 border border-transparent hover:border-surface-variant">
+<img class="w-12 h-12 rounded-full object-cover shrink-0" data-alt="Close up portrait of a young professional woman with short dark hair, smiling warmly. Soft, diffused lighting typical of a high-end natural light studio. Clean white background. Minimalist aesthetic, focusing on clarity and approachability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEKvbDdEvqnlWq7_Lk-JJ4MqzKkZiXTNJIL-3IOAKCQR_tgt2Rb85fq3pqcnD7sYJVcrojMpfrCZgyh5SzJavVFUDD4LvV3g4KLg7Rj-3C7Otp7ElLIfvYmjWwMaossfMRXCoYxRHdKZRtA8SgGzUXHyUjJyQze_uz4d18AThiSmTUPq9TdxrgATa7FnY1LzPW0-TV1EUtUKBdtDbTrwfUBE0LuGn5gACTOoZ1XluIe1fu8bv9rckt5ELMp19JsjviTO2DQKHYdO0">
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-md text-label-md font-bold text-primary truncate">Sarah Jenkins</span>
+<span class="font-label-sm text-label-sm text-on-primary-container whitespace-nowrap">2h ago</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm text-[10px] ml-2">Design Resources</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-3 line-clamp-2">This shelf layout is incredibly helpful! I've been looking for these specific Figma plugins for weeks. Thanks for curating this Alex.</p>
+</div>
+<div class="flex items-center gap-2 shrink-0 ml-4">
+<button aria-label="Reply" class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-full transition-colors flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<button aria-label="Pin" class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-full transition-colors flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<button aria-label="Delete" class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-full transition-colors flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- Comment Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0px_4px_20px_rgba(11,19,43,0.04)] hover:shadow-[0px_12px_32px_rgba(11,19,43,0.08)] transition-shadow duration-300 flex items-start gap-4 border border-transparent hover:border-surface-variant">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="font-headline-md text-headline-md text-on-primary-fixed">M</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-md text-label-md font-bold text-primary truncate">Marcus Chen</span>
+<span class="font-label-sm text-label-sm text-on-primary-container whitespace-nowrap">5h ago</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm text-[10px] ml-2">Tech Setup</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-3 line-clamp-2">Is the mechanical keyboard you linked tactile or linear? The description on the store page is a bit ambiguous. Love the setup though!</p>
+<!-- Reply nested structure example -->
+<div class="mt-4 pl-4 border-l-2 border-outline-variant flex items-start gap-3">
+<img class="w-8 h-8 rounded-full object-cover shrink-0" data-alt="A modern, vibrant abstract 3D logo featuring an interconnected shelf structure rendered in glossy white and energetic teal accents, set against a pristine white background. High end studio lighting with soft shadows. Smooth and sleek design perfect for a premium SaaS application avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDT8t8qjqC9JoUKWdddxMy_n9-m-WXALZWw_AnEG4JfQmB2sA-_AJJjjxStlF872KAznCITkGZwfvRidP2lMyGqeLRVndb5sfo8ZEsINjDPp9sA_3LF5t-1GbethDMJF5Tt6TA_3ffBIjmmIRcTgc9tHfdlhblPczhVWWVZVmJNHzMxPvqNcCEoYJ_VO9Ggjyknh3S4L0Tv4V-k00YdVaoPMbAZodVuMQAqgdaZkS4_evU4miIQ9Bh9g6_NItE1SnaOWOe2guH0ucM">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md font-bold text-primary">Alex Rivera (Creator)</span>
+<span class="font-label-sm text-label-sm text-on-primary-container">1h ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-1">Hey Marcus! They are tactile (Boba U4Ts). Highly recommend them if you do a lot of typing.</p>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 ml-4">
+<button aria-label="Reply" class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-full transition-colors flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<button aria-label="Pin" class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-full transition-colors flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<button aria-label="Delete" class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-full transition-colors flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- Comment Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0px_4px_20px_rgba(11,19,43,0.04)] hover:shadow-[0px_12px_32px_rgba(11,19,43,0.08)] transition-shadow duration-300 flex items-start gap-4 border border-transparent hover:border-surface-variant">
+<img class="w-12 h-12 rounded-full object-cover shrink-0" data-alt="Portrait of a young man with stylish glasses and a beanie, looking creative and engaged. Soft studio lighting on a pure white background. Minimalist and vibrant aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9931zTu_718xRMUVXQMki1hfa2a2KQMUusSHNazCzGBQN74AvqATd7CidNV7qKYjYOzb2EsPSmcMsBn5twwhdEVrKGN_QZBnlcoubQXt-xkaJUKyU-cPXqOIctf6nBt488rNDODAJoRANGwcXXSydZNKfBbC2oV5KwBj28ck8JqBEp1crh6G-zvXZS4ZG2Whk-HWlalrMgzZZXVG8kuMCLNwemqrxz0J--xqq8-1iEoUcZ4vDeWEGHCku4ciqNQWLXC6J2r58zDE">
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-md text-label-md font-bold text-primary truncate">Devon Lane</span>
+<span class="font-label-sm text-label-sm text-on-primary-container whitespace-nowrap">1d ago</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm text-[10px] ml-2">Design Resources</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-3 line-clamp-2">Any chance you could add some resources for Framer? Building out my portfolio and would love to see what tools you use for it.</p>
+</div>
+<div class="flex items-center gap-2 shrink-0 ml-4">
+<button aria-label="Reply" class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-full transition-colors flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<button aria-label="Pin" class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-full transition-colors flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<button aria-label="Delete" class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-full transition-colors flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+<!-- Load More -->
+<div class="mt-8 flex justify-center">
+<button class="px-6 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-low transition-colors duration-200 shadow-[0px_4px_20px_rgba(11,19,43,0.04)] bg-surface-container-lowest">
+                    Load More Comments
+                </button>
+</div>
+</div>
+</main>
+
+
+</body></html>

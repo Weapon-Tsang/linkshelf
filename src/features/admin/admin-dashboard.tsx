@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/cn";
 import type { AdminCreator, AdminWithdrawal, AdminDashboardData } from "./actions";
 
@@ -32,6 +32,7 @@ export function AdminDashboard({
   const [creatorQuery, setCreatorQuery] = useState("");
   const [threshold, setThreshold] = useState(String(thresholds.minimumWithdrawalCents / 100));
   const [csvReady, setCsvReady] = useState(false);
+  const [isInteractive, setIsInteractive] = useState(false);
   const filteredCreators = useMemo(() => {
     const query = creatorQuery.trim().toLowerCase();
     if (!query) return creators;
@@ -39,8 +40,13 @@ export function AdminDashboard({
       (creator) =>
         creator.handle.toLowerCase().includes(query) ||
         creator.displayName.toLowerCase().includes(query),
-    );
+      );
   }, [creators, creatorQuery]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => setIsInteractive(true), 0);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   return (
     <div>
@@ -58,8 +64,10 @@ export function AdminDashboard({
           </p>
         </div>
         <button
-          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--teal-700)] px-6 text-sm font-bold text-white"
+          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--teal-700)] px-6 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={!isInteractive}
           onClick={() => {
+            if (!isInteractive) return;
             const exportedCsv = onExportCsv?.() ?? csv;
             void exportedCsv;
             setCsvReady(true);

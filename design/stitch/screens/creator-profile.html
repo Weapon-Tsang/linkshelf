@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Liam Roberts - LinkShelf</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#dcd9dc",
+                    "on-error-container": "#93000a",
+                    "on-surface-variant": "#45464d",
+                    "primary-fixed": "#dbe1ff",
+                    "outline": "#76767e",
+                    "inverse-on-surface": "#f3f0f2",
+                    "inverse-primary": "#bec5e5",
+                    "surface-variant": "#e4e2e4",
+                    "surface": "#fcf8fb",
+                    "on-secondary-container": "#006f65",
+                    "tertiary": "#000000",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#c8c3e0",
+                    "on-primary-container": "#7b83a0",
+                    "background": "#fcf8fb",
+                    "primary-fixed-dim": "#bec5e5",
+                    "on-surface": "#1b1b1d",
+                    "inverse-surface": "#303032",
+                    "secondary-container": "#64f6e3",
+                    "surface-container": "#f0edef",
+                    "on-secondary-fixed": "#00201c",
+                    "primary": "#000000",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#f6f3f5",
+                    "surface-container-high": "#eae7ea",
+                    "on-tertiary-fixed-variant": "#47445c",
+                    "on-background": "#1b1b1d",
+                    "secondary-fixed": "#68f9e6",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary": "#006a60",
+                    "on-secondary-fixed-variant": "#005048",
+                    "on-primary-fixed": "#131a33",
+                    "primary-container": "#131a33",
+                    "tertiary-fixed": "#e5dffd",
+                    "on-tertiary-fixed": "#1b192e",
+                    "on-primary-fixed-variant": "#3e4660",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#1b192e",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#44dcca",
+                    "surface-container-highest": "#e4e2e4",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#fcf8fb",
+                    "on-tertiary-container": "#85819b",
+                    "outline-variant": "#c6c6ce",
+                    "surface-tint": "#565d79"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "gutter": "24px",
+                    "stack-lg": "32px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "40px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "label-md": ["Outfit"],
+                    "headline-xl": ["Outfit"],
+                    "headline-lg": ["Outfit"],
+                    "body-lg": ["Outfit"],
+                    "body-md": ["Outfit"],
+                    "headline-xl-mobile": ["Outfit"],
+                    "headline-md": ["Outfit"],
+                    "label-sm": ["Outfit"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-xl-mobile": ["32px", {"lineHeight": "38px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 50%, #f0fdf4 100%);
+            background-attachment: fixed;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(0, 191, 174, 0.05);
+        }
+        .glass-card:hover {
+            box-shadow: 0 12px 40px 0 rgba(0, 191, 174, 0.15);
+            border-color: rgba(100, 246, 227, 0.5);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @media (prefers-reduced-motion: no-preference) {
+            .animate-fade-up {
+                animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            @keyframes fadeUp {
+                to { opacity: 1; transform: translateY(0); }
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-md border-b border-outline-variant/30">
+<div class="flex justify-between items-center h-[72px] px-gutter max-w-container-max mx-auto">
+<div class="flex items-center gap-stack-sm cursor-pointer transition-transform hover:scale-95 active:scale-90">
+<span class="material-symbols-outlined text-secondary text-[28px]" style="font-variation-settings: 'FILL' 1;">shelves</span>
+<span class="font-headline-md text-headline-md font-bold text-on-background">LinkShelf</span>
+</div>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="font-label-md text-label-md text-secondary border-b-2 border-secondary pb-1" href="#">Explore</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Features</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Pricing</a>
+</nav>
+<div class="flex items-center gap-stack-md">
+<a class="hidden md:block font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Log In</a>
+<button class="bg-secondary text-on-secondary px-gutter py-[10px] rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity">Get Started</button>
+</div>
+</div>
+</header>
+<main class="pt-[96px] px-stack-md md:px-gutter max-w-[900px] mx-auto pb-margin-desktop">
+<!-- Profile Section -->
+<section class="relative animate-fade-up" style="animation-delay: 100ms;">
+<!-- Cover Image -->
+<div class="w-full aspect-[21/9] md:aspect-[3/1] rounded-2xl overflow-hidden shadow-lg">
+<img alt="Profile Cover" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAf8AcZsiFTBexC90V0RnnElBXCZAb_68Va1o3Jkn-K_9D-Reltc0984Fk62oCMa1iScrPSbunJd-OWi3pem1J-N86PvTxOATjNtAFHzQ8wJM6UowXAvoKHitU9HgnJpDi5Oi0ZElX3JH_b08mdFy-2kYvsr4NNsMt9LmvAJzq-NXAOdF2zfKhyMvgCma2jW7M3ahxPY3_ExRp6TF7NYywpebhFw0cQmFNhx1_lvuPm-VkU_BdaBryuYRR01AtIo1XBDY5ZAO0YzfU"/>
+</div>
+<!-- Interaction Buttons Floating Top Right -->
+<div class="absolute top-4 right-4 flex items-center gap-3">
+<div class="bg-secondary/10 backdrop-blur-md border border-secondary/20 px-4 py-1.5 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-secondary">monetization_on</span>
+<span class="text-label-sm text-secondary">Share to earn</span>
+</div>
+<button class="w-10 h-10 rounded-full bg-on-background flex items-center justify-center text-white hover:bg-on-background/80 transition-colors">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-on-background flex items-center justify-center text-white hover:bg-on-background/80 transition-colors">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+<!-- Avatar & Header Text -->
+<div class="relative px-6 -mt-12 md:-mt-16 flex flex-col md:flex-row md:items-end gap-6">
+<div class="relative">
+<div class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white overflow-hidden shadow-xl bg-white">
+<img alt="Liam Roberts Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLvvbbxp4lShDDkF8kPUTTc-9riZe43qCUvFG3AE9ikq3J2YOmo3CtrR-i4NGt0CTja0iX5vUlgnyL8ZRY3q0mrHfQwMVuWInAD7bDL9mC1uLyWgWsgBmj9sRAP7w-J1l2vZuHAWhl2IMrmkOYWJzv2j9jQlzjUZclz4sfFHIhsQeQ61wzy6gevJXNjisYIj8fbX6m3dPp1d2wvXIOG5RDTRg9vTu3t1hPPR_FfZpqgEePQr3Oajg87t_w"/>
+</div>
+</div>
+<div class="mb-2">
+<h1 class="font-headline-lg text-headline-lg text-on-background">Liam Roberts</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">@liamroberts.photo</p>
+</div>
+</div>
+</section>
+<!-- Information & Socials -->
+<section class="mt-8 px-6 animate-fade-up" style="animation-delay: 200ms;">
+<p class="font-body-lg text-body-lg text-on-surface max-w-2xl">Landscape &amp; travel photographer. I curate and share the professional gear and editing tools I trust in the field.</p>
+<div class="flex flex-wrap gap-3 mt-6">
+<a class="flex items-center gap-2 px-4 py-2 rounded-full glass-card text-on-surface-variant hover:text-secondary transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+<span class="text-label-md">Instagram</span>
+</a>
+<a class="flex items-center gap-2 px-4 py-2 rounded-full glass-card text-on-surface-variant hover:text-secondary transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">music_note</span>
+<span class="text-label-md">TikTok</span>
+</a>
+<a class="flex items-center gap-2 px-4 py-2 rounded-full glass-card text-on-surface-variant hover:text-secondary transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">smart_display</span>
+<span class="text-label-md">YouTube</span>
+</a>
+</div>
+</section>
+<!-- Shelves (Horizontal Categories) -->
+<section class="mt-12 animate-fade-up" style="animation-delay: 300ms;">
+<div class="flex items-center justify-between mb-stack-md px-1">
+<h2 class="font-headline-md text-headline-md text-on-background">Shelves</h2>
+<button class="text-label-md text-secondary hover:underline">View All</button>
+</div>
+<div class="flex gap-stack-md overflow-x-auto pb-4 no-scrollbar">
+<!-- Shelf Card 1 -->
+<div class="flex-shrink-0 w-[160px] group cursor-pointer shelf-trigger" data-title="Photography Kit">
+<div class="aspect-square rounded-2xl overflow-hidden glass-card p-1 transition-transform group-hover:scale-[1.02]">
+<img alt="Photography Kit" class="w-full h-full object-cover rounded-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCo__FkVCyBuKAwyzDsvu3zUmEbMwyP27csjao_FpKVRhQiTmM0e9cfb11wNLMJP1tKvEUKRD6J58ImULIP1L3sWJgY3D7oyRyPWpO-I9gNV1vCOTfHlxbFCB2oX3wFGaBPb_mhvcayrjGbiyTzulfi7jAwytGhbWcxi2hLWFZAgFjD6cpK_GwIiq7V_T7ddJtSD62lvRRvSuKO_GX_DitaQiKWG2THlBHaZGOq4BNPIGpobk8MS7gvBEX59MGazc55OBcJbpPf6vQ"/>
+</div>
+<p class="font-label-md text-label-md text-on-surface mt-2 text-center group-hover:text-secondary transition-colors">Photography Kit</p>
+</div>
+<!-- Shelf Card 2 -->
+<div class="flex-shrink-0 w-[160px] group cursor-pointer shelf-trigger" data-title="Desk Setup">
+<div class="aspect-square rounded-2xl overflow-hidden glass-card p-1 transition-transform group-hover:scale-[1.02]">
+<img alt="Desk Setup" class="w-full h-full object-cover rounded-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBos8sNijSLsLTp37l3BNO9eXA3Fmet28h7vVHT4da9DK-3IHg-4IerkJkktiqkFN-0-cio-zLZ8JbSu5eDxFgYKv0BJnEannkf7_Zgo8X7cIJ55wByVWQ0mFUCxrNa92BOMwm843Yw-Sjl1oArJ182KsD2KhvGPkNb4gt51gtG276HJsvGYJCmwwFB83nyIOZfs-lv8vcJsWmfBImaTcCOJKz0LVBmTwwUFQ6cggmmAQpXxLzVpH8al15mXFrbhIeub3LObSvPdR4"/>
+</div>
+<p class="font-label-md text-label-md text-on-surface mt-2 text-center group-hover:text-secondary transition-colors">Desk Setup</p>
+</div>
+<!-- Shelf Card 3 -->
+<div class="flex-shrink-0 w-[160px] group cursor-pointer shelf-trigger" data-title="Travel Essentials">
+<div class="aspect-square rounded-2xl overflow-hidden glass-card p-1 transition-transform group-hover:scale-[1.02]">
+<img alt="Travel Essentials" class="w-full h-full object-cover rounded-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC93Qt-tOMYJ3xW0zBl7PEhIy7NhUplkPvFOs-QXay-wcha1u0nDevRe3nMHgG0SwfGEcTFOzp3HMC88OP6-5AwkL6gksoHvlOabfCnD7w18Fhcsysd9xCLO4S9IsRu4-XdMh1tpT9wxgzV9_2E3_Qog9ZzffY1UvbhqpiJpDm0QIE1VAcG3zh4cwlKjr4b5pygL_lyiDojRKQoRQHEnot5Yxe1FA0wQR24aO7Fr9w4MdBmcAiwFl9dLWgI8n7Qn0vu-33hBEP4g3A"/>
+</div>
+<p class="font-label-md text-label-md text-on-surface mt-2 text-center group-hover:text-secondary transition-colors">Travel Essentials</p>
+</div>
+</div>
+</section>
+<!-- Product List -->
+<section class="mt-12 flex flex-col gap-4">
+<div class="flex items-center gap-2 mb-stack-sm px-1">
+<span class="material-symbols-outlined text-secondary">star</span>
+<h2 class="font-headline-md text-headline-md text-on-background">Featured Gear</h2>
+</div>
+<!-- Item 1 -->
+<div class="glass-card rounded-2xl p-stack-md flex items-center gap-stack-md group cursor-pointer animate-fade-up" style="animation-delay: 400ms;">
+<div class="w-[88px] h-[88px] rounded-xl bg-white flex-shrink-0 flex items-center justify-center p-2 shadow-sm">
+<img class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAc5XZ8LdOv_rE1bWLTBa-Mk-sozDG7q3WsLc2d4h5l1DuFVbvzuFwvM5rMKKJiaipL41HX50dbB4MhZUseQDDx6kJXpuzWhbbdJ18-o9GWK0QSqVB5jPaWMyOkzdhM_T1CtnPV9AjFKI7ZHFT3Mtl7v4LYATGTAWKsAIxZk_PnGDeCEToRzvxSvuVyPCE08a7E_exHQ8a-NZ5uGAFamJAsAmtjW3ErZyEVjT6mSvNoCwZMnCQbrOTT5AaO__pBJxX81FyIE5jYWnk"/>
+</div>
+<div class="flex-grow">
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors">Sony a7 IV Mirrorless Camera</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1 font-normal">33MP full-frame camera with pro performance.</p>
+<div class="flex items-center gap-3 mt-2">
+<span class="font-label-md text-on-surface">$2,498.00</span>
+<span class="text-[10px] uppercase font-bold bg-secondary/10 text-secondary px-2 py-0.5 rounded">B&amp;H Photo</span>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+</div>
+<!-- Item 2 -->
+<div class="glass-card rounded-2xl p-stack-md flex items-center gap-stack-md group cursor-pointer animate-fade-up" style="animation-delay: 450ms;">
+<div class="w-[88px] h-[88px] rounded-xl bg-white flex-shrink-0 flex items-center justify-center p-2 shadow-sm">
+<img class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ2cRbcAB9YSsSVFVGvNM8_UOVSJFnAuDfhSLM58Ik6nK4jRxpn6UxGet_QwHKp8tqIWHrbFll1lKUXvEVmcCnz4E1m2DWHzUViBtwkcYozdT5JIiP1H_UCHJpydkRgt2QznvjYZGvmxcOcf1qsIQcjKkJWDaZnIPShbt8yDHwfhNlbh89EoCDjVL0CFd0of7I60Iv1ojuekuS5SIMdtAwLP1m3asoZDFpNaiUL234VrhCEcQN6HJ8zZAEiklXYWmPyPjbrJ_dims"/>
+</div>
+<div class="flex-grow">
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors">Sony FE 35mm f/1.4 GM Lens</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1 font-normal">Stunning sharpness and beautiful bokeh.</p>
+<div class="flex items-center gap-3 mt-2">
+<span class="font-label-md text-on-surface">$1,398.00</span>
+<span class="text-[10px] uppercase font-bold bg-secondary/10 text-secondary px-2 py-0.5 rounded">B&amp;H Photo</span>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+</div>
+<!-- Item 3 -->
+<div class="glass-card rounded-2xl p-stack-md flex items-center gap-stack-md group cursor-pointer animate-fade-up" style="animation-delay: 500ms;">
+<div class="w-[88px] h-[88px] rounded-xl bg-white flex-shrink-0 flex items-center justify-center p-2 shadow-sm">
+<img class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz7-aS8rhNEvRVqjJIkePdF66jC5yN7TAn9y65hwc8GxyAZNx9SfyW71OvMx-Fn4TY9w__5h-PEeGco0vmzeJn-swwCazZrYzqKBg5HSjavKTM5WZAIbGryVSa2wSjndYmTjgJyQdAOzHPeiy3rljPNn6yQ24ZhHAHv3J4R8mXq7K-MGGi6bklxyyJp8mUA7D4b2lIt_Bem4GwI0sBBQ_1VMCnkxEsIn1k_gbvzI7KiRgPO4sQ-__TxM2bHZPPHjb-p8iKn_28wdk"/>
+</div>
+<div class="flex-grow">
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors">Peak Design Travel Tripod</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1 font-normal">Compact, lightweight, and built to travel.</p>
+<div class="flex items-center gap-3 mt-2">
+<span class="font-label-md text-on-surface">$349.95</span>
+<span class="text-[10px] uppercase font-bold bg-secondary/10 text-secondary px-2 py-0.5 rounded">Peak Design</span>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-stack-lg bg-white border-t border-outline-variant/30 mt-12">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter max-w-container-max mx-auto gap-stack-md">
+<div class="flex items-center gap-stack-sm opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
+<span class="material-symbols-outlined text-on-background" style="font-variation-settings: 'FILL' 1;">shelves</span>
+<span class="font-headline-md text-headline-md text-on-background font-bold">LinkShelf</span>
+</div>
+<nav class="flex flex-wrap justify-center gap-gutter">
+<a class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:text-secondary underline" href="#">Privacy</a>
+<a class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:text-secondary underline" href="#">Terms</a>
+<a class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:text-secondary underline" href="#">Cookies</a>
+<a class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hover:text-secondary underline" href="#">Contact</a>
+</nav>
+<div class="font-label-sm text-label-sm text-on-surface-variant">
+                © 2024 LinkShelf Inc.
+            </div>
+</div>
+</footer>
+<!-- Shelf Detail Modal (Standard for LinkTree style) -->
+<div class="fixed inset-0 z-[100] hidden flex items-center justify-center p-stack-md md:p-gutter" id="shelf-modal">
+<div class="absolute inset-0 bg-on-background/60 backdrop-blur-sm" id="modal-backdrop"></div>
+<div class="relative w-full max-w-[700px] max-h-[85vh] glass-card bg-white/95 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-fade-up">
+<div class="p-gutter border-b border-outline-variant/30 flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-on-background" id="modal-title">Shelf Name</h2>
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-colors" id="close-modal">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-gutter overflow-y-auto flex flex-col gap-4" id="modal-content">
+<!-- Content injected via JS -->
+</div>
+</div>
+</div>
+<script>
+        const modal = document.getElementById('shelf-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        const closeBtn = document.getElementById('close-modal');
+        const backdrop = document.getElementById('modal-backdrop');
+
+        document.querySelectorAll('.shelf-trigger').forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const title = trigger.getAttribute('data-title');
+                modalTitle.innerText = title;
+                
+                // Clear and mock some items for the specific shelf
+                modalContent.innerHTML = `
+                    <div class="font-body-md text-on-surface-variant mb-2">My top picks for ${title}</div>
+                    ${document.querySelector('main > section:last-of-type').innerHTML}
+                `.replace(/Featured Gear/, ''); // Simple cleanup
+
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        const closeModal = () => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        };
+
+        closeBtn.addEventListener('click', closeModal);
+        backdrop.addEventListener('click', closeModal);
+    </script>
+</body></html>

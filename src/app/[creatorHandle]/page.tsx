@@ -11,20 +11,12 @@ import {
 } from "@/features/shelves/service";
 
 interface CreatorPageProps {
-  readonly params:
-    | Promise<{
-        readonly creatorHandle: string;
-      }>
-    | {
-        readonly creatorHandle: string;
-      };
-  readonly searchParams?:
-    | Promise<{
-        readonly resume?: string | string[];
-      }>
-    | {
-        readonly resume?: string | string[];
-      };
+  readonly params: Promise<{
+    readonly creatorHandle: string;
+  }>;
+  readonly searchParams?: Promise<{
+    readonly resume?: string | string[];
+  }>;
 }
 
 function creatorResumeReturnTo(

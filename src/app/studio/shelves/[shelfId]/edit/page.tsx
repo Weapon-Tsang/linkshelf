@@ -12,13 +12,9 @@ import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
 import { ShelfEditor } from "@/features/studio/shelf-editor";
 
 interface EditShelfPageProps {
-  readonly params:
-    | Promise<{
-        readonly shelfId: string;
-      }>
-    | {
-        readonly shelfId: string;
-      };
+  readonly params: Promise<{
+    readonly shelfId: string;
+  }>;
 }
 
 async function getStudioContext(returnTo: string) {
