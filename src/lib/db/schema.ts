@@ -550,4 +550,15 @@ export const schemaMigrations: readonly SchemaMigration[] = [
         ON products (shelf_id, deleted_at, sort_position);
     `,
   },
+  {
+    version: 5,
+    name: "admin_settings",
+    sql: `
+      CREATE TABLE admin_settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      ) STRICT;
+    `,
+  },
 ];

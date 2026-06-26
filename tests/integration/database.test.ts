@@ -76,8 +76,10 @@ describe("local database", () => {
       { version: 2, name: "enforce_data_invariants" },
       { version: 3, name: "soft_delete_users" },
       { version: 4, name: "soft_delete_products" },
+      { version: 5, name: "admin_settings" },
     ]);
     expect(tables).toEqual([
+      "admin_settings",
       "click_events",
       "comments",
       "creator_profiles",
