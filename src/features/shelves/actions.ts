@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import type { AuthSession } from "@/features/auth/adapter";
 import type { ShelfStatus } from "./types";
@@ -74,6 +75,82 @@ interface CountRow {
 
 export interface ShelfMutationOptions {
   readonly now?: () => Date;
+}
+
+export interface ShelfEditorProductInput {
+  readonly id?: string;
+  readonly destinationUrl?: string;
+  readonly title?: string;
+  readonly description?: string;
+  readonly merchant?: string;
+  readonly price?: number;
+  readonly imageUrl?: string;
+  readonly hotspotX?: number | null;
+  readonly hotspotY?: number | null;
+}
+
+export interface ShelfEditorInput {
+  readonly shelfId?: string;
+  readonly title?: string;
+  readonly slug?: string;
+  readonly description?: string;
+  readonly category?: string;
+  readonly theme?: string;
+  readonly sourceContentUrl?: string | null;
+  readonly coverUrl?: string | null;
+  readonly products?: readonly ShelfEditorProductInput[];
+}
+
+export interface ShelfEditorProduct {
+  readonly id: string;
+  readonly destinationUrl: string;
+  readonly title: string;
+  readonly description: string;
+  readonly merchant: string;
+  readonly price: number;
+  readonly imageUrl: string;
+  readonly hotspotX: number | null;
+  readonly hotspotY: number | null;
+  readonly sortPosition: number;
+}
+
+export interface ShelfEditorShelf {
+  readonly id: string;
+  readonly slug: string;
+  readonly title: string;
+  readonly description: string;
+  readonly category: string;
+  readonly status: ShelfStatus;
+  readonly theme: string;
+  readonly sourceContentUrl: string | null;
+  readonly coverUrl: string | null;
+  readonly products: readonly ShelfEditorProduct[];
+}
+
+export type ShelfEditorDataResult =
+  | {
+      readonly ok: true;
+      readonly shelf: ShelfEditorShelf;
+    }
+  | {
+      readonly ok: false;
+      readonly reason: ShelfManagementFailureReason;
+    };
+
+export type ShelfEditorMutationResult =
+  | {
+      readonly ok: true;
+      readonly shelfId: string;
+      readonly status: ShelfStatus;
+    }
+  | {
+      readonly ok: false;
+      readonly reason: ShelfManagementFailureReason | "VALIDATION_ERROR";
+      readonly errors?: Partial<Record<keyof ShelfEditorInput | "products", string>>;
+    };
+
+export interface ShelfEditorMutationOptions extends ShelfMutationOptions {
+  readonly createId?: (prefix: "shelf" | "product") => string;
 }
 
 function requireCreator(
@@ -262,4 +339,336 @@ export function softDeleteShelf(
     )
     .run(deletedAt, deletedAt, input.shelfId, creator.creator.id);
   return { ok: true };
+}
+
+interface ShelfEditorRow {
+  readonly id: string;
+  readonly slug: string;
+  readonly title: string;
+  readonly description: string;
+  readonly category: string;
+  readonly status: ShelfStatus;
+  readonly theme: string;
+  readonly sourceContentUrl: string | null;
+  readonly coverUrl: string | null;
+}
+
+interface ShelfEditorProductRow {
+  readonly id: string;
+  readonly destinationUrl: string;
+  readonly title: string;
+  readonly description: string;
+  readonly priceCents: number;
+  readonly merchant: string;
+  readonly imageUrl: string;
+  readonly hotspotX: number | null;
+  readonly hotspotY: number | null;
+  readonly sortPosition: number;
+}
+
+function normalizeText(value: string | undefined, fallback = ""): string {
+  const trimmed = value?.trim() ?? "";
+  return trimmed || fallback;
+}
+
+function slugify(value: string | undefined): string {
+  const slug = normalizeText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+  return slug || "untitled-shelf";
+}
+
+function isHttpUrl(value: string | undefined | null): value is string {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+function normalizeHotspot(value: number | null | undefined): number | null {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.max(0, Math.min(100, value))
+    : null;
+}
+
+function validProducts(
+  products: readonly ShelfEditorProductInput[] | undefined,
+): ShelfEditorProductInput[] {
+  return (products ?? []).filter(
+    (product) =>
+      isHttpUrl(product.destinationUrl) &&
+      isHttpUrl(product.imageUrl) &&
+      normalizeText(product.title) &&
+      normalizeText(product.merchant) &&
+      typeof product.price === "number" &&
+      Number.isFinite(product.price) &&
+      product.price > 0,
+  );
+}
+
+function validatePublishInput(input: ShelfEditorInput) {
+  const errors: Partial<Record<keyof ShelfEditorInput | "products", string>> = {};
+  if (!normalizeText(input.title)) errors.title = "Title is required to publish.";
+  if (!slugify(input.slug || input.title).match(/^[a-z0-9][a-z0-9-]{1,80}$/)) {
+    errors.slug = "Use a readable URL slug.";
+  }
+  if (!isHttpUrl(input.coverUrl)) errors.coverUrl = "Cover image is required to publish.";
+  if (validProducts(input.products).length === 0) {
+    errors.products = "Add at least one complete product before publishing.";
+  }
+  return errors;
+}
+
+function createEditorId(
+  prefix: "shelf" | "product",
+  options: ShelfEditorMutationOptions,
+): string {
+  return options.createId?.(prefix) ?? `${prefix}-${randomUUID()}`;
+}
+
+function shelfValues(
+  creatorId: string,
+  input: ShelfEditorInput,
+  status: ShelfStatus,
+  now: string,
+) {
+  const title = normalizeText(input.title, "Untitled Shelf");
+  return {
+    creatorId,
+    slug: slugify(input.slug || title),
+    title,
+    description: normalizeText(input.description, "A new LinkShelf collection."),
+    category: normalizeText(input.category, "General"),
+    status,
+    theme: normalizeText(input.theme, "tech"),
+    sourceContentUrl: isHttpUrl(input.sourceContentUrl) ? input.sourceContentUrl : null,
+    coverUrl: isHttpUrl(input.coverUrl) ? input.coverUrl : null,
+    updatedAt: now,
+  };
+}
+
+function upsertShelfAndProducts(
+  database: DatabaseSync,
+  input: ShelfEditorInput,
+  creatorId: string,
+  status: ShelfStatus,
+  options: ShelfEditorMutationOptions,
+): string {
+  const now = (options.now ?? (() => new Date()))().toISOString();
+  const shelfId = input.shelfId ?? createEditorId("shelf", options);
+  const values = shelfValues(creatorId, input, status, now);
+  const products = validProducts(input.products);
+
+  database.exec("BEGIN IMMEDIATE TRANSACTION");
+  try {
+    if (input.shelfId) {
+      database
+        .prepare(
+          `UPDATE shelves
+           SET slug = ?,
+               title = ?,
+               description = ?,
+               category = ?,
+               status = ?,
+               theme = ?,
+               source_content_url = ?,
+               cover_url = ?,
+               updated_at = ?
+           WHERE id = ?
+             AND creator_id = ?
+             AND deleted_at IS NULL`,
+        )
+        .run(
+          values.slug,
+          values.title,
+          values.description,
+          values.category,
+          values.status,
+          values.theme,
+          values.sourceContentUrl,
+          values.coverUrl,
+          values.updatedAt,
+          shelfId,
+          creatorId,
+        );
+    } else {
+      database
+        .prepare(
+          `INSERT INTO shelves
+             (id, creator_id, slug, title, description, category, status, theme,
+              source_content_url, cover_url, created_at, updated_at, deleted_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)`,
+        )
+        .run(
+          shelfId,
+          values.creatorId,
+          values.slug,
+          values.title,
+          values.description,
+          values.category,
+          values.status,
+          values.theme,
+          values.sourceContentUrl,
+          values.coverUrl,
+          now,
+          values.updatedAt,
+        );
+    }
+
+    database.prepare("DELETE FROM products WHERE shelf_id = ?").run(shelfId);
+    const insertProduct = database.prepare(
+      `INSERT INTO products
+         (id, shelf_id, title, description, price_cents, currency, merchant,
+          destination_url, image_url, sort_position, hotspot_x, hotspot_y,
+          created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, 'USD', ?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+    products.forEach((product, index) => {
+      insertProduct.run(
+        product.id || createEditorId("product", options),
+        shelfId,
+        normalizeText(product.title),
+        normalizeText(product.description, "Creator-recommended product."),
+        BigInt(Math.round((product.price ?? 0) * 100)),
+        normalizeText(product.merchant, "Amazon"),
+        normalizeText(product.destinationUrl),
+        normalizeText(product.imageUrl),
+        BigInt(index),
+        normalizeHotspot(product.hotspotX),
+        normalizeHotspot(product.hotspotY),
+        now,
+        now,
+      );
+    });
+
+    database.exec("COMMIT");
+  } catch (error) {
+    database.exec("ROLLBACK");
+    throw error;
+  }
+
+  return shelfId;
+}
+
+export function getShelfEditorData(
+  database: DatabaseSync,
+  shelfId: string,
+  session: AuthSession | null,
+): ShelfEditorDataResult {
+  const creator = requireCreator(database, session);
+  if (!creator.ok) return creator;
+
+  const shelf = database
+    .prepare(
+      `SELECT
+         id,
+         slug,
+         title,
+         description,
+         category,
+         status,
+         theme,
+         source_content_url AS sourceContentUrl,
+         cover_url AS coverUrl
+       FROM shelves
+       WHERE id = ?
+         AND creator_id = ?
+         AND deleted_at IS NULL
+       LIMIT 1`,
+    )
+    .get(shelfId, creator.creator.id) as ShelfEditorRow | undefined;
+
+  if (!shelf) return { ok: false, reason: "NOT_FOUND" };
+
+  const products = database
+    .prepare(
+      `SELECT
+         id,
+         destination_url AS destinationUrl,
+         title,
+         description,
+         price_cents AS priceCents,
+         merchant,
+         image_url AS imageUrl,
+         hotspot_x AS hotspotX,
+         hotspot_y AS hotspotY,
+         sort_position AS sortPosition
+       FROM products
+       WHERE shelf_id = ?
+       ORDER BY sort_position`,
+    )
+    .all(shelf.id) as unknown as ShelfEditorProductRow[];
+
+  return {
+    ok: true,
+    shelf: {
+      ...shelf,
+      products: products.map((product) => ({
+        id: product.id,
+        destinationUrl: product.destinationUrl,
+        title: product.title,
+        description: product.description,
+        merchant: product.merchant,
+        price: product.priceCents / 100,
+        imageUrl: product.imageUrl,
+        hotspotX: product.hotspotX,
+        hotspotY: product.hotspotY,
+        sortPosition: product.sortPosition,
+      })),
+    },
+  };
+}
+
+export function saveShelfDraft(
+  database: DatabaseSync,
+  input: ShelfEditorInput,
+  session: AuthSession | null,
+  options: ShelfEditorMutationOptions = {},
+): ShelfEditorMutationResult {
+  const creator = requireCreator(database, session);
+  if (!creator.ok) return creator;
+  if (
+    input.shelfId &&
+    !getShelfOwnership(database, { creatorId: creator.creator.id, shelfId: input.shelfId })
+  ) {
+    return { ok: false, reason: "NOT_FOUND" };
+  }
+
+  const shelfId = upsertShelfAndProducts(database, input, creator.creator.id, "DRAFT", options);
+  return { ok: true, shelfId, status: "DRAFT" };
+}
+
+export function publishShelfFromEditor(
+  database: DatabaseSync,
+  input: ShelfEditorInput,
+  session: AuthSession | null,
+  options: ShelfEditorMutationOptions = {},
+): ShelfEditorMutationResult {
+  const creator = requireCreator(database, session);
+  if (!creator.ok) return creator;
+  if (
+    input.shelfId &&
+    !getShelfOwnership(database, { creatorId: creator.creator.id, shelfId: input.shelfId })
+  ) {
+    return { ok: false, reason: "NOT_FOUND" };
+  }
+
+  const errors = validatePublishInput(input);
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, reason: "VALIDATION_ERROR", errors };
+  }
+
+  const shelfId = upsertShelfAndProducts(
+    database,
+    input,
+    creator.creator.id,
+    "PUBLISHED",
+    options,
+  );
+  return { ok: true, shelfId, status: "PUBLISHED" };
 }
