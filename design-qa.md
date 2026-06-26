@@ -25,10 +25,10 @@ Focused region comparison evidence: not generated in this pass because full-view
 | `landing-page.jpg` | `/` | `1280x1600@2` | Captured; P2 visual drift remains |
 | `creator-profile.png` | `/liamroberts.photo` | `1280x1600@2` | Captured; P2 content/layout drift remains |
 | `creator-login.png` | `/login?returnTo=/studio/dashboard` | `1280x1024@2` | Captured; Google-only login is intentional per product direction |
-| `studio-dashboard.jpg` | `/studio/dashboard` | `1280x1024@2` | Captured; P1 information-architecture/layout mismatch remains |
-| `studio-management-expanded.jpg` | `/studio/shelves` | `1280x1024@2` | Captured; P1 management layout mismatch remains |
-| `studio-management-one-column.jpg` | `/studio/shelves` | `1280x1024@2` | Captured; P1 state mismatch remains |
-| `studio-create-shelf.jpg` | `/studio/create` | `1280x1024@2` | Captured; P1 editor/workbench mismatch remains |
+| `studio-dashboard.jpg` | `/studio/dashboard` | `1280x1024@2` | Captured after Studio IA pass; P2 spacing/data drift remains |
+| `studio-management-expanded.jpg` | `/studio/shelves` | `1280x1024@2` | Captured after card-grid pass; P2 thumbnail/spacing drift remains |
+| `studio-management-one-column.jpg` | `/studio/shelves` | `1280x1024@2` | Captured after card-grid pass; P2 state/content drift remains |
+| `studio-create-shelf.jpg` | `/studio/create` | `1280x1024@2` | Captured after AI Workbench pass; remaining content/asset fidelity drift |
 | `studio-settings.jpg` | `/studio/settings` | `728x1024@2` | Captured after serialization fix; P2 layout/content drift remains |
 | `studio-analytics.jpg` | `/studio/analytics` | `1280x1024@2` | Captured; P2 metrics/content drift remains |
 | `studio-comments.jpg` | `/studio/comments` | `1280x1024@2` | Captured after serialization fix; P2 content/layout drift remains |
@@ -46,11 +46,11 @@ Focused region comparison evidence: not generated in this pass because full-view
   Impact: the former reachability blocker is resolved; the remaining issue is visual/source-state alignment rather than route functionality.
   Fix: confirm whether the Stitch `share-modal.png` export is the intended modal state. If yes, tune the mobile public shelf state to match it; if no, re-export the modal source and use the current `shareModal=1` route for comparison.
 
-- [P1] Creator Studio shell and management pages do not match the Stitch information architecture
+- [P2] Creator Studio shell and management pages are structurally aligned but still drift visually
   Location: `studio-dashboard`, `studio-management-expanded`, `studio-management-one-column`, `studio-create-shelf`.
-  Evidence: Stitch uses a compact creator-management sidebar, activity-first dashboard, card-grid shelf manager, AI Link Workbench, detected item editor, and preview blocks. The implementation uses a different beige shell, different sidebar cards, list-based shelf manager, simplified editor form, and different preview/content hierarchy.
-  Impact: core creator workflow is functional, but it is not visually faithful to the designed Studio experience.
-  Fix: align the Studio shell/sidebar and rebuild the dashboard, shelves, and create-shelf content modules from the Stitch reference structure before doing polish-level spacing work.
+  Evidence: the implementation now uses the compact Creator Management sidebar, dashboard CTA/metrics/activity feed, thumbnail shelf card grid, AI Link Workbench, detected item list, and shelf preview blocks from the Stitch IA. Remaining differences are mostly exact image selection, spacing, card density, and the create-shelf empty state versus Stitch’s more populated example.
+  Impact: the former core Studio IA blocker is reduced; the Studio flow is now much closer to the designed experience, but still needs a polish/content pass before it can be called visually faithful.
+  Fix: tune Studio image assets, copy/data values, card sizing, and prefilled create-shelf state against the side-by-side captures.
 
 - [P1] Fan dashboard is a different product state than the Stitch source
   Location: `/hub/dashboard`.
@@ -91,6 +91,11 @@ Focused region comparison evidence: not generated in this pass because full-view
 - Wired existing fan share links into the real `ShareDialog`, including post-auth `shareModal=1` route state and hero share button fallback.
 - Added component coverage for existing share-link buttons and initial public shelf share modal state.
 - Updated `scripts/capture-design-qa.mjs` so `share-modal` is now a real mobile capture target instead of a known blocker.
+- Reworked `StudioShell` around the Stitch Creator Management sidebar, primary create CTA, and compact account summary.
+- Rebuilt the Studio dashboard around the Stitch create-shelf card, `Today's Clicks` / `New Saves` metrics, and recent activity feed.
+- Rebuilt shelf management as a thumbnail card grid with status pills, category tags, icon actions, and fallback Stitch cover art when local assets are unavailable.
+- Reworked the create-shelf screen into `Shelf Details`, `AI Link Workbench`, detected item editing, and `Shelf Preview` sections.
+- Added Studio structure component tests plus a cover-art fallback integration test.
 
 ## Verification run evidence
 
@@ -100,7 +105,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 | Fan auth/share dialog regression | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/share-dialog.test.tsx tests/component/public-shelf.test.tsx` | Passed: 13 tests |
 | Latest TypeScript | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit` | Passed |
 | Latest lint | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint .` | Passed |
-| Latest unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 218 tests across 33 files |
+| Latest unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 221 tests across 35 files |
 | Latest end-to-end suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
 | Production build | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
 | Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states including `share-modal` |
@@ -109,7 +114,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 ## Implementation checklist
 
 1. Confirm or re-export the intended Stitch state for `share-modal`, because the current reference does not show the modal while the app route does.
-2. Align Creator Studio shell, dashboard, shelf manager, and create-shelf editor to the Stitch IA.
+2. Finish Studio polish pass: exact imagery, spacing, card density, data values, and create-shelf populated state.
 3. Add Fan Hub shared shelves and saved collections sections to match the reference.
 4. Tune fan-auth overlay visual treatment while preserving Google-only auth.
 5. Do a second full visual QA pass and add focused crops for typography/card/detail fidelity.

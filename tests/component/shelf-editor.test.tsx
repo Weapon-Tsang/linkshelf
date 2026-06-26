@@ -37,12 +37,18 @@ describe("ShelfEditor", () => {
     expect(screen.getByRole("textbox", { name: "Shelf title" })).toHaveValue(
       "Photography Kit",
     );
-    expect(screen.getByRole("textbox", { name: "Slug" })).toHaveValue("photography-kit");
+    expect(screen.getByRole("textbox", { name: "Shelf URL" })).toHaveValue(
+      "photography-kit",
+    );
     expect(screen.getByRole("combobox", { name: "Theme" })).toHaveValue("tech");
     expect(screen.getByRole("button", { name: "Mobile preview" })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
+    expect(screen.getByRole("heading", { name: "AI Link Workbench" })).toBeVisible();
+    expect(screen.getByText("Auto-Detect Active")).toBeVisible();
+    expect(screen.getByText("Detected Items (1)")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Shelf Preview" })).toBeVisible();
     expect(screen.getAllByText("Sony A7IV Mirrorless Camera")[0]).toBeVisible();
   });
 

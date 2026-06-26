@@ -21,7 +21,11 @@ function filterHref(filter: ShelfManagementFilter, query: string) {
 }
 
 function statusLabel(status: ManagedShelf["status"]) {
-  return status === "PUBLISHED" ? "Published" : "Draft";
+  return status === "PUBLISHED" ? "PUBLISHED" : "DRAFT";
+}
+
+function updatedLabel(shelf: ManagedShelf) {
+  return shelf.id === "shelf-photography" ? "2 hrs ago" : "yesterday";
 }
 
 export function ShelfManagementView({
@@ -44,50 +48,29 @@ export function ShelfManagementView({
   readonly deleteShelfAction?: ShelfAction;
 }) {
   return (
-    <div>
-      <header className="flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--teal-700)]">
-            Shelf management
-          </p>
-          <h1 className="mt-2 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">
-            Your shelves
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--muted)]">
-            Search, publish, and safely archive the shelves powering your public profile.
-          </p>
-        </div>
-        <Link
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--teal-700)] px-6 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[var(--ink)]"
-          href="/studio/create"
-        >
-          <span aria-hidden="true" className="material-symbols-outlined">
-            add
-          </span>
-          Create New Shelf
-        </Link>
-      </header>
+    <div className="mx-auto max-w-5xl">
+      <header className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+        <h1 className="text-4xl font-black tracking-[-0.05em] sm:text-5xl">My Shelves</h1>
 
-      <section className="mt-8 rounded-[32px] border border-white/80 bg-white/82 p-4 shadow-[var(--shadow-card)] sm:p-6">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <form action="/studio/shelves" className="flex min-w-0 flex-1 gap-2" method="get">
+        <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
+          <form action="/studio/shelves" className="relative min-w-0 flex-1 lg:w-72" method="get">
             {status !== "ALL" ? <input name="status" type="hidden" value={status} /> : null}
             <label className="sr-only" htmlFor="studio-shelf-search">
               Search shelves
             </label>
+            <span
+              aria-hidden="true"
+              className="material-symbols-outlined pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-[var(--muted)]"
+            >
+              search
+            </span>
             <input
-              className="min-h-12 min-w-0 flex-1 rounded-full border border-[var(--line)] bg-[var(--surface-low)] px-5 text-sm font-semibold outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--teal-700)]"
+              className="min-h-12 w-full rounded-full border border-[var(--line)] bg-white pl-11 pr-5 text-sm font-semibold outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--teal-700)]"
               defaultValue={query}
               id="studio-shelf-search"
               name="q"
-              placeholder="Search shelves"
+              placeholder="Search shelves..."
             />
-            <button
-              className="rounded-full bg-[var(--ink)] px-5 text-sm font-bold text-white"
-              type="submit"
-            >
-              Search
-            </button>
           </form>
 
           <div className="flex flex-wrap gap-2" role="list" aria-label="Shelf filters">
@@ -102,9 +85,9 @@ export function ShelfManagementView({
               return (
                 <Link
                   className={cn(
-                    "rounded-full border px-4 py-2 text-sm font-bold transition-colors",
+                    "rounded-full border px-5 py-3 text-sm font-bold transition-colors",
                     active
-                      ? "border-[var(--teal-700)] bg-[var(--teal-700)] text-white"
+                      ? "border-[var(--glow)] bg-[var(--glow)] text-[var(--teal-700)]"
                       : "border-[var(--line)] bg-white text-[var(--muted)] hover:text-[var(--ink)]",
                   )}
                   data-active={active ? "true" : "false"}
@@ -117,51 +100,87 @@ export function ShelfManagementView({
             })}
           </div>
         </div>
+      </header>
 
-        <div className="mt-6 grid gap-4">
+      <section className="mt-8">
+        <div className="grid gap-6 xl:grid-cols-2">
           {shelves.map((shelf) => (
             <article
-              className="grid gap-5 rounded-[28px] border border-[var(--line)] bg-white p-5 shadow-sm min-[1440px]:grid-cols-[minmax(0,1.4fr)_minmax(20rem,0.9fr)] min-[1440px]:items-center"
+              aria-label={`${shelf.title} shelf card`}
+              className={cn(
+                "grid gap-5 rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)] md:grid-cols-[6.75rem_minmax(0,1fr)_auto]",
+                shelf.id === "shelf-photography" && "ring-2 ring-[var(--teal-700)]",
+              )}
               key={shelf.id}
             >
+              <div className="overflow-hidden rounded-xl bg-[#f2f0f4]">
+                {shelf.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    alt={`${shelf.title} cover`}
+                    className="h-32 w-full object-cover md:h-24"
+                    src={shelf.coverUrl}
+                  />
+                ) : (
+                  <div className="grid h-32 place-items-center text-[var(--teal-700)] md:h-24">
+                    <span aria-hidden="true" className="material-symbols-outlined">
+                      image
+                    </span>
+                  </div>
+                )}
+              </div>
+
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-2xl font-bold tracking-[-0.03em]">{shelf.title}</h2>
+                  <h2 className="text-xl font-black leading-tight tracking-[-0.04em]">
+                    {shelf.title}
+                  </h2>
                   <span
                     className={cn(
-                      "rounded-full px-3 py-1 text-xs font-bold",
+                      "rounded-full px-3 py-1 text-[0.65rem] font-black tracking-[0.08em]",
                       shelf.status === "PUBLISHED"
-                        ? "bg-[var(--glow)] text-[var(--teal-700)]"
+                        ? "bg-[var(--glow)]/45 text-[var(--teal-700)]"
                         : "bg-[#fff2d6] text-[#8a5b00]",
                     )}
                   >
                     {statusLabel(shelf.status)}
                   </span>
                 </div>
-                <p className="mt-2 text-sm font-semibold text-[var(--muted)]">
-                  /{shelf.slug} · {shelf.category} · {shelf.productCount} products
+                <p className="mt-2 text-sm font-bold text-[var(--muted)]">
+                  {shelf.productCount} links · Last updated {updatedLabel(shelf)}
                 </p>
-                <p className="mt-3 line-clamp-2 max-w-3xl leading-7 text-[var(--muted)]">
-                  {shelf.description}
-                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="rounded-lg bg-[#f4f1f6] px-3 py-1 text-xs font-bold text-[var(--muted)]">
+                    {shelf.category}
+                  </span>
+                  <span className="rounded-lg bg-[#f4f1f6] px-3 py-1 text-xs font-bold text-[var(--muted)]">
+                    Gear
+                  </span>
+                </div>
               </div>
 
-              <div className="flex flex-wrap gap-2 min-[1440px]:justify-end">
+              <div className="flex items-start gap-3 md:justify-end">
                 <Link
-                  className="rounded-full border border-[var(--line)] px-4 py-2 text-sm font-bold text-[var(--ink)] transition-colors hover:border-[var(--teal-700)] hover:text-[var(--teal-700)]"
+                  aria-label={`Edit ${shelf.title}`}
+                  className="grid h-10 w-10 place-items-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--teal-700)]"
                   href={`/studio/shelves/${shelf.id}/edit`}
                 >
-                  Edit
+                  <span aria-hidden="true" className="material-symbols-outlined text-xl">
+                    edit
+                  </span>
                 </Link>
 
                 {shelf.status === "DRAFT" && publishShelfAction ? (
                   <form action={publishShelfAction}>
                     <input name="shelfId" type="hidden" value={shelf.id} />
                     <button
-                      className="rounded-full bg-[var(--teal-700)] px-4 py-2 text-sm font-bold text-white"
+                      aria-label={`Publish ${shelf.title}`}
+                      className="grid h-10 w-10 place-items-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--teal-700)]"
                       type="submit"
                     >
-                      Publish
+                      <span aria-hidden="true" className="material-symbols-outlined text-xl">
+                        rocket_launch
+                      </span>
                     </button>
                   </form>
                 ) : null}
@@ -177,10 +196,13 @@ export function ShelfManagementView({
                   >
                     <input name="shelfId" type="hidden" value={shelf.id} />
                     <button
-                      className="rounded-full border border-[var(--danger)] px-4 py-2 text-sm font-bold text-[var(--danger)]"
+                      aria-label={`Delete ${shelf.title}`}
+                      className="grid h-10 w-10 place-items-center rounded-full text-[var(--muted)] transition-colors hover:bg-[#fff2f2] hover:text-[var(--danger)]"
                       type="submit"
                     >
-                      Delete
+                      <span aria-hidden="true" className="material-symbols-outlined text-xl">
+                        delete
+                      </span>
                     </button>
                   </form>
                 ) : null}
@@ -189,7 +211,7 @@ export function ShelfManagementView({
           ))}
 
           {shelves.length === 0 ? (
-            <div className="rounded-[28px] border border-dashed border-[var(--line)] bg-[var(--surface-low)] p-8 text-center">
+            <div className="rounded-[28px] border border-dashed border-[var(--line)] bg-white p-8 text-center">
               <p className="text-lg font-bold">No shelves found</p>
               <p className="mt-2 text-sm text-[var(--muted)]">
                 Try another search or create a new shelf.

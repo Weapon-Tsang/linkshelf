@@ -20,7 +20,7 @@ for (const viewport of viewports) {
 
     await loginAs(page, "creator", "/studio/dashboard");
     await page.goto("/studio/dashboard");
-    await expect(page.getByRole("heading", { name: "Manage your shelves" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Recent Activities" })).toBeVisible();
     await expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
     ).toBe(true);

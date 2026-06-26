@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import type { AuthSession } from "@/features/auth/adapter";
 import { rewriteAmazonTag } from "@/features/affiliate/rewrite-amazon-tag";
+import { STITCH_ASSET_SOURCES } from "@/lib/db/seed";
 import type { ShelfStatus } from "./types";
 
 export type ShelfManagementFilter = "ALL" | ShelfStatus;
@@ -21,6 +22,12 @@ export interface ManagedShelf {
   readonly productCount: number;
   readonly updatedAt: string;
 }
+
+const shelfCoverFallbacks: Record<string, string> = {
+  "shelf-photography": STITCH_ASSET_SOURCES.shelfPhotography,
+  "shelf-desk": STITCH_ASSET_SOURCES.shelfDesk,
+  "shelf-travel": STITCH_ASSET_SOURCES.shelfTravel,
+};
 
 export type ShelfListResult =
   | {
@@ -297,6 +304,7 @@ export function listCreatorShelves(
     creator: { ...creator.creator },
     shelves: shelves.map((shelf) => ({
       ...shelf,
+      coverUrl: shelf.coverUrl ?? shelfCoverFallbacks[shelf.id] ?? null,
       productCount: toNumber(shelf.productCount),
     })),
     totals,

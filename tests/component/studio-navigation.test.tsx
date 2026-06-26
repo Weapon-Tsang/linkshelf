@@ -43,6 +43,12 @@ describe("StudioShell navigation", () => {
     expect(activeLink).toHaveAttribute("aria-current", "page");
     expect(activeLink).toHaveAttribute("data-active", "true");
     expect(screen.getByText("Manage shelves")).toBeVisible();
-    expect(screen.getByText("@liamroberts.photo")).toBeVisible();
+    expect(screen.getByText("Creator Management")).toBeVisible();
+    expect(screen.getByRole("link", { name: /create new shelf/i })).toHaveAttribute(
+      "href",
+      "/studio/create",
+    );
+    expect(screen.getByText("Alex Rivera")).toBeVisible();
+    expect(screen.getByText("Pro Plan")).toBeVisible();
   });
 });

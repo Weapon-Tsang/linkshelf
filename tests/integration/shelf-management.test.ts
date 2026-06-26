@@ -79,6 +79,18 @@ describe("creator shelf management", () => {
     expect(Object.getPrototypeOf(result.totals)).toBe(Object.prototype);
   });
 
+  it("falls back to Stitch cover art when localized assets are unavailable", () => {
+    const result = listCreatorShelves(database, creatorSession, {
+      status: "ALL",
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.shelves.find((shelf) => shelf.id === "shelf-photography")?.coverUrl)
+      .toMatch(/^https:\/\/lh3\.googleusercontent\.com\/aida-public\//);
+  });
+
   it("publishes drafts and soft-deletes shelves without exposing deleted records", () => {
     expect(
       saveShelfDraft(

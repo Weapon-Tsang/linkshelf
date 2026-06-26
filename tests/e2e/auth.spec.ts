@@ -7,7 +7,8 @@ test("creator Google development login reaches Studio", async ({ page }) => {
   await page.goto("/login?returnTo=/studio/dashboard");
   await page.getByRole("button", { name: "Continue with Google" }).click();
   await expect(page).toHaveURL(new RegExp(`${LOCAL_ROUTE.source}/studio/dashboard$`));
-  await expect(page.getByRole("heading", { name: "Manage your shelves" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Create New Shelf/i }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Recent Activities" })).toBeVisible();
 });
 
 test("Fan Hub rejects creator sessions and accepts fan sessions", async ({ page }) => {

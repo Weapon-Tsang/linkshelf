@@ -47,25 +47,31 @@ export function StudioShell({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-[#f7f4ef] text-[var(--ink)] lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
-      <aside className="border-b border-[var(--line)] bg-white/78 px-5 py-5 backdrop-blur-xl lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:border-b-0 lg:border-r lg:px-6 lg:py-7">
-        <Link href="/studio/dashboard" className="inline-flex">
+    <div className="min-h-screen bg-[#fbf7fb] text-[var(--ink)] lg:grid lg:grid-cols-[250px_minmax(0,1fr)]">
+      <aside className="border-b border-[var(--line)] bg-white px-5 py-5 shadow-[12px_0_34px_rgba(11,19,43,0.035)] lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:border-b-0 lg:px-6 lg:py-7">
+        <Link href="/studio/dashboard" className="inline-flex items-start gap-2">
           <BrandMark className="text-2xl" />
         </Link>
+        <p className="ml-9 -mt-1 text-xs font-semibold text-[var(--muted)]">
+          Creator Management
+        </p>
+        <p className="sr-only">
+          Workspace for {creator.displayName} @{creator.handle}
+        </p>
 
-        <div className="mt-7 rounded-3xl border border-[var(--line)] bg-[var(--surface-low)] p-4">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--muted)]">
-            Creator Studio
-          </p>
-          <p className="mt-2 text-lg font-bold">{creator.displayName}</p>
-          <p className="mt-1 text-sm font-semibold text-[var(--teal-700)]">
-            @{creator.handle}
-          </p>
-        </div>
+        <Link
+          className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--teal-700)] px-4 text-sm font-bold text-white shadow-[0_12px_26px_rgba(0,124,114,0.22)] transition-colors hover:bg-[var(--ink)]"
+          href="/studio/create"
+        >
+          <span aria-hidden="true" className="material-symbols-outlined text-lg">
+            add
+          </span>
+          Create New Shelf
+        </Link>
 
         <nav
           aria-label="Studio"
-          className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-5 lg:grid-cols-1"
+          className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-5 lg:grid-cols-1"
         >
           {navigationItems.map((item) => {
             const active =
@@ -75,8 +81,8 @@ export function StudioShell({
               <Link
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--ink)]",
-                  active && "bg-[var(--teal-700)] text-white shadow-sm hover:bg-[var(--teal-700)] hover:text-white",
+                  "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--ink)]",
+                  active && "bg-[var(--glow)] text-[var(--ink)] shadow-sm hover:bg-[var(--glow)] hover:text-[var(--ink)]",
                 )}
                 data-active={active ? "true" : "false"}
                 href={item.href}
@@ -91,11 +97,17 @@ export function StudioShell({
           })}
         </nav>
 
-        <div className="mt-auto hidden rounded-3xl bg-[var(--glow)] p-5 lg:block">
-          <p className="text-sm font-bold text-[var(--ink)]">Next up</p>
-          <p className="mt-2 text-sm leading-6 text-[var(--ink)]/80">
-            Keep shelves fresh, publish drafts, and route every product through your creator tag.
-          </p>
+        <div className="mt-auto hidden items-center gap-3 lg:flex">
+          <div
+            aria-hidden="true"
+            className="grid h-10 w-10 place-items-center rounded-full bg-[linear-gradient(135deg,#00bfae,#0b132b)] text-sm font-black text-white"
+          >
+            AR
+          </div>
+          <div>
+            <p className="text-sm font-bold">Alex Rivera</p>
+            <p className="text-xs font-semibold text-[var(--muted)]">Pro Plan</p>
+          </div>
         </div>
       </aside>
 
