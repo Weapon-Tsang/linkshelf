@@ -8,14 +8,20 @@ test("fan can open public shelf and manage Hub wallet", async ({ page }) => {
 
   await loginAs(page, "fan", "/hub/dashboard");
   await page.goto("/hub/dashboard");
-  await expect(page.getByText("$15.99").first()).toBeVisible();
+  await expect(page.getByText("$128.50").first()).toBeVisible();
   await page.getByRole("button", { name: "My Shares" }).click();
   await expect(page.getByText("jamie-photo")).toBeVisible();
+  await expect(page.getByText("jamie-travel")).toBeVisible();
   await page.getByRole("button", { name: "Saved" }).click();
   await expect(
     page
       .getByRole("region", { name: "Saved Collections" })
-      .getByRole("heading", { name: "Photography Kit" }),
+      .getByRole("heading", { name: "Outdoor Adventure" }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("region", { name: "Saved Collections" })
+      .getByRole("heading", { name: "Dream Home" }),
   ).toBeVisible();
 });
 

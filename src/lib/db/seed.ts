@@ -183,7 +183,9 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
       INSERT OR IGNORE INTO saves (id, user_id, target_type, target_id, created_at)
       VALUES
         ('save-jamie-photography', 'user-fan', 'SHELF', 'shelf-photography',
-          '2026-06-04T08:15:00.000Z');
+          '2026-06-04T08:15:00.000Z'),
+        ('save-jamie-travel', 'user-fan', 'SHELF', 'shelf-travel',
+          '2026-06-10T08:15:00.000Z');
 
       INSERT OR IGNORE INTO comments
         (id, shelf_id, user_id, parent_id, body, status, created_at, updated_at, deleted_at)
@@ -205,7 +207,9 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
         (id, shelf_id, fan_user_id, short_code, channel, created_at)
       VALUES
         ('share-jamie-photography', 'shelf-photography', 'user-fan', 'jamie-photo', 'X',
-          '2026-06-05T09:45:00.000Z');
+          '2026-06-05T09:45:00.000Z'),
+        ('share-jamie-travel', 'shelf-travel', 'user-fan', 'jamie-travel', 'COPY',
+          '2026-06-04T09:45:00.000Z');
 
       INSERT OR IGNORE INTO click_events
         (id, product_id, shelf_id, share_id, beneficiary, affiliate_tag, destination_url,
@@ -226,8 +230,17 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
       INSERT OR IGNORE INTO wallet_entries
         (id, user_id, click_event_id, amount_cents, type, status, description, created_at, cleared_at)
       VALUES
-        ('wallet-fan-pending', 'user-fan', 'click-fan', 1599, 'AFFILIATE_EARNING', 'PENDING',
+        ('wallet-fan-pending', 'user-fan', 'click-fan', 1230, 'AFFILIATE_EARNING', 'PENDING',
           'Pending fan share from Sony A7IV click', '2026-06-05T10:00:01.000Z', NULL),
+        ('wallet-fan-tech', 'user-fan', NULL, 1240, 'ADJUSTMENT', 'CLEARED',
+          'Tech Collection', '2026-06-24T10:00:01.000Z', '2026-06-24T10:00:01.000Z'),
+        ('wallet-fan-home-office', 'user-fan', NULL, 415, 'ADJUSTMENT', 'CLEARED',
+          'Home Office Gear', '2026-06-22T10:00:01.000Z', '2026-06-22T10:00:01.000Z'),
+        ('wallet-fan-fall', 'user-fan', NULL, 2800, 'ADJUSTMENT', 'CLEARED',
+          'Fall Essentials', '2026-06-19T10:00:01.000Z', '2026-06-19T10:00:01.000Z'),
+        ('wallet-fan-opening-balance', 'user-fan', NULL, 13395, 'ADJUSTMENT', 'CLEARED',
+          'Fan Hub opening balance', '2026-06-01T10:00:01.000Z',
+          '2026-06-01T10:00:01.000Z'),
         ('wallet-creator-share', 'user-creator', 'click-fan', 400, 'AFFILIATE_EARNING', 'CLEARED',
           'Creator share from fan-attributed click', '2026-06-05T10:00:01.000Z',
           '2026-06-12T10:00:00.000Z'),
@@ -237,6 +250,16 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
         ('wallet-platform-adjustment', 'user-admin', 'click-platform', 1200, 'ADJUSTMENT', 'CLEARED',
           'Simulated platform attribution', '2026-06-07T10:00:01.000Z',
           '2026-06-14T10:00:00.000Z');
+
+      UPDATE wallet_entries
+      SET
+        amount_cents = 1230,
+        type = 'AFFILIATE_EARNING',
+        status = 'PENDING',
+        description = 'Pending fan share from Sony A7IV click',
+        created_at = '2026-06-05T10:00:01.000Z',
+        cleared_at = NULL
+      WHERE id = 'wallet-fan-pending';
 
       INSERT OR IGNORE INTO withdrawals
         (id, user_id, amount_cents, destination_label, status, reviewer_id, created_at, updated_at,

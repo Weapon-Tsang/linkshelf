@@ -41,6 +41,27 @@ describe("local database", () => {
     expect(count.count).toBe(3);
   });
 
+  it("refreshes deterministic Fan Hub seed values in existing local databases", () => {
+    const db = createDatabase(":memory:");
+    databases.push(db);
+    migrate(db);
+    seed(db);
+
+    db.prepare("UPDATE wallet_entries SET amount_cents = 1599 WHERE id = ?").run(
+      "wallet-fan-pending",
+    );
+
+    seed(db);
+
+    expect(
+      (
+        db
+          .prepare("SELECT amount_cents AS amountCents FROM wallet_entries WHERE id = ?")
+          .get("wallet-fan-pending") as { amountCents: number }
+      ).amountCents,
+    ).toBe(1_230);
+  });
+
   it("creates file databases with production-safe pragmas", () => {
     const temporaryDirectory = mkdtempSync(join(tmpdir(), "linkshelf-database-"));
     temporaryDirectories.push(temporaryDirectory);
@@ -294,14 +315,16 @@ describe("local database", () => {
       (
         db
           .prepare(
-            `SELECT COUNT(*) AS count
+            `SELECT
+               COUNT(DISTINCT saves.id) AS save_count,
+               COUNT(DISTINCT shares.id) AS share_count
              FROM saves
              JOIN shares ON shares.fan_user_id = saves.user_id
              WHERE saves.user_id = 'user-fan'`,
           )
-          .get() as { count: number }
-      ).count,
-    ).toBe(1);
+          .get() as { save_count: number; share_count: number }
+      ),
+    ).toEqual({ save_count: 2, share_count: 2 });
   });
 
   it("rejects invalid roles, prices, and hotspot coordinates", () => {
@@ -366,7 +389,7 @@ describe("local database", () => {
       3,
     );
     expect((db.prepare("SELECT COUNT(*) AS count FROM wallet_entries").get() as { count: number }).count).toBe(
-      4,
+      8,
     );
     expect(() => db.prepare("DELETE FROM products WHERE id = ?").run("product-sony-a7iv")).toThrow(
       /FOREIGN KEY constraint failed/,

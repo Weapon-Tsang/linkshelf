@@ -66,6 +66,13 @@ describe("Fan Hub dashboard", () => {
             id: "shelf-photography",
             title: "Outdoor Adventure",
             creatorHandle: "AlexGear",
+            itemCount: 14,
+          },
+          {
+            id: "shelf-home",
+            title: "Dream Home",
+            creatorHandle: "HomeInspo",
+            itemCount: 28,
           },
         ]}
         shares={[
@@ -75,6 +82,15 @@ describe("Fan Hub dashboard", () => {
             channel: "X",
             shortCode: "jamie-photo",
             clicks: 1200,
+            shareCount: 342,
+          },
+          {
+            id: "share-fall-reading",
+            shelfTitle: "Fall Reading List",
+            channel: "COPY",
+            shortCode: "fall-books",
+            clicks: 840,
+            shareCount: 128,
           },
         ]}
         summary={{
@@ -82,6 +98,32 @@ describe("Fan Hub dashboard", () => {
           pendingCents: 1230,
           lifetimeCents: 14080,
           affiliateTag: "fan-demo-20",
+          entries: [
+            {
+              id: "wallet-tech",
+              amountCents: 1240,
+              type: "ADJUSTMENT",
+              status: "CLEARED",
+              description: "Tech Collection",
+              createdAt: "2026-06-24T10:00:00.000Z",
+            },
+            {
+              id: "wallet-home",
+              amountCents: 415,
+              type: "ADJUSTMENT",
+              status: "CLEARED",
+              description: "Home Office Gear",
+              createdAt: "2026-06-22T10:00:00.000Z",
+            },
+            {
+              id: "wallet-fall",
+              amountCents: 2800,
+              type: "ADJUSTMENT",
+              status: "CLEARED",
+              description: "Fall Essentials",
+              createdAt: "2026-06-19T10:00:00.000Z",
+            },
+          ],
         }}
       />,
     );
@@ -90,10 +132,18 @@ describe("Fan Hub dashboard", () => {
     expect(screen.getByText("Available Balance")).toBeVisible();
     expect(screen.getByRole("heading", { name: "Rewards History" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Source" })).toBeVisible();
+    expect(screen.getByText("Tech Collection")).toBeVisible();
+    expect(screen.getByText("Home Office Gear")).toBeVisible();
+    expect(screen.getByText("Fall Essentials")).toBeVisible();
     expect(screen.getByRole("heading", { name: "My Shared Shelves" })).toBeVisible();
     expect(screen.getByText("1.2k Clicks")).toBeVisible();
+    expect(screen.getByText("840 Clicks")).toBeVisible();
+    expect(screen.getByText("342 Shares")).toBeVisible();
+    expect(screen.getByText("128 Shares")).toBeVisible();
     expect(screen.getByRole("heading", { name: "Saved Collections" })).toBeVisible();
     expect(screen.getByText("14 Items Saved")).toBeVisible();
+    expect(screen.getByText("28 Items Saved")).toBeVisible();
+    expect(screen.getByRole("navigation", { name: "Fan dashboard utility" })).toBeVisible();
   });
 
   it("keeps the dashboard modules interactive for tracking ID, withdrawal, and CSV export", async () => {

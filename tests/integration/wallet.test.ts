@@ -83,7 +83,7 @@ describe("fan wallet lifecycle", () => {
       requestWithdrawal(
         database,
         {
-          amountCents: 7_500,
+          amountCents: 25_000,
           destinationLabel: "Amazon gift card ending 7777",
         },
         fanSession,
@@ -149,5 +149,41 @@ describe("fan wallet lifecycle", () => {
     const savedShelf = summary.savedShelves[0] as unknown as Record<string, unknown>;
     expect(savedShelf.coverUrl).toEqual(expect.stringContaining("lh3.googleusercontent.com"));
     expect(savedShelf.itemCount).toBeGreaterThan(0);
+  });
+
+  it("seeds Stitch-like Fan Hub balances, rewards, shares, and saved collections", () => {
+    const seeded = createDatabase(":memory:");
+    migrate(seeded);
+    seed(seeded, { publicRoot: "/definitely/missing" });
+
+    try {
+      const summary = getWalletSummary(seeded, fanSession);
+
+      expect(summary.ok).toBe(true);
+      if (!summary.ok) return;
+
+      expect(summary.availableCents).toBe(12_850);
+      expect(summary.pendingCents).toBe(1_230);
+      expect(summary.entries.map((entry) => entry.description)).toEqual(
+        expect.arrayContaining(["Tech Collection", "Home Office Gear", "Fall Essentials"]),
+      );
+      expect(summary.shares.map((share) => share.shelfTitle)).toEqual(
+        expect.arrayContaining(["Minimalist Setup v2", "Fall Reading List"]),
+      );
+      expect(summary.shares.map((share) => share.clicks)).toEqual(
+        expect.arrayContaining([1200, 840]),
+      );
+      expect(summary.shares.map((share) => share.shareCount)).toEqual(
+        expect.arrayContaining([342, 128]),
+      );
+      expect(summary.savedShelves.map((shelf) => shelf.title)).toEqual(
+        expect.arrayContaining(["Outdoor Adventure", "Dream Home"]),
+      );
+      expect(summary.savedShelves.map((shelf) => shelf.itemCount)).toEqual(
+        expect.arrayContaining([14, 28]),
+      );
+    } finally {
+      seeded.close();
+    }
   });
 });

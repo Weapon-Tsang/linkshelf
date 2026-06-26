@@ -58,7 +58,7 @@ describe("super admin actions", () => {
     expect(result).toMatchObject({
       ok: true,
       metrics: {
-        ledgerCents: 5697,
+        ledgerCents: 23178,
         pendingWithdrawalCents: 5000,
       },
       trafficSplit: {

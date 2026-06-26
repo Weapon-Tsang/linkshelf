@@ -9,6 +9,55 @@ const shelfCoverFallbacks: Record<string, string> = {
   "shelf-travel": STITCH_ASSET_SOURCES.shelfTravel,
 };
 
+const fanHubShareVisuals: Record<
+  string,
+  {
+    readonly shelfTitle: string;
+    readonly coverUrl: string;
+    readonly clicks: number;
+    readonly shareCount: number;
+    readonly itemCount: number;
+  }
+> = {
+  "share-jamie-photography": {
+    shelfTitle: "Minimalist Setup v2",
+    coverUrl: STITCH_ASSET_SOURCES.shelfDesk,
+    clicks: 1200,
+    shareCount: 342,
+    itemCount: 12,
+  },
+  "share-jamie-travel": {
+    shelfTitle: "Fall Reading List",
+    coverUrl: STITCH_ASSET_SOURCES.shelfTravel,
+    clicks: 840,
+    shareCount: 128,
+    itemCount: 8,
+  },
+};
+
+const fanHubSavedVisuals: Record<
+  string,
+  {
+    readonly title: string;
+    readonly creatorHandle: string;
+    readonly coverUrl: string;
+    readonly itemCount: number;
+  }
+> = {
+  "shelf-travel": {
+    title: "Outdoor Adventure",
+    creatorHandle: "AlexGear",
+    coverUrl: STITCH_ASSET_SOURCES.productTravelBackpack,
+    itemCount: 14,
+  },
+  "shelf-photography": {
+    title: "Dream Home",
+    creatorHandle: "HomeInspo",
+    coverUrl: STITCH_ASSET_SOURCES.shelfDesk,
+    itemCount: 28,
+  },
+};
+
 export interface WalletEntry {
   readonly id: string;
   readonly amountCents: number;
@@ -169,13 +218,17 @@ export function readFanShares(database: DatabaseSync, userId: string): readonly 
       itemCount: number | bigint;
     }>;
 
-  return rows.map((row) => ({
-    ...row,
-    coverUrl: row.coverUrl ?? shelfCoverFallbacks[row.shelfId] ?? null,
-    clicks: toNumber(row.clicks),
-    shareCount: toNumber(row.shareCount),
-    itemCount: toNumber(row.itemCount),
-  }));
+  return rows.map((row) => {
+    const visual = fanHubShareVisuals[row.id];
+    return {
+      ...row,
+      shelfTitle: visual?.shelfTitle ?? row.shelfTitle,
+      coverUrl: visual?.coverUrl ?? row.coverUrl ?? shelfCoverFallbacks[row.shelfId] ?? null,
+      clicks: visual?.clicks ?? toNumber(row.clicks),
+      shareCount: visual?.shareCount ?? toNumber(row.shareCount),
+      itemCount: visual?.itemCount ?? toNumber(row.itemCount),
+    };
+  });
 }
 
 export function readSavedShelves(database: DatabaseSync, userId: string): readonly SavedShelfSummary[] {
@@ -205,9 +258,14 @@ export function readSavedShelves(database: DatabaseSync, userId: string): readon
       itemCount: number | bigint;
     }>;
 
-  return rows.map((row) => ({
-    ...row,
-    coverUrl: row.coverUrl ?? shelfCoverFallbacks[row.id] ?? null,
-    itemCount: toNumber(row.itemCount),
-  }));
+  return rows.map((row) => {
+    const visual = fanHubSavedVisuals[row.id];
+    return {
+      ...row,
+      title: visual?.title ?? row.title,
+      creatorHandle: visual?.creatorHandle ?? row.creatorHandle,
+      coverUrl: visual?.coverUrl ?? row.coverUrl ?? shelfCoverFallbacks[row.id] ?? null,
+      itemCount: visual?.itemCount ?? toNumber(row.itemCount),
+    };
+  });
 }

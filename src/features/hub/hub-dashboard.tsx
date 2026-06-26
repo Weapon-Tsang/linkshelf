@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { SocialChannelType } from "@/features/shelves/types";
 import { cn } from "@/lib/cn";
@@ -123,35 +124,66 @@ export function HubDashboard({
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  const rewardEntries = summary.entries ?? [];
+  const rewardEntries = (summary.entries ?? [])
+    .filter((entry) => entry.status === "CLEARED")
+    .slice(0, 3);
 
   return (
     <div className="mx-auto max-w-[1180px] space-y-6">
-      <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--teal-700)]">
-            My Hub
-          </p>
-          <h1 className="mt-2 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">
-            Fan rewards dashboard
-          </h1>
-        </div>
-        <nav aria-label="Fan Hub sections" className="flex flex-wrap gap-2">
-          {(["Wallet", "My Shares", "Saved"] as const).map((section) => (
-            <button
-              aria-pressed={active === section}
-              className={cn(
-                "rounded-full border border-[var(--line)] bg-white px-5 py-2 text-sm font-bold text-[var(--muted)]",
-                active === section && "border-[var(--teal-700)] bg-[var(--glow)] text-[var(--ink)]",
-              )}
-              key={section}
-              onClick={() => setActive(section)}
-              type="button"
+      <header className="space-y-5">
+        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <nav
+            aria-label="Fan dashboard utility"
+            className="flex flex-wrap items-center gap-6 text-sm font-bold text-[var(--muted)]"
+          >
+            <Link className="text-[var(--teal-700)]" href="/hub/dashboard">
+              Dashboard
+            </Link>
+            <Link href="/liamroberts.photo">Explore</Link>
+            <Link href="/studio/analytics">Analytics</Link>
+          </nav>
+          <div className="flex items-center gap-4 text-[var(--muted)]">
+            <span aria-hidden="true" className="material-symbols-outlined text-xl">
+              notifications
+            </span>
+            <span aria-hidden="true" className="material-symbols-outlined text-xl">
+              settings
+            </span>
+            <span
+              aria-label="Jamie Chen"
+              className="grid h-9 w-9 place-items-center rounded-full bg-[var(--ink)] text-xs font-bold text-white shadow-[var(--shadow-card)]"
+              role="img"
             >
-              {section}
-            </button>
-          ))}
-        </nav>
+              JC
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--teal-700)]">
+              My Hub
+            </p>
+            <h1 className="mt-2 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">
+              Fan rewards dashboard
+            </h1>
+          </div>
+          <nav aria-label="Fan Hub sections" className="flex flex-wrap gap-2">
+            {(["Wallet", "My Shares", "Saved"] as const).map((section) => (
+              <button
+                aria-pressed={active === section}
+                className={cn(
+                  "rounded-full border border-[var(--line)] bg-white px-5 py-2 text-sm font-bold text-[var(--muted)]",
+                  active === section && "border-[var(--teal-700)] bg-[var(--glow)] text-[var(--ink)]",
+                )}
+                key={section}
+                onClick={() => setActive(section)}
+                type="button"
+              >
+                {section}
+              </button>
+            ))}
+          </nav>
+        </div>
       </header>
 
       {csvReady ? (
@@ -298,7 +330,7 @@ export function HubDashboard({
               </thead>
               <tbody className="divide-y divide-[var(--surface-low)]">
                 {rewardEntries.length > 0 ? (
-                  rewardEntries.slice(0, 4).map((entry) => (
+                  rewardEntries.map((entry) => (
                     <tr className="transition-colors hover:bg-[var(--surface-low)]/60" key={entry.id}>
                       <td className="py-4 text-sm font-semibold text-[var(--ink)]">
                         {formatDate(entry.createdAt)}
