@@ -2,7 +2,7 @@
 
 Status: blocked after current-run Stitch side-by-side visual QA.
 
-This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the current local app at `http://127.0.0.1:3000` on 2026-06-26.
+This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-26, with code-level Fan Hub alignment updates added on 2026-06-27. The Fan Hub screen needs a fresh side-by-side recapture once elevated browser/build commands are available again.
 
 ## Evidence summary
 
@@ -32,7 +32,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 | `studio-settings.jpg` | `/studio/settings` | `728x1024@2` | Captured after serialization fix; P2 layout/content drift remains |
 | `studio-analytics.jpg` | `/studio/analytics` | `1280x1024@2` | Captured; P2 metrics/content drift remains |
 | `studio-comments.jpg` | `/studio/comments` | `1280x1024@2` | Captured after serialization fix; P2 content/layout drift remains |
-| `fan-dashboard.png` | `/hub/dashboard` | `1280x1024@2` | Captured; P1 dashboard content mismatch remains |
+| `fan-dashboard.png` | `/hub/dashboard` | `1280x1024@2` | Implemented after Fan Hub IA pass; needs fresh visual recapture |
 | `fan-auth-overlay.png` | public shelf + fan auth overlay | `1280x1024@2` | Captured after portal fix; P2 visual/provider drift remains |
 | `admin-login.png` | admin secret Google gate | `1280x1024@2` | Captured; Google-only auth is intentional per product direction |
 | `super-admin.png` | `/admin/dashboard` | `1280x1024@2` | Captured; P2 data-density/layout drift remains |
@@ -52,11 +52,11 @@ Focused region comparison evidence: not generated in this pass because full-view
   Impact: the former core Studio IA blocker is reduced; the Studio flow is now much closer to the designed experience, but still needs a polish/content pass before it can be called visually faithful.
   Fix: tune Studio image assets, copy/data values, card sizing, and prefilled create-shelf state against the side-by-side captures.
 
-- [P1] Fan dashboard is a different product state than the Stitch source
+- [P2] Fan dashboard is structurally aligned but still needs visual recapture and polish
   Location: `/hub/dashboard`.
-  Evidence: Stitch shows wallet binding, available balance, rewards history, shared shelves, saved collections, and creator-economy navigation. The implementation shows reward summary cards, tabs, tracking ID, and withdrawal form but omits the main shared/saved content areas visible in the reference.
-  Impact: the fan hub does not communicate the designed “My Hub” value proposition yet.
-  Fix: add the missing shared shelves and saved collections sections, then align wallet/rewards layout and navigation density.
+  Evidence: the implementation now renders the Stitch “My Hub” structure in one dashboard: Creator Economy navigation, Affiliate ID Binding, Available Balance, Rewards History, My Shared Shelves, Saved Collections, real share/saved card metadata, and the existing CSV/tracking/withdrawal interactions. This was verified by component and integration tests, but the side-by-side screenshot evidence could not be refreshed in this run because elevated browser/build commands were blocked by the current Codex usage limit.
+  Impact: the former product-state blocker is reduced; remaining work is visual fidelity validation and polish rather than missing core content.
+  Fix: rerun `scripts/capture-design-qa.mjs` after the usage-limit window clears, then tune exact spacing, image choices, navigation density, and reward table data against `fan-dashboard.png`.
 
 - [P2] Public fan-auth overlay is now usable but still visually diverges
   Location: public shelf share overlay.
@@ -72,8 +72,8 @@ Focused region comparison evidence: not generated in this pass because full-view
 
 ## Required fidelity surfaces
 
-- Fonts and typography: broadly consistent bold rounded sans style, but hierarchy and optical sizes diverge on Studio/Fan/Admin pages.
-- Spacing and layout rhythm: major layout drift remains in Studio, Fan Hub, and create-shelf screens; landing/profile are closer but still not pixel-aligned.
+- Fonts and typography: broadly consistent bold rounded sans style, but hierarchy and optical sizes still need visual recapture/polish on Studio/Fan/Admin pages.
+- Spacing and layout rhythm: major IA drift has been reduced in Studio and Fan Hub; pixel-level spacing drift remains, especially in create-shelf and post-recapture Fan Hub polish.
 - Colors and visual tokens: teal/navy/soft surface language is consistent; beige app shell differs from several Stitch white/pink surfaces.
 - Image quality and asset fidelity: localized Stitch/source assets render on public pages; several admin/studio mock sections use simplified content rather than exact reference imagery or thumbnails.
 - Copy and app-specific content: product-level copy is present, but many screen headings, data values, labels, and content modules differ from the Stitch references.
@@ -96,6 +96,10 @@ Focused region comparison evidence: not generated in this pass because full-view
 - Rebuilt shelf management as a thumbnail card grid with status pills, category tags, icon actions, and fallback Stitch cover art when local assets are unavailable.
 - Reworked the create-shelf screen into `Shelf Details`, `AI Link Workbench`, detected item editing, and `Shelf Preview` sections.
 - Added Studio structure component tests plus a cover-art fallback integration test.
+- Reworked `HubShell` around the Stitch Creator Economy side navigation, Wallet/My Shares/Saved nav entries, mobile bottom nav, and New Link CTA.
+- Rebuilt Fan Hub as a single My Hub dashboard with Affiliate ID Binding, Available Balance, Rewards History, My Shared Shelves, and Saved Collections modules.
+- Extended wallet summaries with real cover art, item counts, and share counts for Fan Hub cards.
+- Added Fan Hub structure/component coverage and wallet visual-metadata integration coverage.
 
 ## Verification run evidence
 
@@ -105,9 +109,10 @@ Focused region comparison evidence: not generated in this pass because full-view
 | Fan auth/share dialog regression | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/share-dialog.test.tsx tests/component/public-shelf.test.tsx` | Passed: 13 tests |
 | Latest TypeScript | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit` | Passed |
 | Latest lint | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint .` | Passed |
-| Latest unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 221 tests across 35 files |
-| Latest end-to-end suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
-| Production build | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
+| Fan Hub RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/fan-hub.test.tsx tests/integration/wallet.test.ts` | RED confirmed missing Fan Hub structure/metadata, then passed: 9 tests |
+| Latest unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 224 tests across 35 files |
+| Latest end-to-end suite after Fan Hub pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Blocked before execution: elevated command rejected by Codex usage-limit gate; prior run before Fan Hub changes passed 12 tests |
+| Production build after Fan Hub pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Sandboxed run hit Turbopack local process/port permission error; elevated rerun rejected by Codex usage-limit gate |
 | Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states including `share-modal` |
 | Share modal browser/E2E recapture | `PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test tests/e2e/fan-flow.spec.ts -g "post-auth share"` and `node scripts/capture-design-qa.mjs` | Passed targeted E2E; captured 15 visual states including `share-modal` |
 
@@ -115,7 +120,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 
 1. Confirm or re-export the intended Stitch state for `share-modal`, because the current reference does not show the modal while the app route does.
 2. Finish Studio polish pass: exact imagery, spacing, card density, data values, and create-shelf populated state.
-3. Add Fan Hub shared shelves and saved collections sections to match the reference.
+3. Refresh Fan Hub visual capture and polish spacing, imagery, table density, and navigation details against `fan-dashboard.png`.
 4. Tune fan-auth overlay visual treatment while preserving Google-only auth.
 5. Do a second full visual QA pass and add focused crops for typography/card/detail fidelity.
 

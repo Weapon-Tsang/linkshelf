@@ -135,4 +135,19 @@ describe("fan wallet lifecycle", () => {
       expect(Object.getPrototypeOf(shelf)).toBe(Object.prototype);
     }
   });
+
+  it("returns visual shelf metadata for the Fan Hub shared and saved cards", () => {
+    const summary = getWalletSummary(database, fanSession);
+
+    expect(summary.ok).toBe(true);
+    if (!summary.ok) return;
+
+    const sharedShelf = summary.shares[0] as unknown as Record<string, unknown>;
+    expect(sharedShelf.coverUrl).toEqual(expect.stringContaining("lh3.googleusercontent.com"));
+    expect(sharedShelf.shareCount).toBeGreaterThan(0);
+
+    const savedShelf = summary.savedShelves[0] as unknown as Record<string, unknown>;
+    expect(savedShelf.coverUrl).toEqual(expect.stringContaining("lh3.googleusercontent.com"));
+    expect(savedShelf.itemCount).toBeGreaterThan(0);
+  });
 });

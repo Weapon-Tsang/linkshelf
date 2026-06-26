@@ -1,6 +1,13 @@
 import type { DatabaseSync } from "node:sqlite";
+import { STITCH_ASSET_SOURCES } from "@/lib/db/seed";
 
 export const PLATFORM_AFFILIATE_TAG = "linkshelf-platform-20";
+
+const shelfCoverFallbacks: Record<string, string> = {
+  "shelf-photography": STITCH_ASSET_SOURCES.shelfPhotography,
+  "shelf-desk": STITCH_ASSET_SOURCES.shelfDesk,
+  "shelf-travel": STITCH_ASSET_SOURCES.shelfTravel,
+};
 
 export interface WalletEntry {
   readonly id: string;
@@ -14,16 +21,22 @@ export interface WalletEntry {
 
 export interface ShareSummary {
   readonly id: string;
+  readonly shelfId: string;
   readonly shelfTitle: string;
+  readonly coverUrl: string | null;
   readonly channel: string;
   readonly shortCode: string;
   readonly clicks: number;
+  readonly shareCount: number;
+  readonly itemCount: number;
 }
 
 export interface SavedShelfSummary {
   readonly id: string;
   readonly title: string;
   readonly creatorHandle: string;
+  readonly coverUrl: string | null;
+  readonly itemCount: number;
 }
 
 function toNumber(value: number | bigint | null | undefined) {
@@ -126,13 +139,19 @@ export function readFanShares(database: DatabaseSync, userId: string): readonly 
     .prepare(
       `SELECT
          shares.id AS id,
+         shelves.id AS shelfId,
          shelves.title AS shelfTitle,
+         shelves.cover_url AS coverUrl,
          shares.channel AS channel,
          shares.short_code AS shortCode,
-         COUNT(click_events.id) AS clicks
+         COUNT(DISTINCT click_events.id) AS clicks,
+         COUNT(DISTINCT sibling_shares.id) AS shareCount,
+         COUNT(DISTINCT products.id) AS itemCount
        FROM shares
        INNER JOIN shelves ON shelves.id = shares.shelf_id
        LEFT JOIN click_events ON click_events.share_id = shares.id
+       LEFT JOIN shares AS sibling_shares ON sibling_shares.shelf_id = shelves.id
+       LEFT JOIN products ON products.shelf_id = shelves.id
        WHERE shares.fan_user_id = ?
          AND shelves.deleted_at IS NULL
        GROUP BY shares.id
@@ -140,15 +159,22 @@ export function readFanShares(database: DatabaseSync, userId: string): readonly 
     )
     .all(userId) as Array<{
       id: string;
+      shelfId: string;
       shelfTitle: string;
+      coverUrl: string | null;
       channel: string;
       shortCode: string;
       clicks: number | bigint;
+      shareCount: number | bigint;
+      itemCount: number | bigint;
     }>;
 
   return rows.map((row) => ({
     ...row,
+    coverUrl: row.coverUrl ?? shelfCoverFallbacks[row.shelfId] ?? null,
     clicks: toNumber(row.clicks),
+    shareCount: toNumber(row.shareCount),
+    itemCount: toNumber(row.itemCount),
   }));
 }
 
@@ -158,16 +184,30 @@ export function readSavedShelves(database: DatabaseSync, userId: string): readon
       `SELECT
          shelves.id AS id,
          shelves.title AS title,
-         creator_profiles.handle AS creatorHandle
+         shelves.cover_url AS coverUrl,
+         creator_profiles.handle AS creatorHandle,
+         COUNT(products.id) AS itemCount
        FROM saves
        INNER JOIN shelves ON shelves.id = saves.target_id
        INNER JOIN creator_profiles ON creator_profiles.id = shelves.creator_id
+       LEFT JOIN products ON products.shelf_id = shelves.id
        WHERE saves.user_id = ?
          AND saves.target_type = 'SHELF'
          AND shelves.deleted_at IS NULL
+       GROUP BY shelves.id
        ORDER BY saves.created_at DESC`,
     )
-    .all(userId) as unknown as SavedShelfSummary[];
+    .all(userId) as Array<{
+      id: string;
+      title: string;
+      creatorHandle: string;
+      coverUrl: string | null;
+      itemCount: number | bigint;
+    }>;
 
-  return rows.map((row) => ({ ...row }));
+  return rows.map((row) => ({
+    ...row,
+    coverUrl: row.coverUrl ?? shelfCoverFallbacks[row.id] ?? null,
+    itemCount: toNumber(row.itemCount),
+  }));
 }
