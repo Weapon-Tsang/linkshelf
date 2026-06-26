@@ -72,7 +72,7 @@ interface ManagedShelfRow {
 
 interface CountRow {
   readonly status: ShelfStatus;
-  readonly count: number;
+  readonly count: number | bigint;
 }
 
 export interface ShelfMutationOptions {
@@ -192,6 +192,11 @@ function normalizeSearch(query: string | undefined): string | null {
   return trimmed ? `%${trimmed}%` : null;
 }
 
+function toNumber(value: number | bigint | null | undefined): number {
+  if (typeof value === "bigint") return Number(value);
+  return Number(value ?? 0);
+}
+
 function getShelfOwnership(
   database: DatabaseSync,
   input: {
@@ -260,7 +265,11 @@ export function listCreatorShelves(
        GROUP BY shelves.id
        ORDER BY shelves._rowid_`,
     )
-    .all(...params) as unknown as ManagedShelfRow[];
+    .all(...params) as unknown as Array<
+      Omit<ManagedShelfRow, "productCount"> & {
+        readonly productCount: number | bigint;
+      }
+    >;
 
   const counts = database
     .prepare(
@@ -277,15 +286,19 @@ export function listCreatorShelves(
     drafts: 0,
   };
   for (const row of counts) {
-    totals.all += row.count;
-    if (row.status === "PUBLISHED") totals.published = row.count;
-    if (row.status === "DRAFT") totals.drafts = row.count;
+    const count = toNumber(row.count);
+    totals.all += count;
+    if (row.status === "PUBLISHED") totals.published = count;
+    if (row.status === "DRAFT") totals.drafts = count;
   }
 
   return {
     ok: true,
-    creator: creator.creator,
-    shelves,
+    creator: { ...creator.creator },
+    shelves: shelves.map((shelf) => ({
+      ...shelf,
+      productCount: toNumber(shelf.productCount),
+    })),
     totals,
   };
 }

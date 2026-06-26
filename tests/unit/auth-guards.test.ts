@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   canAccess,
+  hasSameOrigin,
   requiredRoleFor,
   safeReturnTo,
 } from "@/features/auth/guards";
@@ -51,5 +52,25 @@ describe("safe return paths", () => {
     "/api/auth/google",
   ])("rejects unsafe or looping destination %s", (value) => {
     expect(safeReturnTo(value, "/fallback")).toBe("/fallback");
+  });
+});
+
+describe("same-origin auth posts", () => {
+  it("accepts localhost and 127.0.0.1 as equivalent loopback origins in development", () => {
+    expect(
+      hasSameOrigin({
+        url: "http://localhost:3000/api/auth/google",
+        headers: new Headers({ origin: "http://127.0.0.1:3000" }),
+      }),
+    ).toBe(true);
+  });
+
+  it("keeps rejecting non-loopback cross-origin posts", () => {
+    expect(
+      hasSameOrigin({
+        url: "http://localhost:3000/api/auth/google",
+        headers: new Headers({ origin: "https://evil.example" }),
+      }),
+    ).toBe(false);
   });
 });

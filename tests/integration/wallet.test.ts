@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { AuthSession } from "@/features/auth/adapter";
 import {
   exportWalletCsv,
+  getWalletSummary,
   getFanTrackingTag,
   requestWithdrawal,
   saveFanTrackingId,
@@ -115,5 +116,23 @@ describe("fan wallet lifecycle", () => {
     const csv = exportWalletCsv(database, fanSession);
     expect(csv.ok && csv.csv.split("\n")[0]).toBe("date,source,type,amount");
     expect(csv.ok && csv.csv).toContain("Manual cleared test credit,ADJUSTMENT,100.00");
+  });
+
+  it("returns plain serializable objects for server-to-client rendering", () => {
+    const summary = getWalletSummary(database, fanSession);
+
+    expect(summary.ok).toBe(true);
+    if (!summary.ok) return;
+
+    expect(Object.getPrototypeOf(summary)).toBe(Object.prototype);
+    for (const entry of summary.entries) {
+      expect(Object.getPrototypeOf(entry)).toBe(Object.prototype);
+    }
+    for (const share of summary.shares) {
+      expect(Object.getPrototypeOf(share)).toBe(Object.prototype);
+    }
+    for (const shelf of summary.savedShelves) {
+      expect(Object.getPrototypeOf(shelf)).toBe(Object.prototype);
+    }
   });
 });

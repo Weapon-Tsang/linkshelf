@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { safeReturnTo } from "@/features/auth/guards";
+import { requestBaseUrl, safeReturnTo } from "@/features/auth/guards";
 import { createAdminEntryChallenge } from "@/features/auth/session";
 
 export function GET(request: Request): Response {
@@ -10,13 +10,13 @@ export function GET(request: Request): Response {
   );
 
   if (process.env.NODE_ENV === "production") {
-    const adminUrl = new URL("/admin-secret", request.url);
+    const adminUrl = new URL("/admin-secret", requestBaseUrl(request));
     adminUrl.searchParams.set("returnTo", returnTo);
     return NextResponse.redirect(adminUrl, 303);
   }
 
   const challenge = createAdminEntryChallenge(returnTo);
-  const adminUrl = new URL("/admin-secret", request.url);
+  const adminUrl = new URL("/admin-secret", requestBaseUrl(request));
   adminUrl.searchParams.set("challenge", challenge.token);
   adminUrl.searchParams.set("returnTo", challenge.payload.returnTo);
   const response = NextResponse.redirect(adminUrl, 303);

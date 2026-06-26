@@ -59,8 +59,8 @@ export function HubShell({
           })}
         </nav>
         <div className="mt-auto hidden rounded-3xl bg-[var(--glow)] p-5 lg:block">
-          <p className="text-sm font-bold text-[var(--teal-700)]">Share to earn</p>
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+          <p className="text-sm font-bold text-[var(--ink)]">Share to earn</p>
+          <p className="mt-2 text-sm leading-6 text-[var(--ink)]/80">
             Your fan links use your tracking ID first, then LinkShelf&apos;s platform fallback.
           </p>
         </div>

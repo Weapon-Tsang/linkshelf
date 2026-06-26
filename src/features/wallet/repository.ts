@@ -153,7 +153,7 @@ export function readFanShares(database: DatabaseSync, userId: string): readonly 
 }
 
 export function readSavedShelves(database: DatabaseSync, userId: string): readonly SavedShelfSummary[] {
-  return database
+  const rows = database
     .prepare(
       `SELECT
          shelves.id AS id,
@@ -168,4 +168,6 @@ export function readSavedShelves(database: DatabaseSync, userId: string): readon
        ORDER BY saves.created_at DESC`,
     )
     .all(userId) as unknown as SavedShelfSummary[];
+
+  return rows.map((row) => ({ ...row }));
 }

@@ -59,8 +59,8 @@ export function AdminShell({
           })}
         </nav>
         <div className="mt-auto hidden rounded-3xl bg-[var(--glow)] p-5 lg:block">
-          <p className="text-sm font-bold text-[var(--teal-700)]">80/20 monitor</p>
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+          <p className="text-sm font-bold text-[var(--ink)]">80/20 monitor</p>
+          <p className="mt-2 text-sm leading-6 text-[var(--ink)]/80">
             Review affiliate attribution, withdrawal queues, and platform revenue controls.
           </p>
         </div>

@@ -2,6 +2,7 @@
 
 import { PublicNav } from "@/components/brand/public-nav";
 import { SiteFooter } from "@/components/brand/site-footer";
+import { cn } from "@/lib/cn";
 import { CreatorCarousel } from "./creator-carousel";
 import { HeroVisual } from "./hero-visual";
 
@@ -68,7 +69,10 @@ const featureRows = [
 function PrimaryCta({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <a
-      className={`inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#00bfae] to-[#006a60] px-8 py-4 text-sm font-bold text-white shadow-[0_0_18px_rgba(0,191,174,0.45)] transition-all hover:shadow-[0_0_28px_rgba(0,191,174,0.62)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#00bfae] ${className}`}
+      className={cn(
+        "inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#00bfae] to-[#006a60] px-8 py-4 text-sm font-bold text-white shadow-[0_0_18px_rgba(0,191,174,0.45)] transition-all hover:shadow-[0_0_28px_rgba(0,191,174,0.62)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#00bfae]",
+        className,
+      )}
       href={CREATOR_LOGIN_HREF}
     >
       {children}

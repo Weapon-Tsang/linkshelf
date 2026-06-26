@@ -92,8 +92,8 @@ export function StudioShell({
         </nav>
 
         <div className="mt-auto hidden rounded-3xl bg-[var(--glow)] p-5 lg:block">
-          <p className="text-sm font-bold text-[var(--teal-700)]">Next up</p>
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+          <p className="text-sm font-bold text-[var(--ink)]">Next up</p>
+          <p className="mt-2 text-sm leading-6 text-[var(--ink)]/80">
             Keep shelves fresh, publish drafts, and route every product through your creator tag.
           </p>
         </div>

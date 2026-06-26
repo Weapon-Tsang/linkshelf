@@ -3,7 +3,7 @@ const baseUrl = process.env.LINKSHELF_BASE_URL ?? "http://127.0.0.1:3000";
 const checks = [
   { path: "/", statuses: [200] },
   { path: "/login?returnTo=/studio/dashboard", statuses: [200] },
-  { path: "/admin-secret", statuses: [303, 307, 308] },
+  { path: "/admin-secret", statuses: [200] },
   { path: "/liamroberts.photo", statuses: [200] },
   { path: "/liamroberts.photo/photography-kit", statuses: [200] },
   { path: "/studio/dashboard", statuses: [303, 307, 308] },

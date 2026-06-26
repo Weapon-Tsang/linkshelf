@@ -5,7 +5,7 @@ import {
   resolveDevelopmentUser,
   type DevelopmentRoleHint,
 } from "@/features/auth/adapter";
-import { hasSameOrigin, safeReturnTo } from "@/features/auth/guards";
+import { hasSameOrigin, requestBaseUrl, safeReturnTo } from "@/features/auth/guards";
 import {
   ADMIN_ENTRY_COOKIE_NAME,
   consumeAdminEntryChallenge,
@@ -25,7 +25,7 @@ function isRoleHint(value: unknown): value is DevelopmentRoleHint {
 }
 
 function redirect(request: Request, pathname: string): NextResponse {
-  return NextResponse.redirect(new URL(pathname, request.url), 303);
+  return NextResponse.redirect(new URL(pathname, requestBaseUrl(request)), 303);
 }
 
 function setResumeEntryCookieIfNeeded(
@@ -65,7 +65,7 @@ export async function POST(request: Request): Promise<Response> {
       return new Response("Google authentication is not configured", { status: 503 });
     }
     const returnTo = safeReturnTo(requestedReturnTo, "/");
-    const authUrl = new URL("/api/auth/signin/google", request.url);
+    const authUrl = new URL("/api/auth/signin/google", requestBaseUrl(request));
     authUrl.searchParams.set("callbackUrl", returnTo);
     const response = NextResponse.redirect(authUrl, 303);
     setResumeEntryCookieIfNeeded(response, requestedReturnTo);

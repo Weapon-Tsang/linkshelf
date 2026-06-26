@@ -50,12 +50,47 @@ export function safeReturnTo(value: unknown, fallback = "/"): string {
   return typeof value === "string" && isSafeReturnPath(value) ? value : fallback;
 }
 
+function isLoopbackHost(hostname: string): boolean {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+}
+
 export function hasSameOrigin(request: Pick<Request, "headers" | "url">): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return false;
   try {
-    return origin === new URL(request.url).origin;
+    const originUrl = new URL(origin);
+    const requestUrl = new URL(request.url);
+    return (
+      originUrl.origin === requestUrl.origin ||
+      (originUrl.protocol === requestUrl.protocol &&
+        originUrl.port === requestUrl.port &&
+        isLoopbackHost(originUrl.hostname) &&
+        isLoopbackHost(requestUrl.hostname))
+    );
   } catch {
     return false;
   }
+}
+
+export function requestBaseUrl(request: Pick<Request, "headers" | "url">): URL {
+  const requestUrl = new URL(request.url);
+  const origin = request.headers.get("origin");
+  if (origin && hasSameOrigin(request)) {
+    return new URL(origin);
+  }
+
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const host = forwardedHost ?? request.headers.get("host");
+  if (host) {
+    const protocol =
+      request.headers.get("x-forwarded-proto") ??
+      requestUrl.protocol.replace(/:$/, "");
+    try {
+      return new URL(`${protocol}://${host}`);
+    } catch {
+      // Fall through to the framework-provided request URL.
+    }
+  }
+
+  return new URL(requestUrl.origin);
 }

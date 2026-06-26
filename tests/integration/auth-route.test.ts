@@ -74,6 +74,25 @@ describe("development Google auth route", () => {
     );
   });
 
+  it("redirects browser form posts back to the submitted loopback origin", async () => {
+    const response = await googleLogin(
+      new Request("http://localhost:3000/api/auth/google", {
+        method: "POST",
+        headers: { origin: "http://127.0.0.1:3000" },
+        body: new URLSearchParams({
+          role: "creator",
+          returnTo: "/studio/dashboard",
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe(
+      "http://127.0.0.1:3000/studio/dashboard",
+    );
+    expect(response.headers.get("set-cookie")).toContain(`${SESSION_COOKIE_NAME}=`);
+  });
+
   it("mints a same-origin resume marker for fan auth return targets", async () => {
     const returnTo = "/liamroberts.photo/photography-kit?channel=X&resume=share";
     const response = await googleLogin(
@@ -156,6 +175,21 @@ describe("development Google auth route", () => {
       ),
     );
     expect(replay.status).toBe(403);
+  });
+
+  it("redirects admin-entry challenges back to the browser host header", async () => {
+    const response = await createAdminEntry(
+      new Request(
+        "http://localhost:3000/api/auth/admin-entry?returnTo=%2Fadmin%2Fdashboard",
+        { headers: { host: "127.0.0.1:3000" } },
+      ),
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toMatch(
+      /^http:\/\/127\.0\.0\.1:3000\/admin-secret\?/,
+    );
+    expect(response.headers.get("set-cookie")).toContain(`${ADMIN_ENTRY_COOKIE_NAME}=`);
   });
 
   it("rejects expired and return-mismatched admin challenges", async () => {

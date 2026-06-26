@@ -64,6 +64,21 @@ describe("creator shelf management", () => {
     ]);
   });
 
+  it("returns plain serializable objects for server-to-client rendering", () => {
+    const result = listCreatorShelves(database, creatorSession, {
+      status: "ALL",
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(Object.getPrototypeOf(result.creator)).toBe(Object.prototype);
+    for (const shelf of result.shelves) {
+      expect(Object.getPrototypeOf(shelf)).toBe(Object.prototype);
+    }
+    expect(Object.getPrototypeOf(result.totals)).toBe(Object.prototype);
+  });
+
   it("publishes drafts and soft-deletes shelves without exposing deleted records", () => {
     expect(
       saveShelfDraft(
