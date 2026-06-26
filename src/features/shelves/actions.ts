@@ -253,7 +253,9 @@ export function listCreatorShelves(
          COUNT(products.id) AS productCount,
          shelves.updated_at AS updatedAt
        FROM shelves
-       LEFT JOIN products ON products.shelf_id = shelves.id
+       LEFT JOIN products
+         ON products.shelf_id = shelves.id
+        AND products.deleted_at IS NULL
        WHERE ${filters.join(" AND ")}
        GROUP BY shelves.id
        ORDER BY shelves._rowid_`,
@@ -565,14 +567,24 @@ function upsertShelfAndProducts(
     }
 
     const existingProducts = database
-      .prepare("SELECT id FROM products WHERE shelf_id = ?")
+      .prepare("SELECT id FROM products WHERE shelf_id = ? AND deleted_at IS NULL")
       .all(shelfId) as Array<{ id: string }>;
     const existingProductIds = new Set(existingProducts.map((product) => product.id));
     const retainedProductIds: string[] = [];
+    const sortOffsetRow = database
+      .prepare("SELECT COALESCE(MAX(sort_position), 0) AS maxSort FROM products WHERE shelf_id = ?")
+      .get(shelfId) as { maxSort: number | bigint } | undefined;
+    const maxSort = sortOffsetRow?.maxSort ?? 0;
+    const sortOffset = (typeof maxSort === "bigint" ? maxSort : BigInt(maxSort)) + 10000n;
 
     database
-      .prepare("UPDATE products SET sort_position = sort_position + 10000 WHERE shelf_id = ?")
-      .run(shelfId);
+      .prepare(
+        `UPDATE products
+         SET sort_position = sort_position + ?
+         WHERE shelf_id = ?
+           AND deleted_at IS NULL`,
+      )
+      .run(sortOffset, shelfId);
 
     const updateProduct = database.prepare(
       `UPDATE products
@@ -588,7 +600,8 @@ function upsertShelfAndProducts(
            hotspot_y = ?,
            updated_at = ?
        WHERE id = ?
-         AND shelf_id = ?`,
+         AND shelf_id = ?
+         AND deleted_at IS NULL`,
     );
     const insertProduct = database.prepare(
       `INSERT INTO products
@@ -637,23 +650,52 @@ function upsertShelfAndProducts(
           `DELETE FROM products
            WHERE shelf_id = ?
              AND id NOT IN (${placeholders})
+             AND deleted_at IS NULL
              AND NOT EXISTS (
                SELECT 1 FROM click_events
                WHERE click_events.product_id = products.id
              )`,
         )
         .run(shelfId, ...retainedProductIds);
+      database
+        .prepare(
+          `UPDATE products
+           SET deleted_at = ?,
+               updated_at = ?
+           WHERE shelf_id = ?
+             AND id NOT IN (${placeholders})
+             AND deleted_at IS NULL
+             AND EXISTS (
+               SELECT 1 FROM click_events
+               WHERE click_events.product_id = products.id
+             )`,
+        )
+        .run(now, now, shelfId, ...retainedProductIds);
     } else {
       database
         .prepare(
           `DELETE FROM products
            WHERE shelf_id = ?
+             AND deleted_at IS NULL
              AND NOT EXISTS (
                SELECT 1 FROM click_events
                WHERE click_events.product_id = products.id
              )`,
         )
         .run(shelfId);
+      database
+        .prepare(
+          `UPDATE products
+           SET deleted_at = ?,
+               updated_at = ?
+           WHERE shelf_id = ?
+             AND deleted_at IS NULL
+             AND EXISTS (
+               SELECT 1 FROM click_events
+               WHERE click_events.product_id = products.id
+             )`,
+        )
+        .run(now, now, shelfId);
     }
 
     database.exec("COMMIT");
@@ -710,6 +752,7 @@ export function getShelfEditorData(
          sort_position AS sortPosition
        FROM products
        WHERE shelf_id = ?
+         AND deleted_at IS NULL
        ORDER BY sort_position`,
     )
     .all(shelf.id) as unknown as ShelfEditorProductRow[];

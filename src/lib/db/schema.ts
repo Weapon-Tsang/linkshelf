@@ -528,4 +528,26 @@ export const schemaMigrations: readonly SchemaMigration[] = [
       END;
     `,
   },
+  {
+    version: 3,
+    name: "soft_delete_users",
+    sql: `
+      ALTER TABLE users ADD COLUMN deleted_at TEXT;
+
+      CREATE INDEX users_deleted_at_idx
+        ON users (deleted_at);
+    `,
+  },
+  {
+    version: 4,
+    name: "soft_delete_products",
+    sql: `
+      ALTER TABLE products ADD COLUMN deleted_at TEXT;
+
+      CREATE INDEX products_deleted_at_idx
+        ON products (deleted_at);
+      CREATE INDEX products_shelf_deleted_sort_idx
+        ON products (shelf_id, deleted_at, sort_position);
+    `,
+  },
 ];

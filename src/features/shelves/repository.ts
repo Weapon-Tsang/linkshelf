@@ -205,7 +205,9 @@ export function findPublicProfileShelves(
          shelves.cover_url AS coverUrl,
          COUNT(products.id) AS productCount
        FROM shelves
-       LEFT JOIN products ON products.shelf_id = shelves.id
+       LEFT JOIN products
+         ON products.shelf_id = shelves.id
+        AND products.deleted_at IS NULL
        WHERE shelves.creator_id = ?
          AND shelves.status = 'PUBLISHED'
          AND shelves.deleted_at IS NULL
@@ -258,6 +260,7 @@ export function findFeaturedPublicProducts(
        WHERE shelves.creator_id = ?
          AND shelves.status = 'PUBLISHED'
          AND shelves.deleted_at IS NULL
+         AND products.deleted_at IS NULL
        ORDER BY shelves._rowid_, products.sort_position
        LIMIT ?`,
     )
@@ -327,6 +330,7 @@ export function findPublicShelfProducts(
          hotspot_y AS hotspotY
        FROM products
        WHERE shelf_id = ?
+         AND deleted_at IS NULL
        ORDER BY sort_position`,
     )
     .all(shelfId) as unknown as ShelfProductRow[];

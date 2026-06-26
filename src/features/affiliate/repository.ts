@@ -57,6 +57,7 @@ export function findAffiliateProduct(
        INNER JOIN shelves ON shelves.id = products.shelf_id
        INNER JOIN creator_profiles ON creator_profiles.id = shelves.creator_id
        WHERE products.id = ?
+         AND products.deleted_at IS NULL
          AND shelves.status = 'PUBLISHED'
          AND shelves.deleted_at IS NULL
        LIMIT 1`,

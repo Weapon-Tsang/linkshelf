@@ -6,6 +6,7 @@ import {
   publishShelfFromEditor,
   saveShelfDraft,
 } from "@/features/shelves/actions";
+import { findPublicShelfProducts } from "@/features/shelves/repository";
 import { createDatabase } from "@/lib/db/client";
 import { migrate } from "@/lib/db/migrate";
 import { seed } from "@/lib/db/seed";
@@ -198,6 +199,49 @@ describe("shelf editor actions", () => {
         ],
       },
     });
+  });
+
+  it("hides removed products that have click history", () => {
+    const existing = getShelfEditorData(database, "shelf-photography", creatorSession);
+    expect(existing.ok).toBe(true);
+    if (!existing.ok) return;
+
+    expect(() =>
+      saveShelfDraft(
+        database,
+        {
+          shelfId: existing.shelf.id,
+          title: existing.shelf.title,
+          slug: existing.shelf.slug,
+          description: existing.shelf.description,
+          category: existing.shelf.category,
+          theme: existing.shelf.theme,
+          coverUrl: existing.shelf.coverUrl,
+          products: existing.shelf.products.filter(
+            (product) => product.id !== "product-sony-a7iv",
+          ),
+        },
+        creatorSession,
+        { now: () => NOW },
+      ),
+    ).not.toThrow();
+
+    const editorData = getShelfEditorData(database, "shelf-photography", creatorSession);
+    expect(editorData.ok && editorData.shelf.products.map((product) => product.id)).toEqual([
+      "product-sony-lens",
+      "product-peak-tripod",
+    ]);
+    expect(findPublicShelfProducts(database, "shelf-photography").map((product) => product.id)).toEqual([
+      "product-sony-lens",
+      "product-peak-tripod",
+    ]);
+    expect(
+      (
+        database
+          .prepare("SELECT deleted_at AS deletedAt FROM products WHERE id = ?")
+          .get("product-sony-a7iv") as { deletedAt: string | null }
+      ).deletedAt,
+    ).toBe(NOW.toISOString());
   });
 
   it("rejects publish-ready products that cannot use the affiliate redirect", () => {
