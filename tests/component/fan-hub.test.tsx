@@ -1,11 +1,35 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { HubDashboard } from "@/features/hub/hub-dashboard";
+import { HubShell } from "@/features/hub/hub-shell";
 
-afterEach(() => cleanup());
+let currentPathname = "/hub/dashboard";
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => currentPathname,
+}));
+
+afterEach(() => {
+  cleanup();
+  currentPathname = "/hub/dashboard";
+});
 
 describe("Fan Hub dashboard", () => {
+  it("links fans back to the seeded creator profile from the Hub shell", () => {
+    render(
+      <HubShell user={{ displayName: "Jamie Photo" }}>
+        <p>Fan rewards</p>
+      </HubShell>,
+    );
+
+    const nav = screen.getByRole("navigation", { name: "Fan Hub" });
+    expect(within(nav).getByRole("link", { name: "Explore" })).toHaveAttribute(
+      "href",
+      "/liamroberts.photo",
+    );
+  });
+
   it("switches sections, edits tracking ID, confirms withdrawal, and exports CSV", async () => {
     const user = userEvent.setup();
     const onWithdraw = vi.fn();

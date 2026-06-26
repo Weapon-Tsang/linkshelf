@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
 
 const navItems = [
   { label: "Dashboard", href: "/hub/dashboard", icon: "dashboard" },
-  { label: "Explore", href: "/liamshoots", icon: "travel_explore" },
+  { label: "Explore", href: "/liamroberts.photo", icon: "travel_explore" },
 ] as const;
 
 export function HubShell({
