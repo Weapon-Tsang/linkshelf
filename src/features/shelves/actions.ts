@@ -404,7 +404,8 @@ function isHttpUrl(value: string | undefined | null): value is string {
 function isDisplayAsset(value: string | undefined | null): value is string {
   const trimmed = value?.trim() ?? "";
   if (!trimmed) return false;
-  return isHttpUrl(trimmed) || (trimmed.startsWith("/") && !trimmed.startsWith("//"));
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//")) return true;
+  return isHttpUrl(trimmed);
 }
 
 function isSupportedAffiliateDestination(value: string | undefined | null): value is string {
@@ -575,7 +576,7 @@ function upsertShelfAndProducts(
       .prepare("SELECT COALESCE(MAX(sort_position), 0) AS maxSort FROM products WHERE shelf_id = ?")
       .get(shelfId) as { maxSort: number | bigint } | undefined;
     const maxSort = sortOffsetRow?.maxSort ?? 0;
-    const sortOffset = (typeof maxSort === "bigint" ? maxSort : BigInt(maxSort)) + 10000n;
+    const sortOffset = (typeof maxSort === "bigint" ? maxSort : BigInt(maxSort)) + BigInt(10000);
 
     database
       .prepare(

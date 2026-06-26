@@ -74,6 +74,8 @@ describe("local database", () => {
     expect(migrations).toEqual([
       { version: 1, name: "initial_schema" },
       { version: 2, name: "enforce_data_invariants" },
+      { version: 3, name: "soft_delete_users" },
+      { version: 4, name: "soft_delete_products" },
     ]);
     expect(tables).toEqual([
       "click_events",

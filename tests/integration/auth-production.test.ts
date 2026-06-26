@@ -148,7 +148,6 @@ describe("configured production Auth.js", () => {
     });
 
     const database = createDatabase(process.env.LINKSHELF_DB_PATH);
-    database.exec("ALTER TABLE users ADD COLUMN deleted_at TEXT");
     database.exec(
       "UPDATE users SET role = 'FAN', deleted_at = NULL WHERE id = 'user-creator'",
     );
@@ -183,7 +182,6 @@ describe("configured production Auth.js", () => {
     });
 
     const database = createDatabase(process.env.LINKSHELF_DB_PATH);
-    database.exec("ALTER TABLE users ADD COLUMN deleted_at TEXT");
     database.exec(
       "UPDATE users SET role = 'FAN', deleted_at = NULL WHERE id = 'user-creator'",
     );
