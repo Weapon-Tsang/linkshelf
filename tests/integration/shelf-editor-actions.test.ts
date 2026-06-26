@@ -158,4 +158,78 @@ describe("shelf editor actions", () => {
       },
     });
   });
+
+  it("updates existing products with click history without deleting restricted rows", () => {
+    const existing = getShelfEditorData(database, "shelf-photography", creatorSession);
+    expect(existing.ok).toBe(true);
+    if (!existing.ok) return;
+
+    expect(() =>
+      saveShelfDraft(
+        database,
+        {
+          shelfId: existing.shelf.id,
+          title: "Photography Kit Updated",
+          slug: existing.shelf.slug,
+          description: existing.shelf.description,
+          category: existing.shelf.category,
+          theme: existing.shelf.theme,
+          coverUrl: existing.shelf.coverUrl,
+          products: existing.shelf.products.map((product) => ({
+            ...product,
+            description: `${product.description} Updated.`,
+          })),
+        },
+        creatorSession,
+        { now: () => NOW },
+      ),
+    ).not.toThrow();
+
+    expect(
+      getShelfEditorData(database, "shelf-photography", creatorSession),
+    ).toMatchObject({
+      ok: true,
+      shelf: {
+        title: "Photography Kit Updated",
+        products: [
+          { id: "product-sony-a7iv", sortPosition: 0 },
+          { id: "product-sony-lens", sortPosition: 1 },
+          { id: "product-peak-tripod", sortPosition: 2 },
+        ],
+      },
+    });
+  });
+
+  it("rejects publish-ready products that cannot use the affiliate redirect", () => {
+    expect(
+      publishShelfFromEditor(
+        database,
+        {
+          title: "Broken Merchant",
+          slug: "broken-merchant",
+          description: "This should not publish.",
+          category: "Photography",
+          theme: "tech",
+          coverUrl: "https://images.linkshelf.local/cover.jpg",
+          products: [
+            {
+              destinationUrl: "https://example.com/product",
+              title: "Unsupported product",
+              description: "Looks complete but cannot be rewritten.",
+              merchant: "Example",
+              price: 99,
+              imageUrl: "https://images.linkshelf.local/example.jpg",
+            },
+          ],
+        },
+        creatorSession,
+      ),
+    ).toMatchObject({
+      ok: false,
+      reason: "VALIDATION_ERROR",
+      errors: {
+        products: expect.any(String),
+      },
+    });
+  });
 });

@@ -4,6 +4,7 @@ import type { AuthSession } from "@/features/auth/adapter";
 import {
   listCreatorShelves,
   publishShelf,
+  saveShelfDraft,
   softDeleteShelf,
 } from "@/features/shelves/actions";
 import { createDatabase } from "@/lib/db/client";
@@ -65,6 +66,34 @@ describe("creator shelf management", () => {
 
   it("publishes drafts and soft-deletes shelves without exposing deleted records", () => {
     expect(
+      saveShelfDraft(
+        database,
+        {
+          shelfId: "shelf-desk",
+          title: "Desk Setup",
+          slug: "desk-setup",
+          description: "Ergonomic upgrades for a focused workspace.",
+          category: "Workspace",
+          theme: "minimal",
+          coverUrl: "https://images.linkshelf.local/desk-cover.jpg",
+          products: [
+            {
+              id: "product-ergotune",
+              destinationUrl: "https://www.amazon.com/dp/B07Y8V14KQ",
+              title: "ErgoTune Supreme",
+              description: "An adjustable mesh chair for long editing sessions.",
+              merchant: "Amazon",
+              price: 399,
+              imageUrl: "https://images.linkshelf.local/ergotune.jpg",
+            },
+          ],
+        },
+        creatorSession,
+        { now: () => NOW },
+      ),
+    ).toEqual({ ok: true, shelfId: "shelf-desk", status: "DRAFT" });
+
+    expect(
       publishShelf(database, { shelfId: "shelf-desk" }, creatorSession, {
         now: () => NOW,
       }),
@@ -95,6 +124,39 @@ describe("creator shelf management", () => {
           .get("shelf-desk") as { deletedAt: string | null }
       ).deletedAt,
     ).toBe(NOW.toISOString());
+  });
+
+  it("uses publish validation when publishing from the shelf list", () => {
+    const draft = saveShelfDraft(
+      database,
+      {
+        title: "Incomplete Draft",
+        description: "No cover and no complete products yet.",
+        category: "Photography",
+        theme: "tech",
+        products: [{ destinationUrl: "https://www.amazon.com/dp/B0CAMERA" }],
+      },
+      creatorSession,
+      { createId: (prefix) => `${prefix}-incomplete`, now: () => NOW },
+    );
+    expect(draft).toEqual({
+      ok: true,
+      shelfId: "shelf-incomplete",
+      status: "DRAFT",
+    });
+
+    expect(
+      publishShelf(database, { shelfId: "shelf-incomplete" }, creatorSession, {
+        now: () => NOW,
+      }),
+    ).toMatchObject({
+      ok: false,
+      reason: "VALIDATION_ERROR",
+      errors: {
+        coverUrl: expect.any(String),
+        products: expect.any(String),
+      },
+    });
   });
 
   it("rejects management actions for non-creator sessions", () => {

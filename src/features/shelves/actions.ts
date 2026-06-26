@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import type { AuthSession } from "@/features/auth/adapter";
+import { rewriteAmazonTag } from "@/features/affiliate/rewrite-amazon-tag";
 import type { ShelfStatus } from "./types";
 
 export type ShelfManagementFilter = "ALL" | ShelfStatus;
@@ -47,7 +48,8 @@ export type ShelfMutationResult =
     }
   | {
       readonly ok: false;
-      readonly reason: ShelfManagementFailureReason;
+      readonly reason: ShelfManagementFailureReason | "VALIDATION_ERROR";
+      readonly errors?: Partial<Record<keyof ShelfEditorInput | "products", string>>;
     };
 
 interface CreatorRow {
@@ -84,7 +86,7 @@ export interface ShelfEditorProductInput {
   readonly description?: string;
   readonly merchant?: string;
   readonly price?: number;
-  readonly imageUrl?: string;
+  readonly imageUrl?: string | null;
   readonly hotspotX?: number | null;
   readonly hotspotY?: number | null;
 }
@@ -108,7 +110,7 @@ export interface ShelfEditorProduct {
   readonly description: string;
   readonly merchant: string;
   readonly price: number;
-  readonly imageUrl: string;
+  readonly imageUrl: string | null;
   readonly hotspotX: number | null;
   readonly hotspotY: number | null;
   readonly sortPosition: number;
@@ -300,6 +302,13 @@ export function publishShelf(
     return { ok: false, reason: "NOT_FOUND" };
   }
 
+  const editorData = getShelfEditorData(database, input.shelfId, session);
+  if (!editorData.ok) return editorData;
+  const errors = validatePublishInput(editorData.shelf);
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, reason: "VALIDATION_ERROR", errors };
+  }
+
   database
     .prepare(
       `UPDATE shelves
@@ -360,7 +369,7 @@ interface ShelfEditorProductRow {
   readonly description: string;
   readonly priceCents: number;
   readonly merchant: string;
-  readonly imageUrl: string;
+  readonly imageUrl: string | null;
   readonly hotspotX: number | null;
   readonly hotspotY: number | null;
   readonly sortPosition: number;
@@ -383,8 +392,24 @@ function slugify(value: string | undefined): string {
 function isHttpUrl(value: string | undefined | null): value is string {
   if (!value) return false;
   try {
-    const url = new URL(value);
+    const url = new URL(value.trim());
     return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+function isDisplayAsset(value: string | undefined | null): value is string {
+  const trimmed = value?.trim() ?? "";
+  if (!trimmed) return false;
+  return isHttpUrl(trimmed) || (trimmed.startsWith("/") && !trimmed.startsWith("//"));
+}
+
+function isSupportedAffiliateDestination(value: string | undefined | null): value is string {
+  if (!value) return false;
+  try {
+    rewriteAmazonTag(value.trim(), "linkshelf-platform-20");
+    return true;
   } catch {
     return false;
   }
@@ -401,8 +426,8 @@ function validProducts(
 ): ShelfEditorProductInput[] {
   return (products ?? []).filter(
     (product) =>
-      isHttpUrl(product.destinationUrl) &&
-      isHttpUrl(product.imageUrl) &&
+      isSupportedAffiliateDestination(product.destinationUrl) &&
+      isDisplayAsset(product.imageUrl) &&
       normalizeText(product.title) &&
       normalizeText(product.merchant) &&
       typeof product.price === "number" &&
@@ -411,13 +436,32 @@ function validProducts(
   );
 }
 
+function persistableProducts(
+  products: readonly ShelfEditorProductInput[] | undefined,
+): ShelfEditorProductInput[] {
+  return (products ?? []).filter(
+    (product) =>
+      isHttpUrl(product.destinationUrl) &&
+      normalizeText(product.title) &&
+      normalizeText(product.merchant) &&
+      typeof product.price === "number" &&
+      Number.isFinite(product.price) &&
+      product.price > 0,
+  );
+}
+
+function normalizeDisplayAsset(value: string | null | undefined): string | null {
+  const trimmed = value?.trim() ?? "";
+  return isDisplayAsset(trimmed) ? trimmed : null;
+}
+
 function validatePublishInput(input: ShelfEditorInput) {
   const errors: Partial<Record<keyof ShelfEditorInput | "products", string>> = {};
   if (!normalizeText(input.title)) errors.title = "Title is required to publish.";
   if (!slugify(input.slug || input.title).match(/^[a-z0-9][a-z0-9-]{1,80}$/)) {
     errors.slug = "Use a readable URL slug.";
   }
-  if (!isHttpUrl(input.coverUrl)) errors.coverUrl = "Cover image is required to publish.";
+  if (!isDisplayAsset(input.coverUrl)) errors.coverUrl = "Cover image is required to publish.";
   if (validProducts(input.products).length === 0) {
     errors.products = "Add at least one complete product before publishing.";
   }
@@ -447,7 +491,7 @@ function shelfValues(
     status,
     theme: normalizeText(input.theme, "tech"),
     sourceContentUrl: isHttpUrl(input.sourceContentUrl) ? input.sourceContentUrl : null,
-    coverUrl: isHttpUrl(input.coverUrl) ? input.coverUrl : null,
+    coverUrl: normalizeDisplayAsset(input.coverUrl),
     updatedAt: now,
   };
 }
@@ -462,7 +506,7 @@ function upsertShelfAndProducts(
   const now = (options.now ?? (() => new Date()))().toISOString();
   const shelfId = input.shelfId ?? createEditorId("shelf", options);
   const values = shelfValues(creatorId, input, status, now);
-  const products = validProducts(input.products);
+  const products = persistableProducts(input.products);
 
   database.exec("BEGIN IMMEDIATE TRANSACTION");
   try {
@@ -520,7 +564,32 @@ function upsertShelfAndProducts(
         );
     }
 
-    database.prepare("DELETE FROM products WHERE shelf_id = ?").run(shelfId);
+    const existingProducts = database
+      .prepare("SELECT id FROM products WHERE shelf_id = ?")
+      .all(shelfId) as Array<{ id: string }>;
+    const existingProductIds = new Set(existingProducts.map((product) => product.id));
+    const retainedProductIds: string[] = [];
+
+    database
+      .prepare("UPDATE products SET sort_position = sort_position + 10000 WHERE shelf_id = ?")
+      .run(shelfId);
+
+    const updateProduct = database.prepare(
+      `UPDATE products
+       SET title = ?,
+           description = ?,
+           price_cents = ?,
+           currency = 'USD',
+           merchant = ?,
+           destination_url = ?,
+           image_url = ?,
+           sort_position = ?,
+           hotspot_x = ?,
+           hotspot_y = ?,
+           updated_at = ?
+       WHERE id = ?
+         AND shelf_id = ?`,
+    );
     const insertProduct = database.prepare(
       `INSERT INTO products
          (id, shelf_id, title, description, price_cents, currency, merchant,
@@ -529,22 +598,63 @@ function upsertShelfAndProducts(
        VALUES (?, ?, ?, ?, ?, 'USD', ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     products.forEach((product, index) => {
-      insertProduct.run(
-        product.id || createEditorId("product", options),
-        shelfId,
+      const productId =
+        product.id && existingProductIds.has(product.id)
+          ? product.id
+          : product.id || createEditorId("product", options);
+      retainedProductIds.push(productId);
+
+      const productValues = [
         normalizeText(product.title),
         normalizeText(product.description, "Creator-recommended product."),
         BigInt(Math.round((product.price ?? 0) * 100)),
         normalizeText(product.merchant, "Amazon"),
         normalizeText(product.destinationUrl),
-        normalizeText(product.imageUrl),
+        normalizeDisplayAsset(product.imageUrl),
         BigInt(index),
         normalizeHotspot(product.hotspotX),
         normalizeHotspot(product.hotspotY),
+      ] as const;
+
+      if (existingProductIds.has(productId)) {
+        updateProduct.run(...productValues, now, productId, shelfId);
+        return;
+      }
+
+      insertProduct.run(
+        productId,
+        shelfId,
+        ...productValues,
         now,
         now,
       );
     });
+
+    if (retainedProductIds.length > 0) {
+      const placeholders = retainedProductIds.map(() => "?").join(", ");
+      database
+        .prepare(
+          `DELETE FROM products
+           WHERE shelf_id = ?
+             AND id NOT IN (${placeholders})
+             AND NOT EXISTS (
+               SELECT 1 FROM click_events
+               WHERE click_events.product_id = products.id
+             )`,
+        )
+        .run(shelfId, ...retainedProductIds);
+    } else {
+      database
+        .prepare(
+          `DELETE FROM products
+           WHERE shelf_id = ?
+             AND NOT EXISTS (
+               SELECT 1 FROM click_events
+               WHERE click_events.product_id = products.id
+             )`,
+        )
+        .run(shelfId);
+    }
 
     database.exec("COMMIT");
   } catch (error) {
