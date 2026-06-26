@@ -54,7 +54,7 @@ export function HubShell({
                 className={cn(
                   "flex items-center gap-3 border-r-4 border-transparent px-4 py-3 text-sm font-bold text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--ink)]",
                   active &&
-                    "border-[var(--teal-700)] bg-[var(--glow)] text-[var(--teal-700)] hover:bg-[var(--glow)] hover:text-[var(--teal-700)]",
+                    "border-[var(--teal-700)] bg-[var(--glow)] text-[var(--ink)] hover:bg-[var(--glow)] hover:text-[var(--ink)]",
                 )}
                 href={item.href}
                 key={item.href}

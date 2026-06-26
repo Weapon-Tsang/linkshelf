@@ -278,7 +278,7 @@ export function HubDashboard({
               Export CSV
             </button>
           </div>
-          <div className="overflow-x-auto">
+          <div aria-label="Rewards History table" className="overflow-x-auto" tabIndex={0}>
             <table className="w-full min-w-[620px] text-left">
               <thead>
                 <tr className="border-b border-[var(--line)]">
