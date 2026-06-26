@@ -14,3 +14,11 @@ test("fan can open public shelf and manage Hub wallet", async ({ page }) => {
   await page.getByRole("button", { name: "Saved" }).click();
   await expect(page.getByText("Photography Kit")).toBeVisible();
 });
+
+test("post-auth share return opens the share modal on the public shelf", async ({ page }) => {
+  await page.goto("/liamroberts.photo/photography-kit?share=jamie-photo&shareModal=1");
+
+  await expect(page.getByRole("dialog", { name: "Share Shelf" })).toBeVisible();
+  await expect(page.getByText("/liamroberts.photo/photography-kit?share=jamie-photo")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Share on X" })).toBeVisible();
+});

@@ -14,6 +14,8 @@ Full-view comparison evidence: `test-results/design-qa/latest/compare/`
 
 Capture notes: `test-results/design-qa/latest/capture-notes.json`
 
+Note: `test-results/` is intentionally git-ignored; rerun `node scripts/capture-design-qa.mjs` against a local server to regenerate the latest visual evidence.
+
 Focused region comparison evidence: not generated in this pass because full-view comparisons already expose actionable P1/P2 blockers. Focused crops should be added after the major information-architecture/layout alignment pass.
 
 ## Screen coverage
@@ -34,15 +36,15 @@ Focused region comparison evidence: not generated in this pass because full-view
 | `fan-auth-overlay.png` | public shelf + fan auth overlay | `1280x1024@2` | Captured after portal fix; P2 visual/provider drift remains |
 | `admin-login.png` | admin secret Google gate | `1280x1024@2` | Captured; Google-only auth is intentional per product direction |
 | `super-admin.png` | `/admin/dashboard` | `1280x1024@2` | Captured; P2 data-density/layout drift remains |
-| `share-modal.png` | public shelf share dialog | n/a | Blocked: no live route or trigger opens `ShareDialog` |
+| `share-modal.png` | `/liamroberts.photo/photography-kit?share=jamie-photo&shareModal=1` | `390x1405@2` | Captured after share route/portal fix; source-state/visual mismatch remains |
 
 ## Findings
 
-- [P1] Share modal Stitch screen is not reachable in the running app
-  Location: public shelf sharing flow / `src/features/engagement/share-dialog.tsx`.
-  Evidence: `design/stitch/screens/share-modal.png` defines a full share modal state, but the current public shelf share action opens `FanAuthDialog`; `ShareDialog` exists only as a component-level implementation and test target.
-  Impact: one of the 15 requested designed screens cannot be verified as a real product state.
-  Fix: wire the post-auth share flow so a fan can open `ShareDialog`, then capture `share-modal` at the matching mobile viewport.
+- [P2] Share modal is reachable and captured, but the reference state appears mismatched
+  Location: public shelf sharing flow / `src/features/engagement/share-dialog.tsx`, `src/features/public-profile/hotspot-hero.tsx`, `src/app/[creatorHandle]/[shelfId]/page.tsx`.
+  Evidence: `test-results/design-qa/latest/compare/share-modal.png` now captures the real `shareModal=1` state. The implementation opens a bottom-sheet `Share Shelf` dialog with copy/channel/reward content, while the Stitch `share-modal.png` reference looks like the public shelf page without a visible modal.
+  Impact: the former reachability blocker is resolved; the remaining issue is visual/source-state alignment rather than route functionality.
+  Fix: confirm whether the Stitch `share-modal.png` export is the intended modal state. If yes, tune the mobile public shelf state to match it; if no, re-export the modal source and use the current `shareModal=1` route for comparison.
 
 - [P1] Creator Studio shell and management pages do not match the Stitch information architecture
   Location: `studio-dashboard`, `studio-management-expanded`, `studio-management-one-column`, `studio-create-shelf`.
@@ -86,23 +88,27 @@ Focused region comparison evidence: not generated in this pass because full-view
 - Portaled `FanAuthDialog` to `document.body` so the overlay is not clipped or overlapped by the public shelf hero container.
 - Added a regression test that verifies the fan-auth overlay renders outside its trigger container.
 - Added hydration guards to Admin Dashboard export controls and Fan Hub interactive controls so clicks cannot be lost before Client Components finish hydrating.
+- Wired existing fan share links into the real `ShareDialog`, including post-auth `shareModal=1` route state and hero share button fallback.
+- Added component coverage for existing share-link buttons and initial public shelf share modal state.
+- Updated `scripts/capture-design-qa.mjs` so `share-modal` is now a real mobile capture target instead of a known blocker.
 
 ## Verification run evidence
 
 | Gate | Command | Result |
 | --- | --- | --- |
 | Comment/settings serialization regressions | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/integration/comment-actions.test.ts` | Passed: 5 tests |
-| Fan auth portal regression | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/share-dialog.test.tsx` | Passed: 7 tests |
-| TypeScript | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit` | Passed |
-| Lint | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint .` | Passed |
-| Unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 215 tests across 33 files |
-| End-to-end suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 11 tests |
+| Fan auth/share dialog regression | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/share-dialog.test.tsx tests/component/public-shelf.test.tsx` | Passed: 13 tests |
+| Latest TypeScript | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit` | Passed |
+| Latest lint | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint .` | Passed |
+| Latest unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 218 tests across 33 files |
+| Latest end-to-end suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
 | Production build | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
-| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 14 states; `share-modal` blocked as unreachable |
+| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states including `share-modal` |
+| Share modal browser/E2E recapture | `PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test tests/e2e/fan-flow.spec.ts -g "post-auth share"` and `node scripts/capture-design-qa.mjs` | Passed targeted E2E; captured 15 visual states including `share-modal` |
 
 ## Implementation checklist
 
-1. Wire the authenticated/post-auth share modal flow and capture `share-modal`.
+1. Confirm or re-export the intended Stitch state for `share-modal`, because the current reference does not show the modal while the app route does.
 2. Align Creator Studio shell, dashboard, shelf manager, and create-shelf editor to the Stitch IA.
 3. Add Fan Hub shared shelves and saved collections sections to match the reference.
 4. Tune fan-auth overlay visual treatment while preserving Google-only auth.

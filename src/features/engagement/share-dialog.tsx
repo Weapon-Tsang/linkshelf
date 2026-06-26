@@ -2,12 +2,20 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
+import { createPortal } from "react-dom";
 import type { SocialChannelType } from "@/features/shelves/types";
 import { FanAuthDialog } from "./fan-auth-dialog";
 
 export interface ShareDialogChannel {
   readonly type: SocialChannelType;
   readonly enabled: boolean;
+}
+
+export interface ShareDialogLaunchOptions {
+  readonly shelfId: string;
+  readonly shortUrl: string;
+  readonly channels: readonly ShareDialogChannel[];
+  readonly initialOpen?: boolean;
 }
 
 const channelLabels: Record<SocialChannelType, string> = {
@@ -52,7 +60,7 @@ export function ShareDialog({
     setCopied(true);
   }
 
-  return (
+  const dialog = (
     <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/40 px-4 backdrop-blur-sm sm:items-center">
       <section
         aria-describedby={`share-dialog-description-${shelfId}`}
@@ -148,20 +156,25 @@ export function ShareDialog({
       </section>
     </div>
   );
+
+  return typeof document === "undefined" ? dialog : createPortal(dialog, document.body);
 }
 
 export function ShareToEarnButton({
   returnTo,
   children,
   className,
+  shareDialog,
   "aria-label": ariaLabel,
 }: {
   readonly returnTo: string;
   readonly children: ReactNode;
   readonly className?: string;
+  readonly shareDialog?: ShareDialogLaunchOptions;
   readonly "aria-label"?: string;
 }) {
   const [authOpen, setAuthOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(Boolean(shareDialog?.initialOpen));
 
   return (
     <>
@@ -171,11 +184,26 @@ export function ShareToEarnButton({
           className ??
           "inline-flex items-center gap-2 rounded-full bg-[var(--teal-700)] px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90"
         }
-        onClick={() => setAuthOpen(true)}
+        onClick={() => {
+          if (shareDialog) {
+            setShareOpen(true);
+            return;
+          }
+          setAuthOpen(true);
+        }}
         type="button"
       >
         {children}
       </button>
+      {shareDialog ? (
+        <ShareDialog
+          channels={shareDialog.channels}
+          onClose={() => setShareOpen(false)}
+          open={shareOpen}
+          shelfId={shareDialog.shelfId}
+          shortUrl={shareDialog.shortUrl}
+        />
+      ) : null}
       <FanAuthDialog
         onClose={() => setAuthOpen(false)}
         open={authOpen}

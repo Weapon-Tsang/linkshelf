@@ -2,9 +2,22 @@
 
 import type { PublicShelf } from "@/features/shelves/types";
 import { SaveButton } from "@/features/engagement/save-button";
-import { ShareToEarnButton } from "@/features/engagement/share-dialog";
+import { ShareToEarnButton, type ShareDialogLaunchOptions } from "@/features/engagement/share-dialog";
 
-export function HotspotHero({ shelf }: { readonly shelf: PublicShelf }) {
+export function HotspotHero({
+  shelf,
+  shareDialog,
+}: {
+  readonly shelf: PublicShelf;
+  readonly shareDialog?: ShareDialogLaunchOptions;
+}) {
+  const secondaryShareDialog = shareDialog
+    ? {
+        ...shareDialog,
+        initialOpen: false,
+      }
+    : undefined;
+
   return (
     <header className="relative min-h-[520px] overflow-hidden rounded-b-[36px] bg-[var(--ink)] md:min-h-[680px] md:rounded-[36px]">
       {shelf.heroImageUrl ? (
@@ -29,6 +42,7 @@ export function HotspotHero({ shelf }: { readonly shelf: PublicShelf }) {
           aria-label="Share shelf"
           className="flex h-12 w-12 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-md transition-colors hover:bg-black"
           returnTo={`/${shelf.creator.handle}/${shelf.slug}`}
+          shareDialog={shareDialog}
         >
           <span aria-hidden="true" className="material-symbols-outlined">
             ios_share
@@ -39,6 +53,7 @@ export function HotspotHero({ shelf }: { readonly shelf: PublicShelf }) {
       <ShareToEarnButton
         className="absolute right-5 top-20 z-10 rounded-full border border-[var(--teal-500)]/25 bg-[var(--teal-700)]/20 px-4 py-2 text-sm font-semibold text-[var(--teal-500)] backdrop-blur-md transition-colors hover:bg-[var(--teal-700)]/30"
         returnTo={`/${shelf.creator.handle}/${shelf.slug}`}
+        shareDialog={secondaryShareDialog}
       >
         Share to earn
       </ShareToEarnButton>

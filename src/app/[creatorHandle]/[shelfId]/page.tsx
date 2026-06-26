@@ -20,12 +20,26 @@ interface ShelfRouteProps {
     readonly share?: string | string[];
     readonly resume?: string | string[];
     readonly channel?: string | string[];
+    readonly shareModal?: string | string[];
   }>;
 }
 
-function shelfPath(handle: string, slug: string, shareCode?: string | null) {
+function shelfPath(
+  handle: string,
+  slug: string,
+  shareCode?: string | null,
+  openShareModal = false,
+) {
   const path = `/${handle}/${slug}`;
-  return shareCode ? `${path}?share=${encodeURIComponent(shareCode)}` : path;
+  const params = new URLSearchParams();
+  if (shareCode) {
+    params.set("share", shareCode);
+  }
+  if (openShareModal) {
+    params.set("shareModal", "1");
+  }
+  const query = params.toString();
+  return query ? `${path}?${query}` : path;
 }
 
 type SearchValue = string | string[] | undefined;
@@ -97,6 +111,7 @@ export default async function PublicShelfRoute({ params, searchParams }: ShelfRo
         result.shelf.creator.handle,
         result.shelf.slug,
         resume.kind === "share" ? resume.shareCode : existingShareCode,
+        resume.kind === "share",
       ),
     );
   }
@@ -106,5 +121,11 @@ export default async function PublicShelfRoute({ params, searchParams }: ShelfRo
     shareCode: search.share,
   });
 
-  return <ShelfPage shareCode={shareCode ?? undefined} shelf={result.shelf} />;
+  return (
+    <ShelfPage
+      initialShareDialogOpen={shareCode !== null && search.shareModal === "1"}
+      shareCode={shareCode ?? undefined}
+      shelf={result.shelf}
+    />
+  );
 }

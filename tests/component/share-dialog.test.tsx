@@ -128,6 +128,50 @@ describe("ShareToEarnButton", () => {
       'input[name="returnTo"]',
     )).toHaveValue("/liamroberts.photo/photography-kit?resume=share");
   });
+
+  it("opens the real share dialog when a fan share link already exists", async () => {
+    render(
+      <ShareToEarnButton
+        returnTo="/liamroberts.photo/photography-kit"
+        shareDialog={{
+          channels: [{ type: "X", enabled: true }],
+          shelfId: "shelf-photography",
+          shortUrl: "/liamroberts.photo/photography-kit?share=jamie-photo",
+        }}
+      >
+        Share to earn
+      </ShareToEarnButton>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Share to earn" }));
+
+    expect(screen.getByRole("dialog", { name: "Share Shelf" })).toBeVisible();
+    expect(screen.getByText("/liamroberts.photo/photography-kit?share=jamie-photo")).toBeVisible();
+    expect(screen.queryByRole("dialog", { name: "Fan Authentication" })).not.toBeInTheDocument();
+  });
+
+  it("renders the share dialog outside the trigger container so hero overflow cannot clip it", async () => {
+    const { container } = render(
+      <div className="overflow-hidden">
+        <ShareToEarnButton
+          returnTo="/liamroberts.photo/photography-kit"
+          shareDialog={{
+            channels: [{ type: "X", enabled: true }],
+            shelfId: "shelf-photography",
+            shortUrl: "/liamroberts.photo/photography-kit?share=jamie-photo",
+          }}
+        >
+          Share to earn
+        </ShareToEarnButton>
+      </div>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Share to earn" }));
+    const dialog = screen.getByRole("dialog", { name: "Share Shelf" });
+
+    expect(container.contains(dialog)).toBe(false);
+    expect(document.body).toContainElement(dialog);
+  });
 });
 
 describe("SaveButton", () => {

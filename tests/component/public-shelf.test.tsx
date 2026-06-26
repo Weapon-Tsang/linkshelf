@@ -127,6 +127,15 @@ describe("public LinkShelf surfaces", () => {
     );
   });
 
+  it("opens the share dialog on post-auth share resume links", () => {
+    render(<ShelfPage initialShareDialogOpen shareCode="jamie-photo" shelf={shelf} />);
+
+    expect(screen.getByRole("dialog", { name: "Share Shelf" })).toBeVisible();
+    expect(screen.getByText("/liamroberts.photo/photography-kit?share=jamie-photo")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Share on X" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Share on Copy" })).toBeVisible();
+  });
+
   it("omits share attribution from product links when no share code is present", () => {
     render(<ShelfPage shelf={shelf} />);
 

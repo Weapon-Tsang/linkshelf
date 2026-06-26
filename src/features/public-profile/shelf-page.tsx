@@ -14,15 +14,29 @@ function safeExternalHref(value: string) {
 export function ShelfPage({
   shelf,
   shareCode,
+  initialShareDialogOpen = false,
 }: {
   readonly shelf: PublicShelf;
   readonly shareCode?: string;
+  readonly initialShareDialogOpen?: boolean;
 }) {
+  const shareDialog = shareCode
+    ? {
+        channels: shelf.socialChannels.map((channel) => ({
+          type: channel.type,
+          enabled: true,
+        })),
+        initialOpen: initialShareDialogOpen,
+        shelfId: shelf.id,
+        shortUrl: `/${shelf.creator.handle}/${shelf.slug}?share=${encodeURIComponent(shareCode)}`,
+      }
+    : undefined;
+
   return (
     <div className="min-h-screen bg-[var(--surface)] text-[var(--ink)] md:bg-[linear-gradient(135deg,#fcf8fb,#f0fffb)]">
       <main className="mx-auto max-w-[1180px] md:grid md:grid-cols-[minmax(0,1.05fr)_minmax(420px,0.95fr)] md:gap-8 md:px-6 md:py-8">
         <div className="md:sticky md:top-8 md:self-start">
-          <HotspotHero shelf={shelf} />
+          <HotspotHero shareDialog={shareDialog} shelf={shelf} />
         </div>
 
         <div className="relative z-20 -mt-8 px-5 pb-12 md:mt-0 md:px-0">

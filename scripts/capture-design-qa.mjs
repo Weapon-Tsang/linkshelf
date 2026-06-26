@@ -13,6 +13,7 @@ const notesPath = path.join(outRoot, "capture-notes.json");
 const desktop = { width: 1280, height: 1024, deviceScaleFactor: 2 };
 const tallDesktop = { width: 1280, height: 1600, deviceScaleFactor: 2 };
 const narrow = { width: 728, height: 1024, deviceScaleFactor: 2 };
+const mobileTall = { width: 390, height: 1405, deviceScaleFactor: 2, isMobile: true };
 
 const targets = [
   {
@@ -113,6 +114,17 @@ const targets = [
     },
   },
   {
+    id: "share-modal",
+    reference: "share-modal.png",
+    route: "/liamroberts.photo/photography-kit?share=jamie-photo&shareModal=1",
+    viewport: mobileTall,
+    state: "public shelf share dialog opened after fan share resume",
+    fullPage: false,
+    beforeCapture: async (page) => {
+      await page.getByRole("dialog", { name: /share shelf/i }).waitFor();
+    },
+  },
+  {
     id: "admin-login",
     reference: "admin-login.png",
     viewport: desktop,
@@ -142,15 +154,7 @@ const targets = [
   },
 ];
 
-const knownBlockers = [
-  {
-    id: "share-modal",
-    reference: "share-modal.png",
-    state: "public shelf share dialog",
-    blocker:
-      "The ShareDialog component exists and is covered by component tests, but no live app route or button currently opens it; the public share button opens FanAuthDialog instead.",
-  },
-];
+const knownBlockers = [];
 
 function ensureCleanOutput() {
   rmSync(outRoot, { recursive: true, force: true });
