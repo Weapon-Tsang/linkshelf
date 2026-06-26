@@ -44,18 +44,18 @@ describe("Fan Hub dashboard", () => {
     );
   });
 
-  it("links fans back to the seeded creator profile from the Hub shell explore item", () => {
+  it("uses a compact Stitch-style side rail without duplicating top utility navigation", () => {
     render(
       <HubShell user={{ displayName: "Jamie Photo" }}>
         <p>Fan rewards</p>
       </HubShell>,
     );
 
+    const sideRail = screen.getByRole("complementary", { name: "Fan Hub side rail" });
+    expect(sideRail).toHaveClass("lg:w-[188px]");
+
     const nav = screen.getByRole("navigation", { name: "Fan Hub" });
-    expect(within(nav).getByRole("link", { name: "Explore" })).toHaveAttribute(
-      "href",
-      "/liamroberts.photo",
-    );
+    expect(within(nav).queryByRole("link", { name: "Explore" })).not.toBeInTheDocument();
   });
 
   it("renders the Stitch My Hub structure as one dashboard instead of hidden tabs", () => {
@@ -132,6 +132,11 @@ describe("Fan Hub dashboard", () => {
     expect(screen.getByText("Available Balance")).toBeVisible();
     expect(screen.getByRole("heading", { name: "Rewards History" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Source" })).toBeVisible();
+    expect(screen.getByRole("table", { name: "Rewards history entries" })).toHaveClass(
+      "table-fixed",
+    );
+    expect(screen.getByRole("columnheader", { name: "Amount" })).toHaveClass("w-24");
+    expect(screen.getAllByText("Platform Default")[0]).toHaveClass("whitespace-nowrap");
     expect(screen.getByText("Tech Collection")).toBeVisible();
     expect(screen.getByText("Home Office Gear")).toBeVisible();
     expect(screen.getByText("Fall Essentials")).toBeVisible();

@@ -129,8 +129,8 @@ export function HubDashboard({
     .slice(0, 3);
 
   return (
-    <div className="mx-auto max-w-[1180px] space-y-6">
-      <header className="space-y-5">
+    <div className="mx-auto max-w-[1060px] space-y-5">
+      <header className="space-y-4">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <nav
             aria-label="Fan dashboard utility"
@@ -194,7 +194,7 @@ export function HubDashboard({
 
       <section
         aria-labelledby="affiliate-binding-heading"
-        className="rounded-[28px] bg-white p-6 shadow-[var(--shadow-card)]"
+        className="rounded-[28px] bg-white p-5 shadow-[var(--shadow-card)]"
       >
         <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] md:items-center">
           <div>
@@ -244,8 +244,8 @@ export function HubDashboard({
         </div>
       </section>
 
-      <div className="grid items-start gap-6 lg:grid-cols-12">
-        <article className="relative flex min-h-[280px] flex-col justify-between overflow-hidden rounded-[28px] bg-white p-6 shadow-[var(--shadow-card)] lg:col-span-4">
+      <div className="grid items-start gap-5 lg:grid-cols-12">
+        <article className="relative flex min-h-[260px] flex-col justify-between overflow-hidden rounded-[28px] bg-white p-5 shadow-[var(--shadow-card)] lg:col-span-4">
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-[var(--glow)] blur-3xl" />
           <div className="relative">
             <div className="mb-8 flex items-center justify-between gap-4">
@@ -287,7 +287,7 @@ export function HubDashboard({
 
         <section
           aria-labelledby="rewards-history-heading"
-          className="overflow-hidden rounded-[28px] bg-white p-6 shadow-[var(--shadow-card)] lg:col-span-8"
+          className="overflow-hidden rounded-[28px] bg-white p-5 shadow-[var(--shadow-card)] lg:col-span-8"
         >
           <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <h2
@@ -311,19 +311,19 @@ export function HubDashboard({
             </button>
           </div>
           <div aria-label="Rewards History table" className="overflow-x-auto" tabIndex={0}>
-            <table className="w-full min-w-[620px] text-left">
+            <table aria-label="Rewards history entries" className="w-full table-fixed text-left">
               <thead>
                 <tr className="border-b border-[var(--line)]">
-                  <th className="pb-4 text-sm font-bold text-[var(--muted)]" scope="col">
+                  <th className="w-28 pb-4 text-sm font-bold text-[var(--muted)]" scope="col">
                     Date
                   </th>
                   <th className="pb-4 text-sm font-bold text-[var(--muted)]" scope="col">
                     Source
                   </th>
-                  <th className="pb-4 text-sm font-bold text-[var(--muted)]" scope="col">
+                  <th className="w-32 pb-4 text-sm font-bold text-[var(--muted)]" scope="col">
                     Type
                   </th>
-                  <th className="pb-4 text-right text-sm font-bold text-[var(--muted)]" scope="col">
+                  <th className="w-24 pb-4 text-right text-sm font-bold text-[var(--muted)]" scope="col">
                     Amount
                   </th>
                 </tr>
@@ -332,12 +332,14 @@ export function HubDashboard({
                 {rewardEntries.length > 0 ? (
                   rewardEntries.map((entry) => (
                     <tr className="transition-colors hover:bg-[var(--surface-low)]/60" key={entry.id}>
-                      <td className="py-4 text-sm font-semibold text-[var(--ink)]">
+                      <td className="py-4 pr-3 text-sm font-semibold text-[var(--ink)]">
                         {formatDate(entry.createdAt)}
                       </td>
-                      <td className="py-4 text-sm text-[var(--ink)]">{entry.description}</td>
-                      <td className="py-4">
-                        <span className="rounded-full bg-[var(--glow)] px-3 py-1 text-xs font-bold text-[var(--ink)]">
+                      <td className="truncate py-4 pr-3 text-sm text-[var(--ink)]">
+                        {entry.description}
+                      </td>
+                      <td className="py-4 pr-3">
+                        <span className="whitespace-nowrap rounded-full bg-[var(--glow)] px-2.5 py-1 text-[11px] font-bold text-[var(--ink)]">
                           {rewardTypeLabel(entry.type, entry.status)}
                         </span>
                       </td>
@@ -359,7 +361,7 @@ export function HubDashboard({
         </section>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-2">
         <section aria-labelledby="shared-shelves-heading" className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <h2
@@ -372,13 +374,13 @@ export function HubDashboard({
               View All
             </button>
           </div>
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {shares.map((share, index) => (
               <article
-                className="flex items-center gap-4 rounded-[24px] bg-white p-4 shadow-[var(--shadow-card)] transition-transform hover:translate-x-1"
+                className="flex items-center gap-3 rounded-[22px] bg-white p-3 shadow-[var(--shadow-card)] transition-transform hover:translate-x-1"
                 key={share.id}
               >
-                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-[var(--surface-low)]">
+                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-[var(--surface-low)]">
                   {/* eslint-disable-next-line @next/next/no-img-element -- Stitch export assets are remote fixtures and match the existing public-page image strategy. */}
                   <img
                     alt=""
@@ -387,13 +389,13 @@ export function HubDashboard({
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate text-base font-bold text-[var(--ink)]">
+                  <h3 className="truncate text-sm font-bold text-[var(--ink)]">
                     {share.shelfTitle}
                   </h3>
-                  <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--teal-700)]">
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--teal-700)]">
                     <span>{share.shortCode}</span> · {share.channel}
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-4 text-sm text-[var(--muted)]">
+                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-[var(--muted)]">
                     <span className="inline-flex items-center gap-1">
                       <span aria-hidden="true" className="material-symbols-outlined text-[18px]">
                         mouse
@@ -430,13 +432,13 @@ export function HubDashboard({
               Explore More
             </button>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             {savedShelves.map((shelf, index) => (
               <article
-                className="group overflow-hidden rounded-[24px] bg-white shadow-[var(--shadow-card)]"
+                className="group overflow-hidden rounded-[22px] bg-white shadow-[var(--shadow-card)]"
                 key={shelf.id}
               >
-                <div className="relative h-36 overflow-hidden bg-[var(--surface-low)]">
+                <div className="relative h-32 overflow-hidden bg-[var(--surface-low)]">
                   {/* eslint-disable-next-line @next/next/no-img-element -- Stitch export assets are remote fixtures and match the existing public-page image strategy. */}
                   <img
                     alt=""
@@ -448,11 +450,11 @@ export function HubDashboard({
                     @{shelf.creatorHandle}
                   </p>
                 </div>
-                <div className="p-4">
-                  <h3 className="truncate text-base font-bold text-[var(--ink)]">
+                <div className="p-3">
+                  <h3 className="truncate text-sm font-bold text-[var(--ink)]">
                     {shelf.title}
                   </h3>
-                  <p className="mt-1 text-sm text-[var(--muted)]">
+                  <p className="mt-1 text-xs text-[var(--muted)]">
                     {shelf.itemCount ?? fallbackItemCount(index)} Items Saved
                   </p>
                 </div>
