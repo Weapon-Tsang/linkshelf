@@ -71,6 +71,17 @@ describe("fan wallet lifecycle", () => {
       requestWithdrawal(
         database,
         {
+          amountCents: Number.NaN,
+          destinationLabel: "Amazon gift card ending 7777",
+        },
+        fanSession,
+      ),
+    ).toEqual({ ok: false, reason: "INVALID_INPUT" });
+
+    expect(
+      requestWithdrawal(
+        database,
+        {
           amountCents: 7_500,
           destinationLabel: "Amazon gift card ending 7777",
         },

@@ -9,7 +9,7 @@ function isPath(pathname: string, root: string): boolean {
 export function requiredRoleFor(pathname: string): RoleRequirement {
   if (isPath(pathname, "/admin")) return "ADMIN";
   if (isPath(pathname, "/studio")) return "CREATOR";
-  if (isPath(pathname, "/hub")) return ["FAN", "CREATOR"];
+  if (isPath(pathname, "/hub")) return "FAN";
   return null;
 }
 

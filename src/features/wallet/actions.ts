@@ -154,7 +154,7 @@ export function requestWithdrawal(
   if (!fan.ok) return fan;
   const amountCents = Math.round(input.amountCents);
   const destinationLabel = input.destinationLabel.trim();
-  if (amountCents <= 0 || !destinationLabel) {
+  if (!Number.isFinite(amountCents) || amountCents <= 0 || !destinationLabel) {
     return { ok: false, reason: "INVALID_INPUT" };
   }
 

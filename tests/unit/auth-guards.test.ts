@@ -12,7 +12,7 @@ describe("role access", () => {
     ["ADMIN", "/admin/dashboard", true],
     ["CREATOR", "/admin/dashboard", false],
     ["FAN", "/hub/dashboard", true],
-    ["CREATOR", "/hub/dashboard", true],
+    ["CREATOR", "/hub/dashboard", false],
   ] as const)("checks %s for %s", (role, path, expected) => {
     expect(canAccess(role, path)).toBe(expected);
   });
