@@ -61,6 +61,28 @@ describe("ShelfEditor", () => {
     expect(productCards.every((card) => card.getAttribute("data-density") === "compact")).toBe(
       true,
     );
+    expect(
+      within(productCards[0]).getByRole("textbox", { name: "ITEM NAME" }),
+    ).toHaveValue("Sony A7IV Mirrorless Camera");
+    expect(within(productCards[0]).queryByText(/Product 1/)).not.toBeInTheDocument();
+    expect(within(productCards[0]).getByLabelText("Drag product handle")).toBeVisible();
+    expect(within(productCards[0]).getByRole("button", { name: "Remove product" })).toBeVisible();
+    expect(within(productCards[0]).queryByRole("button", { name: "Move product up" })).toBeNull();
+    expect(
+      within(productCards[0]).queryByRole("button", { name: "Move product down" }),
+    ).toBeNull();
+    expect(
+      within(productCards[0])
+        .getByRole("textbox", { name: "ITEM NAME" })
+        .compareDocumentPosition(
+          within(productCards[0]).getByRole("textbox", { name: "Product URL" }),
+        ),
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(within(productCards[0]).queryByRole("button", { name: "Fetch metadata" })).toBeNull();
+    expect(within(productCards[0]).queryByRole("textbox", { name: "Merchant" })).toBeNull();
+    expect(within(productCards[0]).queryByRole("spinbutton", { name: "Price" })).toBeNull();
+    expect(within(productCards[0]).getByText("Amazon")).toBeVisible();
+    expect(within(productCards[0]).getByText("$2,498.00")).toBeVisible();
     expect(within(productCards[0]).queryByLabelText("Image URL")).not.toBeInTheDocument();
     expect(
       within(productCards[0]).queryByLabelText("Product description"),
