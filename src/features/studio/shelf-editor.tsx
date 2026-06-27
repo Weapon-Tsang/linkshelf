@@ -43,11 +43,15 @@ export function ShelfEditor({
   action,
   onExtractMetadata,
   itemDensity = "full",
+  showCoverField = true,
+  themePlacement = "details",
 }: {
   readonly initialValue?: ShelfEditorInput;
   readonly action?: ShelfEditorAction;
   readonly onExtractMetadata?: (url: string) => Promise<ExtractedProductMetadata>;
   readonly itemDensity?: "full" | "compact";
+  readonly showCoverField?: boolean;
+  readonly themePlacement?: "details" | "preview";
 }) {
   const initial = useMemo(() => normalizeInitialValue(initialValue), [initialValue]);
   const [title, setTitle] = useState(initial.title);
@@ -107,6 +111,38 @@ export function ShelfEditor({
     sourceContentUrl,
     products,
   };
+  const useStitchCreateDetailsLayout = themePlacement === "preview" && !showCoverField;
+  const themeControl = (
+    <label
+      className={themePlacement === "details" ? undefined : "min-w-40"}
+      htmlFor="shelf-theme"
+    >
+      <span
+        className={
+          themePlacement === "details"
+            ? "text-sm font-bold text-[var(--muted)]"
+            : "text-xs font-black uppercase tracking-[0.18em] text-[var(--muted)]"
+        }
+      >
+        Theme
+      </span>
+      <select
+        className={
+          themePlacement === "details"
+            ? "mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
+            : "mt-2 min-h-11 w-full rounded-2xl border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--teal-700)]"
+        }
+        id="shelf-theme"
+        name="theme"
+        onChange={(event) => setTheme(event.target.value)}
+        value={theme}
+      >
+        <option value="tech">Tech</option>
+        <option value="minimal">Minimal</option>
+        <option value="living">Living</option>
+      </select>
+    </label>
+  );
 
   return (
     <form action={action} className="mx-auto grid max-w-6xl gap-8">
@@ -136,12 +172,20 @@ export function ShelfEditor({
         </div>
       </header>
 
-      <section className="rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)]">
+      <section
+        aria-labelledby="shelf-details-heading"
+        className="rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)]"
+      >
         <div className="mb-2 flex items-center gap-2">
           <span aria-hidden="true" className="material-symbols-outlined text-[var(--teal-700)]">
             check_circle
           </span>
-          <h2 className="text-xl font-black tracking-[-0.03em]">Shelf Details</h2>
+          <h2
+            className="text-xl font-black tracking-[-0.03em]"
+            id="shelf-details-heading"
+          >
+            Shelf Details
+          </h2>
         </div>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label htmlFor="shelf-title">
@@ -155,7 +199,23 @@ export function ShelfEditor({
             />
           </label>
 
-          <label htmlFor="shelf-slug">
+          {useStitchCreateDetailsLayout ? (
+            <label htmlFor="shelf-category">
+              <span className="text-sm font-bold text-[var(--muted)]">Category</span>
+              <input
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
+                id="shelf-category"
+                name="category"
+                onChange={(event) => setCategory(event.target.value)}
+                value={category}
+              />
+            </label>
+          ) : null}
+
+          <label
+            className={useStitchCreateDetailsLayout ? "md:col-span-2" : undefined}
+            htmlFor="shelf-slug"
+          >
             <span className="text-sm font-bold text-[var(--muted)]">Shelf URL</span>
             <input
               className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
@@ -166,55 +226,48 @@ export function ShelfEditor({
             />
           </label>
 
-          <label htmlFor="shelf-category">
-            <span className="text-sm font-bold text-[var(--muted)]">Category</span>
-            <input
-              className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
-              id="shelf-category"
-              name="category"
-              onChange={(event) => setCategory(event.target.value)}
-              value={category}
-            />
-          </label>
+          {useStitchCreateDetailsLayout ? null : (
+            <label htmlFor="shelf-category">
+              <span className="text-sm font-bold text-[var(--muted)]">Category</span>
+              <input
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
+                id="shelf-category"
+                name="category"
+                onChange={(event) => setCategory(event.target.value)}
+                value={category}
+              />
+            </label>
+          )}
 
-          <label htmlFor="shelf-theme">
-            <span className="text-sm font-bold text-[var(--muted)]">Theme</span>
-            <select
-              className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
-              id="shelf-theme"
-              name="theme"
-              onChange={(event) => setTheme(event.target.value)}
-              value={theme}
-            >
-              <option value="tech">Tech</option>
-              <option value="minimal">Minimal</option>
-              <option value="living">Living</option>
-            </select>
-          </label>
+          {themePlacement === "details" ? themeControl : null}
 
-          <label className="md:col-span-2" htmlFor="shelf-cover">
-            <span className="text-sm font-bold text-[var(--muted)]">Cover image URL</span>
-            <input
-              className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
-              id="shelf-cover"
-              name="coverUrl"
-              onChange={(event) => setCoverUrl(event.target.value)}
-              value={coverUrl}
-            />
-          </label>
+          {showCoverField ? (
+            <label className="md:col-span-2" htmlFor="shelf-cover">
+              <span className="text-sm font-bold text-[var(--muted)]">Cover image URL</span>
+              <input
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
+                id="shelf-cover"
+                name="coverUrl"
+                onChange={(event) => setCoverUrl(event.target.value)}
+                value={coverUrl}
+              />
+            </label>
+          ) : null}
 
-          <label className="md:col-span-2" htmlFor="shelf-source">
-            <span className="text-sm font-bold text-[var(--muted)]">
-              Original Content URL
-            </span>
-            <input
-              className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
-              id="shelf-source"
-              name="sourceContentUrl"
-              onChange={(event) => setSourceContentUrl(event.target.value)}
-              value={sourceContentUrl}
-            />
-          </label>
+          {useStitchCreateDetailsLayout ? null : (
+            <label className="md:col-span-2" htmlFor="shelf-source">
+              <span className="text-sm font-bold text-[var(--muted)]">
+                Original Content URL
+              </span>
+              <input
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
+                id="shelf-source"
+                name="sourceContentUrl"
+                onChange={(event) => setSourceContentUrl(event.target.value)}
+                value={sourceContentUrl}
+              />
+            </label>
+          )}
 
           <label className="md:col-span-2" htmlFor="shelf-description">
             <span className="text-sm font-bold text-[var(--muted)]">Description</span>
@@ -226,17 +279,40 @@ export function ShelfEditor({
               value={description}
             />
           </label>
+
+          {useStitchCreateDetailsLayout ? (
+            <label className="md:col-span-2" htmlFor="shelf-source">
+              <span className="text-sm font-bold text-[var(--muted)]">
+                Original Content URL
+              </span>
+              <input
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
+                id="shelf-source"
+                name="sourceContentUrl"
+                onChange={(event) => setSourceContentUrl(event.target.value)}
+                value={sourceContentUrl}
+              />
+            </label>
+          ) : null}
         </div>
       </section>
 
-      <section className="rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)]">
+      <section
+        aria-labelledby="ai-workbench-heading"
+        className="rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)]"
+      >
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
             <div className="flex items-center gap-2">
               <span aria-hidden="true" className="material-symbols-outlined text-[var(--teal-700)]">
                 auto_awesome
               </span>
-              <h2 className="text-xl font-black tracking-[-0.03em]">AI Link Workbench</h2>
+              <h2
+                className="text-xl font-black tracking-[-0.03em]"
+                id="ai-workbench-heading"
+              >
+                AI Link Workbench
+              </h2>
             </div>
             <p className="mt-3 max-w-2xl text-sm font-semibold leading-6 text-[var(--muted)]">
               Upload a hero image of your collection. Our AI will automatically identify
@@ -320,26 +396,37 @@ export function ShelfEditor({
         </div>
       </section>
 
-      <section className="rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)]">
+      <section
+        aria-labelledby="shelf-preview-heading"
+        className="rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)]"
+      >
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div className="flex items-center gap-2">
             <span aria-hidden="true" className="material-symbols-outlined text-[var(--teal-700)]">
               preview
             </span>
-            <h2 className="text-xl font-black tracking-[-0.03em]">Shelf Preview</h2>
+            <h2
+              className="text-xl font-black tracking-[-0.03em]"
+              id="shelf-preview-heading"
+            >
+              Shelf Preview
+            </h2>
           </div>
-          <div className="flex gap-2">
-            {(["mobile", "tablet"] as const).map((device) => (
-              <button
-                aria-pressed={previewDevice === device}
-                className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-bold capitalize aria-pressed:border-[var(--teal-700)] aria-pressed:bg-[var(--teal-700)] aria-pressed:text-white"
-                key={device}
-                onClick={() => setPreviewDevice(device)}
-                type="button"
-              >
-                {device === "mobile" ? "Mobile preview" : "Tablet preview"}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-end gap-3">
+            {themePlacement === "preview" ? themeControl : null}
+            <div className="flex gap-2">
+              {(["mobile", "tablet"] as const).map((device) => (
+                <button
+                  aria-pressed={previewDevice === device}
+                  className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-bold capitalize aria-pressed:border-[var(--teal-700)] aria-pressed:bg-[var(--teal-700)] aria-pressed:text-white"
+                  key={device}
+                  onClick={() => setPreviewDevice(device)}
+                  type="button"
+                >
+                  {device === "mobile" ? "Mobile preview" : "Tablet preview"}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

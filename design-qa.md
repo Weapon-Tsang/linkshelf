@@ -2,7 +2,7 @@
 
 Status: current-run Stitch side-by-side visual QA complete with known P2 fidelity drift remaining.
 
-This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-27 after the Fan Hub data polish, seed refresh fix, density pass, Google auth mark pass, create-shelf demo seed pass, create-shelf local flat-lay/compact-card pass, and restored elevated verification run.
+This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-27 after the Fan Hub data polish, seed refresh fix, density pass, Google auth mark pass, create-shelf demo seed pass, create-shelf local flat-lay/compact-card pass, create-shelf field-order pass, and restored elevated verification run.
 
 ## Evidence summary
 
@@ -28,7 +28,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 | `studio-dashboard.jpg` | `/studio/dashboard` | `1280x1024@2` | Captured after Studio IA pass; P2 spacing/data drift remains |
 | `studio-management-expanded.jpg` | `/studio/shelves` | `1280x1024@2` | Captured after card-grid pass; P2 thumbnail/spacing drift remains |
 | `studio-management-one-column.jpg` | `/studio/shelves` | `1280x1024@2` | Captured after card-grid pass; P2 state/content drift remains |
-| `studio-create-shelf.jpg` | `/studio/create` | `1280x1024@2` | Captured after AI Workbench, local flat-lay asset, compact cards, and square workbench crop pass; remaining layout/field fidelity drift |
+| `studio-create-shelf.jpg` | `/studio/create` | `1280x1024@2` | Captured after AI Workbench, local flat-lay asset, compact cards, square workbench crop, and field-order pass; remaining shell/spacing/card micro-fidelity drift |
 | `studio-settings.jpg` | `/studio/settings` | `728x1024@2` | Captured after serialization fix; P2 layout/content drift remains |
 | `studio-analytics.jpg` | `/studio/analytics` | `1280x1024@2` | Captured; P2 metrics/content drift remains |
 | `studio-comments.jpg` | `/studio/comments` | `1280x1024@2` | Captured after serialization fix; P2 content/layout drift remains |
@@ -48,7 +48,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 
 - [P2] Creator Studio shell and management pages are structurally aligned but still drift visually
   Location: `studio-dashboard`, `studio-management-expanded`, `studio-management-one-column`, `studio-create-shelf`.
-  Evidence: the implementation now uses the compact Creator Management sidebar, dashboard CTA/metrics/activity feed, thumbnail shelf card grid, AI Link Workbench, detected item list, and shelf preview blocks from the Stitch IA. The create-shelf page now opens with Photography Kit, Tech Pro, three detected camera products, the Stitch-exported local flat-lay cover asset, compact detected-item cards, a square workbench crop, and populated mobile preview instead of an empty state. Remaining differences are mostly exact spacing, field order/copy, card micro-density, and extra implementation fields such as Cover image URL.
+  Evidence: the implementation now uses the compact Creator Management sidebar, dashboard CTA/metrics/activity feed, thumbnail shelf card grid, AI Link Workbench, detected item list, and shelf preview blocks from the Stitch IA. The create-shelf page now opens with Photography Kit, Tech Pro, three detected camera products, the Stitch-exported local flat-lay cover asset, compact detected-item cards, a square workbench crop, Stitch-like details field order, Theme placement in the preview area, and populated mobile preview instead of an empty state. Remaining differences are mostly exact shell treatment, URL-prefix affordance/copy, spacing, and product-card micro-density.
   Impact: the former core Studio IA blocker is reduced; the Studio flow is now much closer to the designed experience, but still needs a polish/content pass before it can be called visually faithful.
   Fix: tune Studio image assets, copy/data values, card sizing, and create-shelf field/card proportions against the side-by-side captures.
 
@@ -115,6 +115,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 - Downloaded the Stitch create-shelf flat-lay source image into `public/stitch/assets/create-shelf-flat-lay.png` and seeded the create route with the local asset instead of the previous remote cover image.
 - Added a compact `ItemEditor` density for the create-shelf demo flow, hiding lower-priority image/description controls while preserving the full editor mode for normal shelf editing.
 - Locked the AI Workbench cover to a square crop so the flat-lay image is no longer stretched by the right-side detected item list.
+- Added a create-shelf presentation mode that hides the internal Cover image URL field, moves Theme into the Shelf Preview controls, and renders Shelf Details in the Stitch order: title/category, Shelf URL, description, then Original Content URL.
 
 ## Verification run evidence
 
@@ -130,11 +131,12 @@ Focused region comparison evidence: not generated in this pass because full-view
 | Google auth mark RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/google-login.test.tsx -t "renders the Stitch Google mark"` | RED confirmed missing source Google mark, then passed: 2 focused tests |
 | Create shelf demo seed RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/shelf-editor.test.tsx -t "opens the create page"` | RED confirmed empty create-shelf state, then passed: 1 focused test |
 | Create shelf flat-lay/compact RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/shelf-editor.test.tsx -t "opens the create page"` | RED confirmed old remote cover, full-density cards, and missing square workbench crop, then passed: 1 focused test |
-| Shelf editor regression after create flat-lay/compact pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/shelf-editor.test.tsx` | Passed: 3 tests |
+| Create shelf field-order RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/shelf-editor.test.tsx -t "opens the create page"` | RED confirmed Theme/Cover still lived in details and field order still put Shelf URL before Category, then passed: 1 focused test |
+| Shelf editor regression after create field-order pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/shelf-editor.test.tsx` | Passed: 3 tests |
 | Latest unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 229 tests across 35 files |
-| Latest end-to-end suite after create-shelf flat-lay/compact pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
-| Production build after create-shelf flat-lay/compact pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
-| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after Fan Hub data/density polish, Google auth mark pass, and create-shelf local flat-lay/compact-card pass, including square-cropped `studio-create-shelf` |
+| Latest end-to-end suite after create-shelf field-order pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
+| Production build after create-shelf field-order pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
+| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after Fan Hub data/density polish, Google auth mark pass, create-shelf local flat-lay/compact-card pass, and create-shelf field-order pass |
 | Share modal browser/E2E recapture | `PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test tests/e2e/fan-flow.spec.ts -g "post-auth share"` and `node scripts/capture-design-qa.mjs` | Passed targeted E2E; captured 15 visual states including `share-modal` |
 
 ## Implementation checklist

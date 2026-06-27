@@ -107,6 +107,8 @@ export default function StudioCreateShelfPage() {
       initialValue={CREATE_SHELF_DEMO}
       itemDensity="compact"
       onExtractMetadata={extractProductMetadata}
+      showCoverField={false}
+      themePlacement="preview"
     />
   );
 }

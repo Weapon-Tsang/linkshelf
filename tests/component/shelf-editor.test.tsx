@@ -12,21 +12,42 @@ describe("ShelfEditor", () => {
   it("opens the create page with Stitch-like photography demo content", () => {
     render(<StudioCreateShelfPage />);
 
-    expect(screen.getByRole("textbox", { name: "Shelf title" })).toHaveValue(
-      "Photography Kit",
+    const shelfTitle = screen.getByRole("textbox", { name: "Shelf title" });
+    const category = screen.getByRole("textbox", { name: "Category" });
+    const shelfUrl = screen.getByRole("textbox", { name: "Shelf URL" });
+    const description = screen.getByRole("textbox", { name: "Description" });
+    const originalContentUrl = screen.getByRole("textbox", {
+      name: "Original Content URL",
+    });
+
+    expect(shelfTitle).toHaveValue("Photography Kit");
+    expect(shelfUrl).toHaveValue("photography-kit");
+    expect(category).toHaveValue("Tech Pro");
+    expect(shelfTitle.compareDocumentPosition(category)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
     );
-    expect(screen.getByRole("textbox", { name: "Shelf URL" })).toHaveValue(
-      "photography-kit",
+    expect(category.compareDocumentPosition(shelfUrl)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
     );
-    expect(screen.getByRole("textbox", { name: "Category" })).toHaveValue("Tech Pro");
-    expect(screen.getByRole("combobox", { name: "Theme" })).toHaveValue("tech");
-    expect(screen.getByRole("textbox", { name: "Description" })).toHaveValue(
-      "My go-to gear for professional shoots and travel vlogs.",
+    expect(shelfUrl.compareDocumentPosition(description)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
     );
-    expect(screen.getByRole("textbox", { name: "Cover image URL" })).toHaveValue(
+    expect(description.compareDocumentPosition(originalContentUrl)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    const shelfDetails = screen.getByRole("region", { name: "Shelf Details" });
+    expect(
+      within(shelfDetails).queryByRole("combobox", { name: "Theme" }),
+    ).not.toBeInTheDocument();
+    expect(description).toHaveValue("My go-to gear for professional shoots and travel vlogs.");
+    expect(
+      screen.queryByRole("textbox", { name: "Cover image URL" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("workbench-cover")).toHaveClass("aspect-square");
+    expect(screen.getByTestId("workbench-cover")).toHaveAttribute(
+      "src",
       STITCH_CREATE_FLAT_LAY_URL,
     );
-    expect(screen.getByTestId("workbench-cover")).toHaveClass("aspect-square");
     expect(screen.getByText("Detected Items (3)")).toBeVisible();
     const productCards = screen.getAllByRole("group", { name: /product/i });
     expect(productCards).toHaveLength(3);
@@ -40,7 +61,10 @@ describe("ShelfEditor", () => {
     expect(screen.getAllByText("Sony A7IV Mirrorless Camera").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Sony FE 24-70mm f/2.8 GM II").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Peak Design Carbon Tripod").length).toBeGreaterThan(0);
-    expect(screen.getByRole("heading", { name: "Shelf Preview" })).toBeVisible();
+    const shelfPreview = screen.getByRole("region", { name: "Shelf Preview" });
+    expect(within(shelfPreview).getByRole("combobox", { name: "Theme" })).toHaveValue(
+      "tech",
+    );
   });
 
   it("renders shelf fields, editable metadata, and preview controls", () => {
