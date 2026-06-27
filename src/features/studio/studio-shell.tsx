@@ -45,6 +45,15 @@ export function StudioShell({
   readonly children: ReactNode;
 }) {
   const pathname = usePathname();
+  const isCreateWorkflow = pathname === "/studio/create";
+
+  if (isCreateWorkflow) {
+    return (
+      <div className="min-h-screen bg-[#fbf7fb] text-[var(--ink)]">
+        <main className="min-w-0 px-5 py-8 sm:px-8 lg:px-10 lg:py-10">{children}</main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#fbf7fb] text-[var(--ink)] lg:grid lg:grid-cols-[250px_minmax(0,1fr)]">

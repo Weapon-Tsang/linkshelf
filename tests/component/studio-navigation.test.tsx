@@ -51,4 +51,25 @@ describe("StudioShell navigation", () => {
     expect(screen.getByText("Alex Rivera")).toBeVisible();
     expect(screen.getByText("Pro Plan")).toBeVisible();
   });
+
+  it("renders the create shelf workflow as a full-canvas editor without the sidebar", () => {
+    currentPathname = "/studio/create";
+
+    render(
+      <StudioShell
+        creator={{
+          displayName: "Liam Roberts",
+          handle: "liamroberts.photo",
+        }}
+      >
+        <h1>Create Shelf</h1>
+      </StudioShell>,
+    );
+
+    expect(screen.getByRole("heading", { name: "Create Shelf" })).toBeVisible();
+    expect(screen.queryByRole("navigation", { name: /studio/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("Creator Management")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /create new shelf/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("Alex Rivera")).not.toBeInTheDocument();
+  });
 });

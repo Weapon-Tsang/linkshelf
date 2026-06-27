@@ -94,6 +94,9 @@ describe("ShelfEditor", () => {
     expect(within(shelfPreview).getByRole("combobox", { name: "Theme" })).toHaveValue(
       "tech",
     );
+    expect(screen.getAllByRole("button", { name: "Save Draft" })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: "Publish Shelf" })).toHaveLength(1);
+    expect(screen.queryByRole("button", { name: "Publish" })).not.toBeInTheDocument();
   });
 
   it("renders shelf fields, editable metadata, and preview controls", () => {

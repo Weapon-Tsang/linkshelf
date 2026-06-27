@@ -476,14 +476,16 @@ export function ShelfEditor({
         </div>
       </section>
 
-      <div className="flex flex-wrap gap-3">
-        <SubmitButton intent="draft" variant="secondary">
-          Save Draft
-        </SubmitButton>
-        <SubmitButton intent="publish" variant="primary">
-          Publish
-        </SubmitButton>
-      </div>
+      {useStitchCreateDetailsLayout ? null : (
+        <div className="flex flex-wrap gap-3">
+          <SubmitButton intent="draft" variant="secondary">
+            Save Draft
+          </SubmitButton>
+          <SubmitButton intent="publish" variant="primary">
+            Publish
+          </SubmitButton>
+        </div>
+      )}
     </form>
   );
 }
