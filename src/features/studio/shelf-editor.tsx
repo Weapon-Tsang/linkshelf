@@ -489,6 +489,7 @@ export function ShelfEditor({
                 description={description}
                 device={device}
                 key={device}
+                presentation="stitch-create"
                 products={products}
                 title={title}
               />

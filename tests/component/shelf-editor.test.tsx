@@ -114,6 +114,18 @@ describe("ShelfEditor", () => {
     ).not.toBeInTheDocument();
     expect(within(shelfPreview).getByText("mobile preview")).toBeVisible();
     expect(within(shelfPreview).getByText("tablet preview")).toBeVisible();
+    const tabletPreviewFrame = within(shelfPreview).getByTestId("tablet-preview-frame");
+    expect(tabletPreviewFrame).toHaveClass("bg-[#c8cee4]");
+    const tabletPreviewOverlay = within(tabletPreviewFrame).getByTestId(
+      "tablet-preview-overlay",
+    );
+    expect(tabletPreviewOverlay).toHaveTextContent("Photography Kit");
+    expect(
+      within(tabletPreviewFrame).getAllByTestId("tablet-preview-skeleton-card"),
+    ).toHaveLength(3);
+    expect(
+      within(tabletPreviewFrame).queryByText("Sony A7IV Mirrorless Camera"),
+    ).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Save Draft" })).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: "Publish Shelf" })).toHaveLength(1);
     expect(screen.queryByRole("button", { name: "Publish" })).not.toBeInTheDocument();
