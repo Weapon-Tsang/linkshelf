@@ -7,10 +7,11 @@ import { ShelfEditor } from "@/features/studio/shelf-editor";
 afterEach(() => cleanup());
 
 const STITCH_CREATE_FLAT_LAY_URL = "/stitch/assets/create-shelf-flat-lay.png";
+const STITCH_CREATE_SHELF_URL_PREFIX = "linkshelf.page/liam/";
 
 describe("ShelfEditor", () => {
   it("opens the create page with Stitch-like photography demo content", () => {
-    render(<StudioCreateShelfPage />);
+    const { container } = render(<StudioCreateShelfPage />);
 
     const shelfTitle = screen.getByRole("textbox", { name: "Shelf title" });
     const category = screen.getByRole("textbox", { name: "Category" });
@@ -23,6 +24,12 @@ describe("ShelfEditor", () => {
     expect(shelfTitle).toHaveValue("Photography Kit");
     expect(shelfUrl).toHaveValue("photography-kit");
     expect(category).toHaveValue("Tech Pro");
+    expect(screen.getByText(STITCH_CREATE_SHELF_URL_PREFIX)).toBeVisible();
+    expect(screen.getByRole("button", { name: "Copy shelf URL" })).toBeVisible();
+    const payload = JSON.parse(
+      container.querySelector<HTMLInputElement>('input[name="payload"]')?.value ?? "{}",
+    ) as { readonly slug?: string };
+    expect(payload.slug).toBe("photography-kit");
     expect(shelfTitle.compareDocumentPosition(category)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );

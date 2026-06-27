@@ -12,6 +12,7 @@ import { ShelfEditor } from "@/features/studio/shelf-editor";
 import { STITCH_ASSET_SOURCES } from "@/lib/db/seed";
 
 const STITCH_CREATE_FLAT_LAY_URL = "/stitch/assets/create-shelf-flat-lay.png";
+const STITCH_CREATE_SHELF_URL_PREFIX = "linkshelf.page/liam/";
 
 const CREATE_SHELF_DEMO: ShelfEditorInput = {
   title: "Photography Kit",
@@ -107,6 +108,7 @@ export default function StudioCreateShelfPage() {
       initialValue={CREATE_SHELF_DEMO}
       itemDensity="compact"
       onExtractMetadata={extractProductMetadata}
+      shelfUrlPrefix={STITCH_CREATE_SHELF_URL_PREFIX}
       showCoverField={false}
       themePlacement="preview"
     />

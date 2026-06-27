@@ -44,6 +44,7 @@ export function ShelfEditor({
   onExtractMetadata,
   itemDensity = "full",
   showCoverField = true,
+  shelfUrlPrefix = "",
   themePlacement = "details",
 }: {
   readonly initialValue?: ShelfEditorInput;
@@ -51,6 +52,7 @@ export function ShelfEditor({
   readonly onExtractMetadata?: (url: string) => Promise<ExtractedProductMetadata>;
   readonly itemDensity?: "full" | "compact";
   readonly showCoverField?: boolean;
+  readonly shelfUrlPrefix?: string;
   readonly themePlacement?: "details" | "preview";
 }) {
   const initial = useMemo(() => normalizeInitialValue(initialValue), [initialValue]);
@@ -98,6 +100,11 @@ export function ShelfEditor({
       price: metadata.price,
       imageUrl: metadata.imageUrl,
     });
+  }
+
+  function copyShelfUrl() {
+    if (!shelfUrlPrefix || !navigator.clipboard) return;
+    void navigator.clipboard.writeText(`${shelfUrlPrefix}${slug}`);
   }
 
   const submitPayload = {
@@ -217,13 +224,41 @@ export function ShelfEditor({
             htmlFor="shelf-slug"
           >
             <span className="text-sm font-bold text-[var(--muted)]">Shelf URL</span>
-            <input
-              className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
-              id="shelf-slug"
-              name="slug"
-              onChange={(event) => setSlug(event.target.value)}
-              value={slug}
-            />
+            {shelfUrlPrefix ? (
+              <div className="mt-2 flex min-h-12 overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] focus-within:border-[var(--teal-700)]">
+                <span
+                  aria-hidden="true"
+                  className="grid shrink-0 place-items-center border-r border-[var(--line)] px-4 text-sm font-bold text-[var(--muted)]"
+                >
+                  {shelfUrlPrefix}
+                </span>
+                <input
+                  className="min-w-0 flex-1 bg-transparent px-3 text-sm font-black outline-none"
+                  id="shelf-slug"
+                  name="slug"
+                  onChange={(event) => setSlug(event.target.value)}
+                  value={slug}
+                />
+                <button
+                  aria-label="Copy shelf URL"
+                  className="grid w-12 shrink-0 place-items-center border-l border-[var(--line)] text-[var(--teal-700)] transition-colors hover:bg-[var(--glow)]/35"
+                  onClick={copyShelfUrl}
+                  type="button"
+                >
+                  <span aria-hidden="true" className="material-symbols-outlined text-lg">
+                    content_copy
+                  </span>
+                </button>
+              </div>
+            ) : (
+              <input
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold outline-none focus:border-[var(--teal-700)]"
+                id="shelf-slug"
+                name="slug"
+                onChange={(event) => setSlug(event.target.value)}
+                value={slug}
+              />
+            )}
           </label>
 
           {useStitchCreateDetailsLayout ? null : (
