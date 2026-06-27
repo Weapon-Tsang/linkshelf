@@ -106,6 +106,14 @@ describe("ShelfEditor", () => {
     expect(within(shelfPreview).getByRole("combobox", { name: "Theme" })).toHaveValue(
       "tech",
     );
+    expect(
+      within(shelfPreview).queryByRole("button", { name: "Mobile preview" }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(shelfPreview).queryByRole("button", { name: "Tablet preview" }),
+    ).not.toBeInTheDocument();
+    expect(within(shelfPreview).getByText("mobile preview")).toBeVisible();
+    expect(within(shelfPreview).getByText("tablet preview")).toBeVisible();
     expect(screen.getAllByRole("button", { name: "Save Draft" })).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: "Publish Shelf" })).toHaveLength(1);
     expect(screen.queryByRole("button", { name: "Publish" })).not.toBeInTheDocument();

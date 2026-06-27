@@ -119,6 +119,7 @@ export function ShelfEditor({
     products,
   };
   const useStitchCreateDetailsLayout = themePlacement === "preview" && !showCoverField;
+  const previewDevices: readonly PreviewDevice[] = ["mobile", "tablet"];
   const themeControl = (
     <label
       className={themePlacement === "details" ? undefined : "min-w-40"}
@@ -456,30 +457,51 @@ export function ShelfEditor({
           </div>
           <div className="flex flex-wrap items-end gap-3">
             {themePlacement === "preview" ? themeControl : null}
-            <div className="flex gap-2">
-              {(["mobile", "tablet"] as const).map((device) => (
-                <button
-                  aria-pressed={previewDevice === device}
-                  className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-bold capitalize aria-pressed:border-[var(--teal-700)] aria-pressed:bg-[var(--teal-700)] aria-pressed:text-white"
-                  key={device}
-                  onClick={() => setPreviewDevice(device)}
-                  type="button"
-                >
-                  {device === "mobile" ? "Mobile preview" : "Tablet preview"}
-                </button>
-              ))}
-            </div>
+            {useStitchCreateDetailsLayout ? null : (
+              <div className="flex gap-2">
+                {previewDevices.map((device) => (
+                  <button
+                    aria-pressed={previewDevice === device}
+                    className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-bold capitalize aria-pressed:border-[var(--teal-700)] aria-pressed:bg-[var(--teal-700)] aria-pressed:text-white"
+                    key={device}
+                    onClick={() => setPreviewDevice(device)}
+                    type="button"
+                  >
+                    {device === "mobile" ? "Mobile preview" : "Tablet preview"}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="mt-6 flex justify-center">
-          <ShelfPreview
-            coverUrl={coverUrl}
-            description={description}
-            device={previewDevice}
-            products={products}
-            title={title}
-          />
+        <div
+          className={
+            useStitchCreateDetailsLayout
+              ? "mt-8 flex flex-col items-center justify-center gap-8 lg:flex-row lg:items-end"
+              : "mt-6 flex justify-center"
+          }
+        >
+          {useStitchCreateDetailsLayout ? (
+            previewDevices.map((device) => (
+              <ShelfPreview
+                coverUrl={coverUrl}
+                description={description}
+                device={device}
+                key={device}
+                products={products}
+                title={title}
+              />
+            ))
+          ) : (
+            <ShelfPreview
+              coverUrl={coverUrl}
+              description={description}
+              device={previewDevice}
+              products={products}
+              title={title}
+            />
+          )}
         </div>
       </section>
 
