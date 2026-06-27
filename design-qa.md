@@ -2,7 +2,7 @@
 
 Status: current-run Stitch side-by-side visual QA complete with known P2 fidelity drift remaining.
 
-This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-27 after the Fan Hub data polish, seed refresh fix, density pass, and restored elevated verification run.
+This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-27 after the Fan Hub data polish, seed refresh fix, density pass, Google auth mark pass, and restored elevated verification run.
 
 ## Evidence summary
 
@@ -33,7 +33,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 | `studio-analytics.jpg` | `/studio/analytics` | `1280x1024@2` | Captured; P2 metrics/content drift remains |
 | `studio-comments.jpg` | `/studio/comments` | `1280x1024@2` | Captured after serialization fix; P2 content/layout drift remains |
 | `fan-dashboard.png` | `/hub/dashboard` | `1280x1024@2` | Captured after Fan Hub data/density polish; minor P2 spacing/image drift remains |
-| `fan-auth-overlay.png` | public shelf + fan auth overlay | `1280x1024@2` | Captured after portal fix; P2 visual/provider drift remains |
+| `fan-auth-overlay.png` | public shelf + fan auth overlay | `1280x1024@2` | Captured after portal, modal-treatment, and Google mark pass; provider count/height drift is intentional |
 | `admin-login.png` | admin secret Google gate | `1280x1024@2` | Captured; Google-only auth is intentional per product direction |
 | `super-admin.png` | `/admin/dashboard` | `1280x1024@2` | Captured; P2 data-density/layout drift remains |
 | `share-modal.png` | `/liamroberts.photo/photography-kit?share=jamie-photo&shareModal=1` | `390x1405@2` | Captured after share route/portal fix; source-state/visual mismatch remains |
@@ -58,11 +58,11 @@ Focused region comparison evidence: not generated in this pass because full-view
   Impact: the former Fan Hub product-state and density blockers are resolved; remaining work is visual fidelity polish rather than missing core content.
   Fix: tune final image crops, micro-spacing, and optional seed display dates against `fan-dashboard.png`.
 
-- [P2] Public fan-auth overlay is now usable but still visually diverges
+- [P2] Public fan-auth overlay is closer to the Stitch modal treatment, with an intentional provider-count deviation
   Location: public shelf share overlay.
-  Evidence: latest comparison shows the dialog is no longer clipped by product cards after portal rendering. Remaining differences: Stitch has three auth providers and a larger centered modal; implementation intentionally uses Google-only auth and a smaller card.
-  Impact: no longer a usability blocker, but it remains visually different from the Stitch source. Provider count is an accepted product deviation from the user’s Google-only direction.
-  Fix: keep Google-only behavior, but optionally tune modal size, blur strength, glow placement, and vertical position to match the source more closely.
+  Evidence: latest comparison shows the dialog is body-portaled, centered, uses a frosted card, close button, teal fan icon, glow treatment, secure-encryption pill, and a Google button with the Stitch-exported Google mark. Remaining differences: Stitch shows three providers and a taller card, while implementation intentionally keeps a single Google-only action.
+  Impact: former usability and modal-scale blockers are resolved. The remaining provider-count mismatch is an accepted product deviation from the user’s Google-only direction.
+  Fix: keep Google-only behavior; if the single-provider version is canonical, re-export the Stitch source or update the reference so visual QA no longer treats GitHub/X as missing.
 
 - [P2] Several screens use the right brand direction but different copy/data density
   Location: landing, creator profile, studio analytics, studio comments, super admin.
@@ -108,22 +108,25 @@ Focused region comparison evidence: not generated in this pass because full-view
 - Added Fan Hub layout-density component regressions for the compact side rail and fixed rewards table.
 - Fixed the Fan Hub E2E selector to scope duplicate shelf names to the Saved Collections region.
 - Fixed Fan Hub axe regressions by improving active navigation contrast and making the rewards table scroll region keyboard-focusable.
+- Added the Stitch-exported Google SVG mark to the shared Google login button while preserving the accessible button name and Google-only auth behavior.
+- Added focused component coverage for the shared Google mark on creator and admin login surfaces.
 
 ## Verification run evidence
 
 | Gate | Command | Result |
 | --- | --- | --- |
 | Comment/settings serialization regressions | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/integration/comment-actions.test.ts` | Passed: 5 tests |
-| Fan auth/share dialog regression | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/share-dialog.test.tsx tests/component/public-shelf.test.tsx` | Passed: 13 tests |
+| Google login + fan auth/share regression | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/google-login.test.tsx tests/component/share-dialog.test.tsx tests/component/public-shelf.test.tsx` | Passed: 22 tests |
 | Latest TypeScript | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit` | Passed |
 | Latest lint | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint .` | Passed |
 | Fan Hub RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/fan-hub.test.tsx tests/integration/wallet.test.ts` | RED confirmed missing Fan Hub structure/metadata, then passed: 10 tests |
 | Fan Hub seed refresh RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/integration/database.test.ts -t "refreshes deterministic Fan Hub seed values"` | RED confirmed stale `$15.99` pending fixture, then passed: 1 focused test |
 | Fan Hub density RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/fan-hub.test.tsx` | RED confirmed side rail/table density drift, then passed: 4 tests |
-| Latest unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 226 tests across 35 files |
-| Latest end-to-end suite after Fan Hub pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
-| Production build after Fan Hub pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
-| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after Fan Hub data/density polish, including `fan-dashboard` and `share-modal` |
+| Google auth mark RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/google-login.test.tsx -t "renders the Stitch Google mark"` | RED confirmed missing source Google mark, then passed: 2 focused tests |
+| Latest unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 228 tests across 35 files |
+| Latest end-to-end suite after Google auth mark pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
+| Production build after Google auth mark pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
+| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after Fan Hub data/density polish and Google auth mark pass, including `fan-auth-overlay` |
 | Share modal browser/E2E recapture | `PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test tests/e2e/fan-flow.spec.ts -g "post-auth share"` and `node scripts/capture-design-qa.mjs` | Passed targeted E2E; captured 15 visual states including `share-modal` |
 
 ## Implementation checklist
@@ -131,7 +134,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 1. Confirm or re-export the intended Stitch state for `share-modal`, because the current reference does not show the modal while the app route does.
 2. Finish Studio polish pass: exact imagery, spacing, card density, data values, and create-shelf populated state.
 3. Continue optional Fan Hub pixel polish: exact image crops, micro-spacing, and seed display dates against `fan-dashboard.png`.
-4. Tune fan-auth overlay visual treatment while preserving Google-only auth.
+4. Fan-auth overlay modal treatment and shared Google mark pass are complete; remaining provider-count mismatch is intentional unless the Stitch source is re-exported.
 5. Do a second full visual QA pass and add focused crops for typography/card/detail fidelity.
 
 final result: current-run QA captured; known P2 polish drift remains

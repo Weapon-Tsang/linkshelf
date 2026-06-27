@@ -63,6 +63,22 @@ describe("Google-only login surfaces", () => {
     expect(form?.querySelector('input[name="entry"]')).toBeNull();
   });
 
+  it.each(["creator", "admin"] as const)(
+    "renders the Stitch Google mark without changing the button name for %s",
+    async (surface) => {
+      const view = await renderSurface(surface);
+      const googleButton = within(view.container).getByRole("button", {
+        name: "Continue with Google",
+      });
+
+      expect(within(googleButton).getByTestId("google-brand-mark")).toHaveAttribute(
+        "aria-hidden",
+        "true",
+      );
+      expect(googleButton).toHaveAccessibleName("Continue with Google");
+    },
+  );
+
   it("posts a signed admin entry marker from the secret route", async () => {
     const { adminChallenge } = await renderSurface("admin");
     const form = screen.getByRole("button", {
