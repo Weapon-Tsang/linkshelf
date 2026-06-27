@@ -55,6 +55,15 @@ describe("ShelfEditor", () => {
       "src",
       STITCH_CREATE_FLAT_LAY_URL,
     );
+    expect(
+      screen.getByLabelText("Hotspot 1 Sony A7IV Mirrorless Camera"),
+    ).toHaveClass("bg-[var(--teal-700)]");
+    expect(screen.getByLabelText("Hotspot 2 Sony FE 24-70mm f/2.8 GM II")).toHaveClass(
+      "bg-white",
+    );
+    expect(screen.getByLabelText("Hotspot 3 Peak Design Carbon Tripod")).toHaveClass(
+      "bg-white",
+    );
     expect(screen.getByText("Detected Items (3)")).toBeVisible();
     const productCards = screen.getAllByRole("group", { name: /product/i });
     expect(productCards).toHaveLength(3);

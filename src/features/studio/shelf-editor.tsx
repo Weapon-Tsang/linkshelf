@@ -377,19 +377,26 @@ export function ShelfEditor({
                 Add a collection cover image
               </div>
             )}
-            {products.slice(0, 3).map((product, index) => (
-              <span
-                aria-label={`Hotspot ${index + 1}${product.title ? ` ${product.title}` : ""}`}
-                className="absolute grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-[var(--teal-700)] text-sm font-black text-white shadow-lg"
-                key={`${product.id ?? "draft-hotspot"}-${index}`}
-                style={{
-                  left: `${product.hotspotX ?? 22 + index * 24}%`,
-                  top: `${product.hotspotY ?? 28 + index * 18}%`,
-                }}
-              >
-                {index + 1}
-              </span>
-            ))}
+            {products.slice(0, 3).map((product, index) => {
+              const selectedHotspot = index === 0;
+              return (
+                <span
+                  aria-label={`Hotspot ${index + 1}${product.title ? ` ${product.title}` : ""}`}
+                  className={`absolute grid h-9 w-9 place-items-center rounded-full border-2 border-white text-sm font-black shadow-lg ${
+                    selectedHotspot
+                      ? "bg-[var(--teal-700)] text-white"
+                      : "bg-white text-[var(--ink)]"
+                  }`}
+                  key={`${product.id ?? "draft-hotspot"}-${index}`}
+                  style={{
+                    left: `${product.hotspotX ?? 22 + index * 24}%`,
+                    top: `${product.hotspotY ?? 28 + index * 18}%`,
+                  }}
+                >
+                  {index + 1}
+                </span>
+              );
+            })}
           </div>
 
           <div>
