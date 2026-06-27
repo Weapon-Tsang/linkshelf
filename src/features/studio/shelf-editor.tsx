@@ -42,10 +42,12 @@ export function ShelfEditor({
   initialValue,
   action,
   onExtractMetadata,
+  itemDensity = "full",
 }: {
   readonly initialValue?: ShelfEditorInput;
   readonly action?: ShelfEditorAction;
   readonly onExtractMetadata?: (url: string) => Promise<ExtractedProductMetadata>;
+  readonly itemDensity?: "full" | "compact";
 }) {
   const initial = useMemo(() => normalizeInitialValue(initialValue), [initialValue]);
   const [title, setTitle] = useState(initial.title);
@@ -250,12 +252,17 @@ export function ShelfEditor({
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,1fr)]">
-          <div className="relative overflow-hidden rounded-xl bg-[#f1eff4]">
+          <div className="relative self-start overflow-hidden rounded-xl bg-[#f1eff4]">
             {coverUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img alt="" className="h-full min-h-[360px] w-full object-cover" src={coverUrl} />
+              <img
+                alt=""
+                className="aspect-square w-full object-cover"
+                data-testid="workbench-cover"
+                src={coverUrl}
+              />
             ) : (
-              <div className="grid min-h-[360px] place-items-center bg-[var(--glow)]/20 text-sm font-black text-[var(--teal-700)]">
+              <div className="grid aspect-square place-items-center bg-[var(--glow)]/20 text-sm font-black text-[var(--teal-700)]">
                 Add a collection cover image
               </div>
             )}
@@ -291,6 +298,7 @@ export function ShelfEditor({
                 <ItemEditor
                   canMoveDown={index < products.length - 1}
                   canMoveUp={index > 0}
+                  density={itemDensity}
                   index={index}
                   key={`${product.id ?? "draft"}-${index}`}
                   onChange={(nextProduct) => updateProduct(index, nextProduct)}

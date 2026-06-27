@@ -11,6 +11,8 @@ import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
 import { ShelfEditor } from "@/features/studio/shelf-editor";
 import { STITCH_ASSET_SOURCES } from "@/lib/db/seed";
 
+const STITCH_CREATE_FLAT_LAY_URL = "/stitch/assets/create-shelf-flat-lay.png";
+
 const CREATE_SHELF_DEMO: ShelfEditorInput = {
   title: "Photography Kit",
   slug: "photography-kit",
@@ -18,7 +20,7 @@ const CREATE_SHELF_DEMO: ShelfEditorInput = {
   category: "Tech Pro",
   theme: "tech",
   sourceContentUrl: "https://www.youtube.com/watch?v=linkshelf-photo",
-  coverUrl: STITCH_ASSET_SOURCES.shelfPhotography,
+  coverUrl: STITCH_CREATE_FLAT_LAY_URL,
   products: [
     {
       destinationUrl: "https://www.amazon.com/dp/B09JZT6YK5",
@@ -103,6 +105,7 @@ export default function StudioCreateShelfPage() {
     <ShelfEditor
       action={submitShelf}
       initialValue={CREATE_SHELF_DEMO}
+      itemDensity="compact"
       onExtractMetadata={extractProductMetadata}
     />
   );

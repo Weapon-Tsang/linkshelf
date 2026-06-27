@@ -6,6 +6,8 @@ import { ShelfEditor } from "@/features/studio/shelf-editor";
 
 afterEach(() => cleanup());
 
+const STITCH_CREATE_FLAT_LAY_URL = "/stitch/assets/create-shelf-flat-lay.png";
+
 describe("ShelfEditor", () => {
   it("opens the create page with Stitch-like photography demo content", () => {
     render(<StudioCreateShelfPage />);
@@ -21,7 +23,20 @@ describe("ShelfEditor", () => {
     expect(screen.getByRole("textbox", { name: "Description" })).toHaveValue(
       "My go-to gear for professional shoots and travel vlogs.",
     );
+    expect(screen.getByRole("textbox", { name: "Cover image URL" })).toHaveValue(
+      STITCH_CREATE_FLAT_LAY_URL,
+    );
+    expect(screen.getByTestId("workbench-cover")).toHaveClass("aspect-square");
     expect(screen.getByText("Detected Items (3)")).toBeVisible();
+    const productCards = screen.getAllByRole("group", { name: /product/i });
+    expect(productCards).toHaveLength(3);
+    expect(productCards.every((card) => card.getAttribute("data-density") === "compact")).toBe(
+      true,
+    );
+    expect(within(productCards[0]).queryByLabelText("Image URL")).not.toBeInTheDocument();
+    expect(
+      within(productCards[0]).queryByLabelText("Product description"),
+    ).not.toBeInTheDocument();
     expect(screen.getAllByText("Sony A7IV Mirrorless Camera").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Sony FE 24-70mm f/2.8 GM II").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Peak Design Carbon Tripod").length).toBeGreaterThan(0);
