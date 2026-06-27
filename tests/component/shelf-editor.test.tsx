@@ -61,6 +61,9 @@ describe("ShelfEditor", () => {
     expect(productCards.every((card) => card.getAttribute("data-density") === "compact")).toBe(
       true,
     );
+    expect(productCards[0]).toHaveAttribute("data-selected", "true");
+    expect(productCards[0]).toHaveClass("border-[var(--teal-700)]");
+    expect(productCards[1]).toHaveAttribute("data-selected", "false");
     expect(
       within(productCards[0]).getByRole("textbox", { name: "ITEM NAME" }),
     ).toHaveValue("Sony A7IV Mirrorless Camera");

@@ -35,8 +35,11 @@ export function ItemEditor({
 }) {
   const fieldId = (field: string) => `product-${index}-${field}`;
   const compact = density === "compact";
+  const selected = compact && index === 0;
   const cardClass = compact
-    ? "rounded-2xl border border-[var(--line)] bg-white/92 p-3.5 shadow-[0_10px_28px_rgba(11,19,43,0.04)]"
+    ? selected
+      ? "rounded-2xl border border-[var(--teal-700)] bg-white/92 p-3.5 shadow-[0_10px_28px_rgba(0,124,114,0.10)]"
+      : "rounded-2xl border border-[var(--line)] bg-white/92 p-3.5 shadow-[0_10px_28px_rgba(11,19,43,0.04)]"
     : "rounded-[28px] border border-[var(--line)] bg-white p-5";
   const headerClass = compact
     ? "mb-3 flex items-center justify-between gap-3"
@@ -67,6 +70,7 @@ export function ItemEditor({
       aria-label={`Product ${index + 1}`}
       className={cardClass}
       data-density={density}
+      data-selected={selected ? "true" : "false"}
     >
       {compact ? (
         <div className="grid gap-2.5">
