@@ -9,6 +9,49 @@ import {
 } from "@/features/shelves/actions";
 import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
 import { ShelfEditor } from "@/features/studio/shelf-editor";
+import { STITCH_ASSET_SOURCES } from "@/lib/db/seed";
+
+const CREATE_SHELF_DEMO: ShelfEditorInput = {
+  title: "Photography Kit",
+  slug: "photography-kit",
+  description: "My go-to gear for professional shoots and travel vlogs.",
+  category: "Tech Pro",
+  theme: "tech",
+  sourceContentUrl: "https://www.youtube.com/watch?v=linkshelf-photo",
+  coverUrl: STITCH_ASSET_SOURCES.shelfPhotography,
+  products: [
+    {
+      destinationUrl: "https://www.amazon.com/dp/B09JZT6YK5",
+      title: "Sony A7IV Mirrorless Camera",
+      description: "A versatile full-frame hybrid camera with reliable autofocus.",
+      merchant: "Amazon",
+      price: 2498,
+      imageUrl: STITCH_ASSET_SOURCES.productSonyA7iv,
+      hotspotX: 55,
+      hotspotY: 38,
+    },
+    {
+      destinationUrl: "https://www.amazon.com/dp/B0B1TQZ99S",
+      title: "Sony FE 24-70mm f/2.8 GM II",
+      description: "A fast standard zoom for portraits, travel, and events.",
+      merchant: "Amazon",
+      price: 2298,
+      imageUrl: STITCH_ASSET_SOURCES.productSonyLens,
+      hotspotX: 25,
+      hotspotY: 20,
+    },
+    {
+      destinationUrl: "https://www.amazon.com/dp/B086YB2Y2F",
+      title: "Peak Design Carbon Tripod",
+      description: "A compact carbon travel tripod with a fast setup.",
+      merchant: "Amazon",
+      price: 649.95,
+      imageUrl: STITCH_ASSET_SOURCES.productPeakTripod,
+      hotspotX: 75,
+      hotspotY: 60,
+    },
+  ],
+};
 
 async function getStudioContext(returnTo: string) {
   const database = getSharedPublicShelvesDatabase();
@@ -56,5 +99,11 @@ async function submitShelf(formData: FormData) {
 }
 
 export default function StudioCreateShelfPage() {
-  return <ShelfEditor action={submitShelf} onExtractMetadata={extractProductMetadata} />;
+  return (
+    <ShelfEditor
+      action={submitShelf}
+      initialValue={CREATE_SHELF_DEMO}
+      onExtractMetadata={extractProductMetadata}
+    />
+  );
 }

@@ -2,7 +2,7 @@
 
 Status: current-run Stitch side-by-side visual QA complete with known P2 fidelity drift remaining.
 
-This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-27 after the Fan Hub data polish, seed refresh fix, density pass, Google auth mark pass, and restored elevated verification run.
+This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-27 after the Fan Hub data polish, seed refresh fix, density pass, Google auth mark pass, create-shelf demo seed pass, and restored elevated verification run.
 
 ## Evidence summary
 
@@ -28,7 +28,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 | `studio-dashboard.jpg` | `/studio/dashboard` | `1280x1024@2` | Captured after Studio IA pass; P2 spacing/data drift remains |
 | `studio-management-expanded.jpg` | `/studio/shelves` | `1280x1024@2` | Captured after card-grid pass; P2 thumbnail/spacing drift remains |
 | `studio-management-one-column.jpg` | `/studio/shelves` | `1280x1024@2` | Captured after card-grid pass; P2 state/content drift remains |
-| `studio-create-shelf.jpg` | `/studio/create` | `1280x1024@2` | Captured after AI Workbench pass; remaining content/asset fidelity drift |
+| `studio-create-shelf.jpg` | `/studio/create` | `1280x1024@2` | Captured after AI Workbench + demo seed pass; remaining layout/asset/field fidelity drift |
 | `studio-settings.jpg` | `/studio/settings` | `728x1024@2` | Captured after serialization fix; P2 layout/content drift remains |
 | `studio-analytics.jpg` | `/studio/analytics` | `1280x1024@2` | Captured; P2 metrics/content drift remains |
 | `studio-comments.jpg` | `/studio/comments` | `1280x1024@2` | Captured after serialization fix; P2 content/layout drift remains |
@@ -48,9 +48,9 @@ Focused region comparison evidence: not generated in this pass because full-view
 
 - [P2] Creator Studio shell and management pages are structurally aligned but still drift visually
   Location: `studio-dashboard`, `studio-management-expanded`, `studio-management-one-column`, `studio-create-shelf`.
-  Evidence: the implementation now uses the compact Creator Management sidebar, dashboard CTA/metrics/activity feed, thumbnail shelf card grid, AI Link Workbench, detected item list, and shelf preview blocks from the Stitch IA. Remaining differences are mostly exact image selection, spacing, card density, and the create-shelf empty state versus Stitch’s more populated example.
+  Evidence: the implementation now uses the compact Creator Management sidebar, dashboard CTA/metrics/activity feed, thumbnail shelf card grid, AI Link Workbench, detected item list, and shelf preview blocks from the Stitch IA. The create-shelf page now opens with Photography Kit, Tech Pro, three detected camera products, camera cover media, and populated mobile preview instead of an empty state. Remaining differences are mostly exact image selection/cropping, spacing, product-card density, and extra implementation fields such as Cover image URL.
   Impact: the former core Studio IA blocker is reduced; the Studio flow is now much closer to the designed experience, but still needs a polish/content pass before it can be called visually faithful.
-  Fix: tune Studio image assets, copy/data values, card sizing, and prefilled create-shelf state against the side-by-side captures.
+  Fix: tune Studio image assets, copy/data values, card sizing, and create-shelf field/card proportions against the side-by-side captures.
 
 - [P2] Fan dashboard now matches the Stitch data story, with visual polish still remaining
   Location: `/hub/dashboard`.
@@ -110,6 +110,8 @@ Focused region comparison evidence: not generated in this pass because full-view
 - Fixed Fan Hub axe regressions by improving active navigation contrast and making the rewards table scroll region keyboard-focusable.
 - Added the Stitch-exported Google SVG mark to the shared Google login button while preserving the accessible button name and Google-only auth behavior.
 - Added focused component coverage for the shared Google mark on creator and admin login surfaces.
+- Seeded the create-shelf route with Stitch-like Photography Kit demo content so the first paint matches the designed populated AI Workbench flow instead of an empty form.
+- Added route-level component coverage for the create-shelf demo seed, including shelf fields, three detected products, and populated preview content.
 
 ## Verification run evidence
 
@@ -123,16 +125,18 @@ Focused region comparison evidence: not generated in this pass because full-view
 | Fan Hub seed refresh RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/integration/database.test.ts -t "refreshes deterministic Fan Hub seed values"` | RED confirmed stale `$15.99` pending fixture, then passed: 1 focused test |
 | Fan Hub density RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/fan-hub.test.tsx` | RED confirmed side rail/table density drift, then passed: 4 tests |
 | Google auth mark RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/google-login.test.tsx -t "renders the Stitch Google mark"` | RED confirmed missing source Google mark, then passed: 2 focused tests |
-| Latest unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 228 tests across 35 files |
-| Latest end-to-end suite after Google auth mark pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
-| Production build after Google auth mark pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
-| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after Fan Hub data/density polish and Google auth mark pass, including `fan-auth-overlay` |
+| Create shelf demo seed RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/shelf-editor.test.tsx -t "opens the create page"` | RED confirmed empty create-shelf state, then passed: 1 focused test |
+| Shelf editor regression after create seed | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/shelf-editor.test.tsx` | Passed: 3 tests |
+| Latest unit/integration/component suite | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run` | Passed: 229 tests across 35 files |
+| Latest end-to-end suite after create-shelf seed pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
+| Production build after create-shelf seed pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
+| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after Fan Hub data/density polish, Google auth mark pass, and create-shelf demo seed pass, including `studio-create-shelf` |
 | Share modal browser/E2E recapture | `PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test tests/e2e/fan-flow.spec.ts -g "post-auth share"` and `node scripts/capture-design-qa.mjs` | Passed targeted E2E; captured 15 visual states including `share-modal` |
 
 ## Implementation checklist
 
 1. Confirm or re-export the intended Stitch state for `share-modal`, because the current reference does not show the modal while the app route does.
-2. Finish Studio polish pass: exact imagery, spacing, card density, data values, and create-shelf populated state.
+2. Finish Studio polish pass: exact imagery, spacing, card density, data values, and create-shelf field/card proportions.
 3. Continue optional Fan Hub pixel polish: exact image crops, micro-spacing, and seed display dates against `fan-dashboard.png`.
 4. Fan-auth overlay modal treatment and shared Google mark pass are complete; remaining provider-count mismatch is intentional unless the Stitch source is re-exported.
 5. Do a second full visual QA pass and add focused crops for typography/card/detail fidelity.

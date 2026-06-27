@@ -1,11 +1,33 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import StudioCreateShelfPage from "@/app/studio/create/page";
 import { ShelfEditor } from "@/features/studio/shelf-editor";
 
 afterEach(() => cleanup());
 
 describe("ShelfEditor", () => {
+  it("opens the create page with Stitch-like photography demo content", () => {
+    render(<StudioCreateShelfPage />);
+
+    expect(screen.getByRole("textbox", { name: "Shelf title" })).toHaveValue(
+      "Photography Kit",
+    );
+    expect(screen.getByRole("textbox", { name: "Shelf URL" })).toHaveValue(
+      "photography-kit",
+    );
+    expect(screen.getByRole("textbox", { name: "Category" })).toHaveValue("Tech Pro");
+    expect(screen.getByRole("combobox", { name: "Theme" })).toHaveValue("tech");
+    expect(screen.getByRole("textbox", { name: "Description" })).toHaveValue(
+      "My go-to gear for professional shoots and travel vlogs.",
+    );
+    expect(screen.getByText("Detected Items (3)")).toBeVisible();
+    expect(screen.getAllByText("Sony A7IV Mirrorless Camera").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Sony FE 24-70mm f/2.8 GM II").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Peak Design Carbon Tripod").length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: "Shelf Preview" })).toBeVisible();
+  });
+
   it("renders shelf fields, editable metadata, and preview controls", () => {
     render(
       <ShelfEditor
