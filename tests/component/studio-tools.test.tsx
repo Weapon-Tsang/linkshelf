@@ -159,23 +159,39 @@ describe("Studio analytics, comments, and settings tools", () => {
       />,
     );
 
+    expect(screen.getByRole("heading", { name: "Settings" })).toBeVisible();
+    expect(screen.getByText("Manage your account settings and preferences.")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Profile Settings" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Change Avatar" })).toBeVisible();
+    expect(screen.getByLabelText("Custom URL Suffix")).toBeVisible();
+    expect(screen.getByText("linkshelf.studio/")).toBeVisible();
+    expect(screen.getByText("This is your public shelf URL.")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Affiliate Configuration" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Update ID" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Account Binding" })).toBeVisible();
+    expect(screen.getByText("Google Account")).toBeVisible();
+    expect(screen.getByText("alex.rivera@example.com")).toBeVisible();
+    expect(screen.getByText("GitHub Account")).toBeVisible();
+    expect(screen.getByText("Not connected")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Bind GitHub Account" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Danger Zone" })).toBeVisible();
+
     await user.clear(screen.getByLabelText("Display name"));
     await user.type(screen.getByLabelText("Display name"), "Liam R.");
     await user.clear(screen.getByLabelText("Amazon Tracking ID"));
     await user.type(screen.getByLabelText("Amazon Tracking ID"), "liam-demo-20");
-    await user.click(screen.getByRole("switch", { name: "FACEBOOK" }));
+    await user.clear(screen.getByLabelText("Custom URL Suffix"));
+    await user.type(screen.getByLabelText("Custom URL Suffix"), "liamroberts");
 
     expect(screen.getByLabelText("Display name")).toHaveValue("Liam R.");
     expect(screen.getByLabelText("Amazon Tracking ID")).toHaveValue("liam-demo-20");
-    expect(screen.getByRole("switch", { name: "FACEBOOK" })).toHaveAttribute(
-      "aria-checked",
-      "true",
-    );
+    expect(screen.getByLabelText("Custom URL Suffix")).toHaveValue("liamroberts");
 
-    await user.click(screen.getByRole("button", { name: "Delete account" }));
+    await user.click(screen.getByRole("button", { name: "Delete Account" }));
     expect(onDelete).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Confirm account deletion")).toBeVisible();
     await user.type(screen.getByLabelText("Confirm account deletion"), "DELETE");
-    await user.click(screen.getByRole("button", { name: "Delete account" }));
+    await user.click(screen.getByRole("button", { name: "Confirm Delete Account" }));
     expect(onDelete).toHaveBeenCalledTimes(1);
   });
 });
