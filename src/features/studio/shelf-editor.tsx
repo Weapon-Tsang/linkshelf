@@ -145,9 +145,9 @@ export function ShelfEditor({
         onChange={(event) => setTheme(event.target.value)}
         value={theme}
       >
-        <option value="tech">Tech</option>
-        <option value="minimal">Minimal</option>
-        <option value="living">Living</option>
+        <option value="tech">科技 (Tech)</option>
+        <option value="minimal">简约 (Minimal)</option>
+        <option value="living">生活 (Living)</option>
       </select>
     </label>
   );

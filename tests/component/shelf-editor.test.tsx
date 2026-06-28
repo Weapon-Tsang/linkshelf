@@ -107,6 +107,9 @@ describe("ShelfEditor", () => {
       "tech",
     );
     expect(
+      within(shelfPreview).getByRole("option", { name: "科技 (Tech)" }),
+    ).toBeInTheDocument();
+    expect(
       within(shelfPreview).queryByRole("button", { name: "Mobile preview" }),
     ).not.toBeInTheDocument();
     expect(
