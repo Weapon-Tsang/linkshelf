@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { SocialChannelType } from "@/features/shelves/types";
 
 const fallbackImages = {
+  fanAvatar: "/stitch/assets/fan-dashboard-avatar.png",
   sharedShelf:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuDDvrAb2jD7VtsS147Vz1lwCSzKfiIX4WS48D-2qIrME2AAWlItEeJkDPwnebAS1_qf6nESgiineyZvbnbp39Yl-tCZLVyHibLCg3v_GdirMDlZDMN-HplLqFDm5VO0jLu1-kHIwmPiNrowEPiyGYH0Rcj9r8f1RppmCplamJdAYlkhIykkgGT7z73wMtQ58Vwrp59SGnpgbKUUJKSIv0CL9lfIFzTju1F626GPsgU_KEYeCD7AhhtW3UYOOGdGd4B54ISdO8HKs18",
   savedCollection:
@@ -152,13 +153,12 @@ export function HubDashboard({
             <span aria-hidden="true" className="material-symbols-outlined text-3xl">
               settings
             </span>
-            <span
-              aria-label="Jamie Chen"
-              className="grid h-12 w-12 place-items-center rounded-full bg-[var(--ink)] text-sm font-bold text-white shadow-[var(--shadow-card)] ring-2 ring-[var(--teal-700)]/20"
-              role="img"
-            >
-              JC
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element -- Stitch source avatar is a static local visual QA asset. */}
+            <img
+              alt="Jamie Chen"
+              className="h-12 w-12 rounded-full object-cover shadow-[var(--shadow-card)] ring-2 ring-[var(--teal-700)]/20"
+              src={fallbackImages.fanAvatar}
+            />
           </div>
         </div>
       </header>

@@ -152,6 +152,10 @@ describe("Fan Hub dashboard", () => {
     const utilityNav = screen.getByRole("navigation", { name: "Fan dashboard utility" });
     expect(utilityNav).toBeVisible();
     expect(utilityNav).toHaveClass("justify-center");
+    expect(screen.getByRole("img", { name: "Jamie Chen" })).toHaveAttribute(
+      "src",
+      "/stitch/assets/fan-dashboard-avatar.png",
+    );
     expect(screen.queryByText("My Hub")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Fan rewards dashboard" })).toHaveClass(
       "sr-only",
