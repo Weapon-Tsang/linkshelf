@@ -100,12 +100,20 @@ describe("Fan Hub dashboard", () => {
           affiliateTag: "fan-demo-20",
           entries: [
             {
+              id: "wallet-opening-balance",
+              amountCents: 13395,
+              type: "ADJUSTMENT",
+              status: "CLEARED",
+              description: "Fan Hub opening balance",
+              createdAt: "2026-06-01T10:00:00.000Z",
+            },
+            {
               id: "wallet-tech",
               amountCents: 1240,
               type: "ADJUSTMENT",
               status: "CLEARED",
               description: "Tech Collection",
-              createdAt: "2026-06-24T10:00:00.000Z",
+              createdAt: "2023-10-24T10:00:00.000Z",
             },
             {
               id: "wallet-home",
@@ -113,7 +121,7 @@ describe("Fan Hub dashboard", () => {
               type: "ADJUSTMENT",
               status: "CLEARED",
               description: "Home Office Gear",
-              createdAt: "2026-06-22T10:00:00.000Z",
+              createdAt: "2023-10-22T10:00:00.000Z",
             },
             {
               id: "wallet-fall",
@@ -121,7 +129,7 @@ describe("Fan Hub dashboard", () => {
               type: "ADJUSTMENT",
               status: "CLEARED",
               description: "Fall Essentials",
-              createdAt: "2026-06-19T10:00:00.000Z",
+              createdAt: "2023-10-19T10:00:00.000Z",
             },
           ],
         }}
@@ -138,6 +146,10 @@ describe("Fan Hub dashboard", () => {
     );
     expect(screen.getByRole("columnheader", { name: "Amount" })).toHaveClass("w-24");
     expect(screen.getAllByText("Platform Default")[0]).toHaveClass("whitespace-nowrap");
+    expect(screen.getByText("Oct 24, 2023")).toBeVisible();
+    expect(screen.getByText("Oct 22, 2023")).toBeVisible();
+    expect(screen.getByText("Oct 19, 2023")).toBeVisible();
+    expect(screen.queryByText("Fan Hub opening balance")).not.toBeInTheDocument();
     expect(screen.getByText("Tech Collection")).toBeVisible();
     expect(screen.getByText("Home Office Gear")).toBeVisible();
     expect(screen.getByText("Fall Essentials")).toBeVisible();

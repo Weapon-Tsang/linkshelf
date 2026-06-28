@@ -85,6 +85,10 @@ function rewardTypeLabel(type: HubWalletEntry["type"], status: HubWalletEntry["s
   return "Affiliate";
 }
 
+function isRewardHistoryEntry(entry: HubWalletEntry) {
+  return !entry.description.toLowerCase().includes("opening balance");
+}
+
 function fallbackItemCount(index: number) {
   return index === 0 ? 14 : 28;
 }
@@ -128,6 +132,7 @@ export function HubDashboard({
 
   const rewardEntries = (summary.entries ?? [])
     .filter((entry) => entry.status === "CLEARED")
+    .filter(isRewardHistoryEntry)
     .slice(0, 3);
   const trackingIdChanged = affiliateTag !== startingAffiliateTag;
 

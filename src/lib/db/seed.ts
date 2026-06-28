@@ -233,11 +233,11 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
         ('wallet-fan-pending', 'user-fan', 'click-fan', 1230, 'AFFILIATE_EARNING', 'PENDING',
           'Pending fan share from Sony A7IV click', '2026-06-05T10:00:01.000Z', NULL),
         ('wallet-fan-tech', 'user-fan', NULL, 1240, 'ADJUSTMENT', 'CLEARED',
-          'Tech Collection', '2026-06-24T10:00:01.000Z', '2026-06-24T10:00:01.000Z'),
+          'Tech Collection', '2023-10-24T10:00:01.000Z', '2023-10-24T10:00:01.000Z'),
         ('wallet-fan-home-office', 'user-fan', NULL, 415, 'ADJUSTMENT', 'CLEARED',
-          'Home Office Gear', '2026-06-22T10:00:01.000Z', '2026-06-22T10:00:01.000Z'),
+          'Home Office Gear', '2023-10-22T10:00:01.000Z', '2023-10-22T10:00:01.000Z'),
         ('wallet-fan-fall', 'user-fan', NULL, 2800, 'ADJUSTMENT', 'CLEARED',
-          'Fall Essentials', '2026-06-19T10:00:01.000Z', '2026-06-19T10:00:01.000Z'),
+          'Fall Essentials', '2023-10-19T10:00:01.000Z', '2023-10-19T10:00:01.000Z'),
         ('wallet-fan-opening-balance', 'user-fan', NULL, 13395, 'ADJUSTMENT', 'CLEARED',
           'Fan Hub opening balance', '2026-06-01T10:00:01.000Z',
           '2026-06-01T10:00:01.000Z'),
@@ -260,6 +260,22 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
         created_at = '2026-06-05T10:00:01.000Z',
         cleared_at = NULL
       WHERE id = 'wallet-fan-pending';
+
+      UPDATE wallet_entries
+      SET
+        created_at = CASE id
+          WHEN 'wallet-fan-tech' THEN '2023-10-24T10:00:01.000Z'
+          WHEN 'wallet-fan-home-office' THEN '2023-10-22T10:00:01.000Z'
+          WHEN 'wallet-fan-fall' THEN '2023-10-19T10:00:01.000Z'
+          ELSE created_at
+        END,
+        cleared_at = CASE id
+          WHEN 'wallet-fan-tech' THEN '2023-10-24T10:00:01.000Z'
+          WHEN 'wallet-fan-home-office' THEN '2023-10-22T10:00:01.000Z'
+          WHEN 'wallet-fan-fall' THEN '2023-10-19T10:00:01.000Z'
+          ELSE cleared_at
+        END
+      WHERE id IN ('wallet-fan-tech', 'wallet-fan-home-office', 'wallet-fan-fall');
 
       INSERT OR IGNORE INTO withdrawals
         (id, user_id, amount_cents, destination_label, status, reviewer_id, created_at, updated_at,

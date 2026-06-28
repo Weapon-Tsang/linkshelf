@@ -47,8 +47,11 @@ describe("local database", () => {
     migrate(db);
     seed(db);
 
-    db.prepare("UPDATE wallet_entries SET amount_cents = 1599 WHERE id = ?").run(
-      "wallet-fan-pending",
+    db.prepare("UPDATE wallet_entries SET amount_cents = 1599 WHERE id = ?").run("wallet-fan-pending");
+    db.prepare("UPDATE wallet_entries SET created_at = ?, cleared_at = ? WHERE id = ?").run(
+      "2026-06-24T10:00:01.000Z",
+      "2026-06-24T10:00:01.000Z",
+      "wallet-fan-tech",
     );
 
     seed(db);
@@ -60,6 +63,16 @@ describe("local database", () => {
           .get("wallet-fan-pending") as { amountCents: number }
       ).amountCents,
     ).toBe(1_230);
+    expect(
+      (
+        db
+          .prepare("SELECT created_at AS createdAt, cleared_at AS clearedAt FROM wallet_entries WHERE id = ?")
+          .get("wallet-fan-tech") as { createdAt: string; clearedAt: string }
+      ),
+    ).toEqual({
+      createdAt: "2023-10-24T10:00:01.000Z",
+      clearedAt: "2023-10-24T10:00:01.000Z",
+    });
   });
 
   it("creates file databases with production-safe pragmas", () => {

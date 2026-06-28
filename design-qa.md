@@ -1,8 +1,8 @@
 # LinkShelf design QA
 
-Status: current-run Stitch side-by-side visual QA complete after the Fan Hub avatar polish, with known P2 fidelity drift remaining.
+Status: current-run Stitch side-by-side visual QA complete after the Fan Hub rewards-date polish, with known P2 fidelity drift remaining.
 
-This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-28 after the Fan Hub data polish, seed refresh fix, density pass, shell/header/affiliate polish, avatar polish, Google auth mark pass, create-shelf demo seed pass, create-shelf local flat-lay/compact-card pass, create-shelf field-order pass, create-shelf URL affordance pass, compact detected-card/header pass, create-shelf full-canvas shell pass, selected detected-card pass, create-shelf hotspot state pass, create-shelf dual-preview pass, create-shelf tablet-frame pass, create-shelf mobile-frame pass, create-shelf theme-label pass, analytics overview pass, comments card-layout pass, settings card-layout pass, dashboard metric/activity polish, and restored elevated verification run.
+This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-28 after the Fan Hub data polish, seed refresh fix, density pass, shell/header/affiliate polish, avatar polish, rewards-date polish, Google auth mark pass, create-shelf demo seed pass, create-shelf local flat-lay/compact-card pass, create-shelf field-order pass, create-shelf URL affordance pass, compact detected-card/header pass, create-shelf full-canvas shell pass, selected detected-card pass, create-shelf hotspot state pass, create-shelf dual-preview pass, create-shelf tablet-frame pass, create-shelf mobile-frame pass, create-shelf theme-label pass, analytics overview pass, comments card-layout pass, settings card-layout pass, dashboard metric/activity polish, and restored elevated verification run.
 
 ## Evidence summary
 
@@ -32,7 +32,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 | `studio-settings.jpg` | `/studio/settings` | `728x1024@2` | Captured after settings card-layout pass; remaining shell scale/spacing drift |
 | `studio-analytics.jpg` | `/studio/analytics` | `1280x1024@2` | Captured after analytics overview pass; remaining shell/sidebar proportion drift |
 | `studio-comments.jpg` | `/studio/comments` | `1280x1024@2` | Captured after comments card-layout pass; remaining seed copy/avatar drift |
-| `fan-dashboard.png` | `/hub/dashboard` | `1280x1024@2` | Captured after Fan Hub avatar polish; minor P2 date/image/card-proportion drift remains |
+| `fan-dashboard.png` | `/hub/dashboard` | `1280x1024@2` | Captured after Fan Hub rewards-date polish; minor P2 image/card-proportion/spacing drift remains |
 | `fan-auth-overlay.png` | public shelf + fan auth overlay | `1280x1024@2` | Captured after portal, modal-treatment, and Google mark pass; provider count/height drift is intentional |
 | `admin-login.png` | admin secret Google gate | `1280x1024@2` | Captured; Google-only auth is intentional per product direction |
 | `super-admin.png` | `/admin/dashboard` | `1280x1024@2` | Captured; P2 data-density/layout drift remains |
@@ -54,9 +54,9 @@ Focused region comparison evidence: not generated in this pass because full-view
 
 - [P2] Fan dashboard now matches the Stitch data story, with visual polish still remaining
   Location: `/hub/dashboard`.
-  Evidence: latest `test-results/design-qa/latest/compare/fan-dashboard.png` shows the implementation now renders the Stitch “My Hub” structure and data: centered top utility navigation without the extra visual headline/pill switcher, a 256px Creator Economy side rail, the Stitch-exported profile avatar, Affiliate ID Binding with a placeholder-style mock tracking field, `$128.50` available balance, `$12.30` pending clearance, `Download CSV`, three rewards rows with non-wrapping type pills, two shared shelves, two saved collections, real share/saved metadata, and the existing CSV/tracking/withdrawal interactions. Remaining visible drift: dates use the 2026 seed timeline instead of the 2023 Stitch example, images are close but not exact crops, and some section spacing/card proportions still need a final pixel polish pass.
+  Evidence: latest `test-results/design-qa/latest/compare/fan-dashboard.png` shows the implementation now renders the Stitch “My Hub” structure and data: centered top utility navigation without the extra visual headline/pill switcher, a 256px Creator Economy side rail, the Stitch-exported profile avatar, Affiliate ID Binding with a placeholder-style mock tracking field, `$128.50` available balance, `$12.30` pending clearance, `Download CSV`, the Stitch `Oct 24/22/19, 2023` rewards rows with non-wrapping type pills, two shared shelves, two saved collections, real share/saved metadata, and the existing CSV/tracking/withdrawal interactions. Remaining visible drift: images are close but not exact crops, and some section spacing/card proportions still need a final pixel polish pass.
   Impact: the former Fan Hub product-state and density blockers are resolved; remaining work is visual fidelity polish rather than missing core content.
-  Fix: tune final image crops, micro-spacing, and optional seed display dates against `fan-dashboard.png`.
+  Fix: tune final image crops, micro-spacing, and card proportions against `fan-dashboard.png`.
 
 - [P2] Public fan-auth overlay is closer to the Stitch modal treatment, with an intentional provider-count deviation
   Location: public shelf share overlay.
@@ -73,7 +73,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 ## Required fidelity surfaces
 
 - Fonts and typography: broadly consistent bold rounded sans style, but hierarchy and optical sizes still need visual recapture/polish on Studio/Fan/Admin pages.
-- Spacing and layout rhythm: major IA drift has been reduced in Studio and Fan Hub; pixel-level spacing drift remains, especially in create-shelf and post-recapture Fan Hub polish.
+- Spacing and layout rhythm: major IA drift has been reduced in Studio and Fan Hub; pixel-level spacing drift remains, especially in create-shelf and post-recapture Fan Hub card proportions.
 - Colors and visual tokens: teal/navy/soft surface language is consistent; beige app shell differs from several Stitch white/pink surfaces.
 - Image quality and asset fidelity: localized Stitch/source assets render on public pages; several admin/studio mock sections use simplified content rather than exact reference imagery or thumbnails.
 - Copy and app-specific content: product-level copy is present, but many screen headings, data values, labels, and content modules differ from the Stitch references.
@@ -111,6 +111,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 - Polished the Fan Hub shell/header/affiliate surface so the side rail uses the Stitch 256px scale, the extra visual My Hub headline and pill switcher are removed, the top utility navigation is centered, the mock `fan-demo-20` tag renders as an empty placeholder field, `Save tracking ID` appears only after edits, and the rewards export button reads `Download CSV`.
 - Restored the Fan Hub page-level `h1` as an `sr-only` heading and updated Fan Hub E2E expectations to the Stitch single-dashboard interaction model.
 - Downloaded the Stitch Fan Hub profile avatar into `public/stitch/assets/fan-dashboard-avatar.png` and replaced the `JC` initials avatar with the local source image.
+- Refreshed deterministic Fan Hub demo reward dates to the Stitch `Oct 24/22/19, 2023` timeline and filtered the internal opening-balance ledger item out of the visible Rewards History table.
 - Added the Stitch-exported Google SVG mark to the shared Google login button while preserving the accessible button name and Google-only auth behavior.
 - Added focused component coverage for the shared Google mark on creator and admin login surfaces.
 - Seeded the create-shelf route with Stitch-like Photography Kit demo content so the first paint matches the designed populated AI Workbench flow instead of an empty form.
@@ -155,6 +156,8 @@ Focused region comparison evidence: not generated in this pass because full-view
 | Fan Hub affiliate mock-field RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/fan-hub.test.tsx` | RED confirmed `fan-demo-20` still rendered as a visible value, `Save tracking ID` was always present, and CSV used `Export CSV`; then passed: 4 tests |
 | Fan Hub E2E/accessibility regression after visual polish | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test tests/e2e/accessibility.spec.ts tests/e2e/auth.spec.ts tests/e2e/fan-flow.spec.ts` | Initial full E2E caught the missing page `h1` and stale pill-click expectations; after adding the `sr-only` h1 and updating E2E to the single-dashboard model, passed: 5 tests |
 | Fan Hub avatar RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/fan-hub.test.tsx` | RED confirmed the Fan Hub profile avatar was still an initials node with no source image; then passed: 4 tests |
+| Fan Hub reward-date seed RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/integration/database.test.ts -t "refreshes deterministic Fan Hub seed values"` | RED confirmed existing local Fan Hub reward dates stayed on the 2026 demo timeline; then passed: 1 focused test |
+| Fan Hub rewards-table RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/fan-hub.test.tsx -t "renders the Stitch My Hub structure"` | RED confirmed the opening-balance ledger item could displace the third Stitch reward row; then passed: 1 focused test |
 | Google auth mark RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/google-login.test.tsx -t "renders the Stitch Google mark"` | RED confirmed missing source Google mark, then passed: 2 focused tests |
 | Create shelf demo seed RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/shelf-editor.test.tsx -t "opens the create page"` | RED confirmed empty create-shelf state, then passed: 1 focused test |
 | Create shelf flat-lay/compact RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/shelf-editor.test.tsx -t "opens the create page"` | RED confirmed old remote cover, full-density cards, and missing square workbench crop, then passed: 1 focused test |
@@ -189,15 +192,17 @@ Focused region comparison evidence: not generated in this pass because full-view
 | Latest end-to-end suite after Fan Hub polish | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
 | Latest production build after Fan Hub polish | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
 | Dashboard accessibility/responsive target after polish | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Covered by the full 12-test E2E suite after restoring `h1`, timestamp contrast, and narrow-viewport row constraints |
-| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after Fan Hub data/density/shell/header/affiliate/avatar polish, Google auth mark pass, create-shelf local flat-lay/compact-card pass, create-shelf field-order pass, create-shelf URL affordance pass, compact detected-card/header pass, create full-canvas pass, selected detected-card pass, hotspot state pass, dual-preview pass, tablet-frame pass, mobile-frame pass, theme-label pass, analytics overview pass, comments card-layout pass, settings card-layout pass, and dashboard metric/activity polish |
+| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after Fan Hub data/density/shell/header/affiliate/avatar/rewards-date polish, Google auth mark pass, create-shelf local flat-lay/compact-card pass, create-shelf field-order pass, create-shelf URL affordance pass, compact detected-card/header pass, create full-canvas pass, selected detected-card pass, hotspot state pass, dual-preview pass, tablet-frame pass, mobile-frame pass, theme-label pass, analytics overview pass, comments card-layout pass, settings card-layout pass, and dashboard metric/activity polish |
 | Share modal browser/E2E recapture | `PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test tests/e2e/fan-flow.spec.ts -g "post-auth share"` and `node scripts/capture-design-qa.mjs` | Passed targeted E2E; captured 15 visual states including `share-modal` |
 
 ## Implementation checklist
 
 1. Confirm or re-export the intended Stitch state for `share-modal`, because the current reference does not show the modal while the app route does.
 2. Finish Studio polish pass: exact imagery, spacing, card density, data values, and create-shelf field/card proportions.
-3. Continue optional Fan Hub pixel polish: exact image crops, micro-spacing, and seed display dates against `fan-dashboard.png`.
+3. Continue optional Fan Hub pixel polish: exact image crops, micro-spacing, and card proportions against `fan-dashboard.png`.
 4. Fan-auth overlay modal treatment and shared Google mark pass are complete; remaining provider-count mismatch is intentional unless the Stitch source is re-exported.
 5. Do a second full visual QA pass and add focused crops for typography/card/detail fidelity.
 
-final result: current-run QA captured; known P2 polish drift remains
+Known blocker: current-run QA still has actionable P2 polish drift in share-modal source-state alignment, Studio visual proportions, Fan Hub image/card proportions, and landing/profile/admin data-density fidelity.
+
+final result: blocked
