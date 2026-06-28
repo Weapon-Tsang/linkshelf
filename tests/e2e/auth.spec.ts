@@ -19,5 +19,5 @@ test("Fan Hub rejects creator sessions and accepts fan sessions", async ({ page 
   await page.context().clearCookies();
   await loginAs(page, "fan", "/hub/dashboard");
   await page.goto("/hub/dashboard");
-  await expect(page.getByRole("heading", { name: "Fan rewards dashboard" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Affiliate ID Binding" })).toBeVisible();
 });

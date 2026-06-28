@@ -44,7 +44,7 @@ describe("Fan Hub dashboard", () => {
     );
   });
 
-  it("uses a compact Stitch-style side rail without duplicating top utility navigation", () => {
+  it("uses the Stitch side rail scale without duplicating top utility navigation", () => {
     render(
       <HubShell user={{ displayName: "Jamie Photo" }}>
         <p>Fan rewards</p>
@@ -52,7 +52,7 @@ describe("Fan Hub dashboard", () => {
     );
 
     const sideRail = screen.getByRole("complementary", { name: "Fan Hub side rail" });
-    expect(sideRail).toHaveClass("lg:w-[188px]");
+    expect(sideRail).toHaveClass("lg:w-[256px]");
 
     const nav = screen.getByRole("navigation", { name: "Fan Hub" });
     expect(within(nav).queryByRole("link", { name: "Explore" })).not.toBeInTheDocument();
@@ -131,6 +131,7 @@ describe("Fan Hub dashboard", () => {
     expect(screen.getByRole("heading", { name: "Affiliate ID Binding" })).toBeVisible();
     expect(screen.getByText("Available Balance")).toBeVisible();
     expect(screen.getByRole("heading", { name: "Rewards History" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Download CSV" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Source" })).toBeVisible();
     expect(screen.getByRole("table", { name: "Rewards history entries" })).toHaveClass(
       "table-fixed",
@@ -148,11 +149,22 @@ describe("Fan Hub dashboard", () => {
     expect(screen.getByRole("heading", { name: "Saved Collections" })).toBeVisible();
     expect(screen.getByText("14 Items Saved")).toBeVisible();
     expect(screen.getByText("28 Items Saved")).toBeVisible();
-    expect(screen.getByRole("navigation", { name: "Fan dashboard utility" })).toBeVisible();
+    const utilityNav = screen.getByRole("navigation", { name: "Fan dashboard utility" });
+    expect(utilityNav).toBeVisible();
+    expect(utilityNav).toHaveClass("justify-center");
+    expect(screen.queryByText("My Hub")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Fan rewards dashboard" })).toHaveClass(
+      "sr-only",
+    );
+    expect(screen.queryByRole("button", { name: "Wallet" })).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Fan Tracking ID")).toHaveValue("");
+    expect(screen.getByPlaceholderText("Your Amazon Tracking ID")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Save tracking ID" })).not.toBeInTheDocument();
   });
 
   it("keeps the dashboard modules interactive for tracking ID, withdrawal, and CSV export", async () => {
     const user = userEvent.setup();
+    const onSaveTrackingId = vi.fn();
     const onWithdraw = vi.fn();
     const onExportCsv = vi.fn(() => "date,source,type,amount\n2026-06-20,Test,AFFILIATE,10.00");
 
@@ -160,6 +172,7 @@ describe("Fan Hub dashboard", () => {
       <HubDashboard
         onExportCsv={onExportCsv}
         onRequestWithdrawal={onWithdraw}
+        onSaveTrackingId={onSaveTrackingId}
         savedShelves={[
           {
             id: "shelf-photography",
@@ -186,15 +199,13 @@ describe("Fan Hub dashboard", () => {
     );
 
     expect(screen.getByText("$50")).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "My Shares" }));
     expect(screen.getByText("jamie-photo")).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "Saved" }));
     expect(screen.getAllByText("Photography Kit").length).toBeGreaterThan(0);
 
-    await user.click(screen.getByRole("button", { name: "Wallet" }));
-    await user.clear(screen.getByLabelText("Fan Tracking ID"));
     await user.type(screen.getByLabelText("Fan Tracking ID"), "jamie-demo-20");
     expect(screen.getByLabelText("Fan Tracking ID")).toHaveValue("jamie-demo-20");
+    await user.click(screen.getByRole("button", { name: "Save tracking ID" }));
+    expect(onSaveTrackingId).toHaveBeenCalledWith("jamie-demo-20");
 
     await user.click(screen.getByRole("button", { name: "Withdraw Funds" }));
     expect(screen.getByRole("dialog", { name: "Confirm withdrawal" })).toBeVisible();
@@ -207,7 +218,7 @@ describe("Fan Hub dashboard", () => {
       destinationLabel: "Amazon gift card",
     });
 
-    await user.click(screen.getByRole("button", { name: "Export CSV" }));
+    await user.click(screen.getByRole("button", { name: "Download CSV" }));
     expect(onExportCsv).toHaveBeenCalledTimes(1);
     expect(screen.getByText("CSV ready")).toBeVisible();
   });

@@ -3,9 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { SocialChannelType } from "@/features/shelves/types";
-import { cn } from "@/lib/cn";
-
-type HubSection = "Wallet" | "My Shares" | "Saved";
 
 const fallbackImages = {
   sharedShelf:
@@ -91,6 +88,10 @@ function fallbackItemCount(index: number) {
   return index === 0 ? 14 : 28;
 }
 
+function initialTrackingId(affiliateTag: string) {
+  return affiliateTag.trim().toLowerCase() === "fan-demo-20" ? "" : affiliateTag;
+}
+
 export function HubDashboard({
   csv,
   onExportCsv,
@@ -111,8 +112,8 @@ export function HubDashboard({
   readonly shares: readonly HubShare[];
   readonly summary: HubSummary;
 }) {
-  const [active, setActive] = useState<HubSection>("Wallet");
-  const [affiliateTag, setAffiliateTag] = useState(summary.affiliateTag);
+  const startingAffiliateTag = initialTrackingId(summary.affiliateTag);
+  const [affiliateTag, setAffiliateTag] = useState(startingAffiliateTag);
   const [withdrawalOpen, setWithdrawalOpen] = useState(false);
   const [withdrawalAmount, setWithdrawalAmount] = useState("50");
   const [destination, setDestination] = useState("");
@@ -127,14 +128,16 @@ export function HubDashboard({
   const rewardEntries = (summary.entries ?? [])
     .filter((entry) => entry.status === "CLEARED")
     .slice(0, 3);
+  const trackingIdChanged = affiliateTag !== startingAffiliateTag;
 
   return (
-    <div className="mx-auto max-w-[1060px] space-y-5">
-      <header className="space-y-4">
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+    <div className="mx-auto max-w-[1280px] space-y-6">
+      <header className="min-h-14">
+        <h1 className="sr-only">Fan rewards dashboard</h1>
+        <div className="grid gap-4 md:grid-cols-[1fr_auto_1fr] md:items-center">
           <nav
             aria-label="Fan dashboard utility"
-            className="flex flex-wrap items-center gap-6 text-sm font-bold text-[var(--muted)]"
+            className="flex flex-wrap items-center justify-center gap-12 text-base font-bold text-[var(--muted)] md:col-start-2"
           >
             <Link className="text-[var(--teal-700)]" href="/hub/dashboard">
               Dashboard
@@ -142,47 +145,21 @@ export function HubDashboard({
             <Link href="/liamroberts.photo">Explore</Link>
             <Link href="/studio/analytics">Analytics</Link>
           </nav>
-          <div className="flex items-center gap-4 text-[var(--muted)]">
-            <span aria-hidden="true" className="material-symbols-outlined text-xl">
+          <div className="flex items-center justify-center gap-8 text-[var(--muted)] md:col-start-3 md:justify-self-end">
+            <span aria-hidden="true" className="material-symbols-outlined text-3xl">
               notifications
             </span>
-            <span aria-hidden="true" className="material-symbols-outlined text-xl">
+            <span aria-hidden="true" className="material-symbols-outlined text-3xl">
               settings
             </span>
             <span
               aria-label="Jamie Chen"
-              className="grid h-9 w-9 place-items-center rounded-full bg-[var(--ink)] text-xs font-bold text-white shadow-[var(--shadow-card)]"
+              className="grid h-12 w-12 place-items-center rounded-full bg-[var(--ink)] text-sm font-bold text-white shadow-[var(--shadow-card)] ring-2 ring-[var(--teal-700)]/20"
               role="img"
             >
               JC
             </span>
           </div>
-        </div>
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--teal-700)]">
-              My Hub
-            </p>
-            <h1 className="mt-2 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">
-              Fan rewards dashboard
-            </h1>
-          </div>
-          <nav aria-label="Fan Hub sections" className="flex flex-wrap gap-2">
-            {(["Wallet", "My Shares", "Saved"] as const).map((section) => (
-              <button
-                aria-pressed={active === section}
-                className={cn(
-                  "rounded-full border border-[var(--line)] bg-white px-5 py-2 text-sm font-bold text-[var(--muted)]",
-                  active === section && "border-[var(--teal-700)] bg-[var(--glow)] text-[var(--ink)]",
-                )}
-                key={section}
-                onClick={() => setActive(section)}
-                type="button"
-              >
-                {section}
-              </button>
-            ))}
-          </nav>
         </div>
       </header>
 
@@ -229,17 +206,19 @@ export function HubDashboard({
                 info
               </span>
             </div>
-            <button
-              className="justify-self-start rounded-full border border-[var(--line)] px-5 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={!isInteractive}
-              onClick={() => {
-                if (!isInteractive) return;
-                void onSaveTrackingId?.(affiliateTag);
-              }}
-              type="button"
-            >
-              Save tracking ID
-            </button>
+            {trackingIdChanged ? (
+              <button
+                className="justify-self-start rounded-full border border-[var(--line)] px-5 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={!isInteractive}
+                onClick={() => {
+                  if (!isInteractive) return;
+                  void onSaveTrackingId?.(affiliateTag);
+                }}
+                type="button"
+              >
+                Save tracking ID
+              </button>
+            ) : null}
           </div>
         </div>
       </section>
@@ -307,7 +286,7 @@ export function HubDashboard({
               }}
               type="button"
             >
-              Export CSV
+              Download CSV
             </button>
           </div>
           <div aria-label="Rewards History table" className="overflow-x-auto" tabIndex={0}>
