@@ -102,6 +102,15 @@ describe("Studio analytics, comments, and settings tools", () => {
             createdAt: "2026-06-06T09:10:00.000Z",
             status: "VISIBLE",
           },
+          {
+            id: "comment-hidden",
+            shelfId: "shelf-photography",
+            shelfTitle: "Photography Kit",
+            authorName: "Super Admin",
+            body: "This fixture demonstrates moderation state.",
+            createdAt: "2026-06-08T09:10:00.000Z",
+            status: "HIDDEN",
+          },
         ]}
         shelves={[
           { id: "shelf-photography", title: "Photography Kit" },
@@ -109,6 +118,20 @@ describe("Studio analytics, comments, and settings tools", () => {
         ]}
       />,
     );
+
+    expect(screen.getByRole("heading", { name: "Recent Comments" })).toBeVisible();
+    expect(screen.getByText("Manage interactions across your shelves.")).toBeVisible();
+    expect(screen.getByRole("combobox", { name: "Filter by shelf" })).toHaveDisplayValue(
+      "All Shelves",
+    );
+    expect(screen.getByRole("combobox", { name: "Sort comments" })).toHaveDisplayValue(
+      "Newest First",
+    );
+    expect(screen.getByRole("button", { name: "Reply to Jamie Chen" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Pin Jamie Chen" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Delete Jamie Chen" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Load More Comments" })).toBeVisible();
+    expect(screen.queryByText("This fixture demonstrates moderation state.")).not.toBeInTheDocument();
 
     await user.selectOptions(screen.getByLabelText("Filter by shelf"), "shelf-travel");
     await user.selectOptions(screen.getByLabelText("Sort comments"), "oldest");
