@@ -114,6 +114,19 @@ describe("ShelfEditor", () => {
     ).not.toBeInTheDocument();
     expect(within(shelfPreview).getByText("mobile preview")).toBeVisible();
     expect(within(shelfPreview).getByText("tablet preview")).toBeVisible();
+    const mobilePreviewPhone = within(shelfPreview).getByTestId("mobile-preview-phone");
+    expect(mobilePreviewPhone).toHaveClass("rounded-[32px]");
+    expect(within(mobilePreviewPhone).getByText("9:41")).toBeVisible();
+    expect(within(mobilePreviewPhone).getByText("Liam Roberts")).toBeVisible();
+    expect(within(mobilePreviewPhone).getByText("@liamshoots")).toBeVisible();
+    expect(
+      within(mobilePreviewPhone).getByAltText("Sony A7IV Mirrorless Camera product image"),
+    ).toBeVisible();
+    expect(
+      within(mobilePreviewPhone).getByRole("button", {
+        name: "Add Sony A7IV Mirrorless Camera to cart",
+      }),
+    ).toBeVisible();
     const tabletPreviewFrame = within(shelfPreview).getByTestId("tablet-preview-frame");
     expect(tabletPreviewFrame).toHaveClass("bg-[#c8cee4]");
     const tabletPreviewOverlay = within(tabletPreviewFrame).getByTestId(
