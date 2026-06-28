@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { DashboardView } from "@/features/studio/dashboard-view";
 
@@ -29,8 +29,17 @@ describe("Studio dashboard Stitch structure", () => {
     );
     expect(screen.getByText("Today's Clicks")).toBeVisible();
     expect(screen.getByText("New Saves")).toBeVisible();
+    expect(within(screen.getByRole("article", { name: "New Saves" })).getByText("bookmark_added")).toBeVisible();
     expect(screen.getByRole("heading", { name: "Recent Activities" })).toBeVisible();
-    expect(screen.getByText(/Alex added a new item to Photography Kit/i)).toBeVisible();
-    expect(screen.getByText(/Minimal Desk Setup shelf reached 1,000 views/i)).toBeVisible();
+    expect(screen.queryByText(/shelves live in Studio/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByText((_, element) =>
+        element?.textContent === "Alex added a new item to Photography Kit"),
+    ).toBeVisible();
+    expect(
+      screen.getByText((_, element) =>
+        element?.textContent === "Minimal Desk Setup shelf reached 1,000 views."),
+    ).toBeVisible();
+    expect(screen.getByRole("link", { name: "View All Activity" })).toHaveClass("mx-auto");
   });
 });
