@@ -1,8 +1,8 @@
 # LinkShelf design QA
 
-Status: current-run Stitch side-by-side visual QA complete after the Fan Hub rewards-date polish, with known P2 fidelity drift remaining.
+Status: current-run Stitch side-by-side visual QA complete after the Super Admin IA polish, with known P2 fidelity drift remaining.
 
-This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-28 after the Fan Hub data polish, seed refresh fix, density pass, shell/header/affiliate polish, avatar polish, rewards-date polish, Google auth mark pass, create-shelf demo seed pass, create-shelf local flat-lay/compact-card pass, create-shelf field-order pass, create-shelf URL affordance pass, compact detected-card/header pass, create-shelf full-canvas shell pass, selected detected-card pass, create-shelf hotspot state pass, create-shelf dual-preview pass, create-shelf tablet-frame pass, create-shelf mobile-frame pass, create-shelf theme-label pass, analytics overview pass, comments card-layout pass, settings card-layout pass, dashboard metric/activity polish, and restored elevated verification run.
+This QA pass compares the implemented LinkShelf routes against the 15 Stitch source screens in `design/stitch/screens/`. Evidence was captured from the local app at `http://127.0.0.1:3000` on 2026-06-28 after the Fan Hub data polish, seed refresh fix, density pass, shell/header/affiliate polish, avatar polish, rewards-date polish, Super Admin IA polish, Google auth mark pass, create-shelf demo seed pass, create-shelf local flat-lay/compact-card pass, create-shelf field-order pass, create-shelf URL affordance pass, compact detected-card/header pass, create-shelf full-canvas shell pass, selected detected-card pass, create-shelf hotspot state pass, create-shelf dual-preview pass, create-shelf tablet-frame pass, create-shelf mobile-frame pass, create-shelf theme-label pass, analytics overview pass, comments card-layout pass, settings card-layout pass, dashboard metric/activity polish, and restored elevated verification run.
 
 ## Evidence summary
 
@@ -35,7 +35,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 | `fan-dashboard.png` | `/hub/dashboard` | `1280x1024@2` | Captured after Fan Hub rewards-date polish; minor P2 image/card-proportion/spacing drift remains |
 | `fan-auth-overlay.png` | public shelf + fan auth overlay | `1280x1024@2` | Captured after portal, modal-treatment, and Google mark pass; provider count/height drift is intentional |
 | `admin-login.png` | admin secret Google gate | `1280x1024@2` | Captured; Google-only auth is intentional per product direction |
-| `super-admin.png` | `/admin/dashboard` | `1280x1024@2` | Captured; P2 data-density/layout drift remains |
+| `super-admin.png` | `/admin/dashboard` | `1280x1024@2` | Captured after Super Admin IA polish; remaining P2 row-count/data-density/proportion drift |
 | `share-modal.png` | `/liamroberts.photo/photography-kit?share=jamie-photo&shareModal=1` | `390x1405@2` | Captured after share route/portal fix; source-state/visual mismatch remains |
 
 ## Findings
@@ -66,9 +66,9 @@ Focused region comparison evidence: not generated in this pass because full-view
 
 - [P2] Several screens use the right brand direction but different copy/data density
   Location: landing, creator profile, super admin.
-  Evidence: teal/navy palette, rounded cards, soft shadows, and LinkShelf branding are present. However, text, metric values, card density, supporting sections, avatar/photo choices, and per-screen navigation differ across the side-by-side comparisons.
+  Evidence: teal/navy palette, rounded cards, soft shadows, and LinkShelf branding are present. Super Admin now uses the Stitch `Global Revenue Ledger` first screen, full LinkShelf Admin rail, four platform metric cards, Traffic Split Monitor, Global Thresholds, Withdrawal Approval Pool, and Active Creator Directory. Remaining visible drift is mostly data density: the live seed only has one pending withdrawal and one creator row on the captured route, while Stitch shows two of each, and the right-side table/card proportions still need a tighter final pass. Landing and creator profile still differ in text, metric values, card density, supporting sections, avatar/photo choices, and per-screen navigation across the side-by-side comparisons.
   Impact: the app feels coherent, but not yet like a faithful Stitch export implementation.
-  Fix: after P1 structure gaps are closed, do a pass on copy, mock data, card density, image usage, and spacing per screen.
+  Fix: continue the Super Admin seed/data-density pass or add canonical demo rows, then do landing/profile copy, mock data, card density, image usage, and spacing per screen.
 
 ## Required fidelity surfaces
 
@@ -140,6 +140,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 - Preserved the local account-delete protection by revealing the `Confirm account deletion` input only after the initial Delete Account click.
 - Polished the Studio dashboard metric/activity surface so `New Saves` uses the Stitch bookmark icon, activity rows use the reference emphasis/tone treatment, the extra visual summary is removed, and `View All Activity` moves below the feed.
 - Fixed the dashboard polish accessibility/responsive regressions by restoring the page `h1`, increasing activity timestamp contrast, and adding min-width constraints to activity rows at narrow viewports.
+- Rebuilt the Super Admin first screen around the Stitch `Global Revenue Ledger` structure, the full LinkShelf Admin navigation rail, four platform KPI cards, Traffic Split Monitor, Global Thresholds, Withdrawal Approval Pool, Active Creator Directory, and export/report affordance while preserving existing export, threshold, creator-filter, and withdrawal review interactions.
 
 ## Verification run evidence
 
@@ -183,6 +184,8 @@ Focused region comparison evidence: not generated in this pass because full-view
 | Settings card-layout RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/studio-tools.test.tsx -t "edits settings state"` | RED confirmed settings still used the old `Creator preferences`/share-channel layout, then passed: 1 focused test |
 | Studio tools regression after settings pass | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/studio-tools.test.tsx` | Passed: 3 tests |
 | Dashboard metric/activity RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/studio-dashboard.test.tsx tests/component/studio-navigation.test.tsx` | RED confirmed dashboard metric cards lacked accessible labels, `New Saves` still used the generic trend icon, the visual activity summary remained, and `View All Activity` was not bottom-centered; then passed: 3 tests |
+| Super Admin IA RED/GREEN target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run tests/component/admin-dashboard.test.tsx` | RED confirmed the old `Unified brand operations` dashboard and two-item shell navigation; then passed: 2 tests |
+| Super Admin E2E target | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test tests/e2e/admin-flow.spec.ts` | Passed: 1 test |
 | Dashboard visual recapture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after dashboard metric/activity polish |
 | Post-dashboard local TypeScript | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit` | Passed |
 | Post-dashboard local lint | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint .` | Passed |
@@ -192,7 +195,7 @@ Focused region comparison evidence: not generated in this pass because full-view
 | Latest end-to-end suite after Fan Hub polish | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Passed: 12 tests |
 | Latest production build after Fan Hub polish | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build` | Passed with one non-fatal Turbopack NFT tracing warning |
 | Dashboard accessibility/responsive target after polish | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test` | Covered by the full 12-test E2E suite after restoring `h1`, timestamp contrast, and narrow-viewport row constraints |
-| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after Fan Hub data/density/shell/header/affiliate/avatar/rewards-date polish, Google auth mark pass, create-shelf local flat-lay/compact-card pass, create-shelf field-order pass, create-shelf URL affordance pass, compact detected-card/header pass, create full-canvas pass, selected detected-card pass, hotspot state pass, dual-preview pass, tablet-frame pass, mobile-frame pass, theme-label pass, analytics overview pass, comments card-layout pass, settings card-layout pass, and dashboard metric/activity polish |
+| Current-run visual capture | `PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next dev --hostname 127.0.0.1 --webpack` + `node scripts/capture-design-qa.mjs` | Captured 15 states after Fan Hub data/density/shell/header/affiliate/avatar/rewards-date polish, Super Admin IA polish, Google auth mark pass, create-shelf local flat-lay/compact-card pass, create-shelf field-order pass, create-shelf URL affordance pass, compact detected-card/header pass, create full-canvas pass, selected detected-card pass, hotspot state pass, dual-preview pass, tablet-frame pass, mobile-frame pass, theme-label pass, analytics overview pass, comments card-layout pass, settings card-layout pass, and dashboard metric/activity polish |
 | Share modal browser/E2E recapture | `PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test tests/e2e/fan-flow.spec.ts -g "post-auth share"` and `node scripts/capture-design-qa.mjs` | Passed targeted E2E; captured 15 visual states including `share-modal` |
 
 ## Implementation checklist
@@ -203,6 +206,6 @@ Focused region comparison evidence: not generated in this pass because full-view
 4. Fan-auth overlay modal treatment and shared Google mark pass are complete; remaining provider-count mismatch is intentional unless the Stitch source is re-exported.
 5. Do a second full visual QA pass and add focused crops for typography/card/detail fidelity.
 
-Known blocker: current-run QA still has actionable P2 polish drift in share-modal source-state alignment, Studio visual proportions, Fan Hub image/card proportions, and landing/profile/admin data-density fidelity.
+Known blocker: current-run QA still has actionable P2 polish drift in share-modal source-state alignment, Studio visual proportions, Fan Hub image/card proportions, Super Admin row-count/proportion polish, and landing/profile data-density fidelity.
 
 final result: blocked

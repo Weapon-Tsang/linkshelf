@@ -3,12 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { BrandMark } from "@/components/brand/brand-mark";
 import { cn } from "@/lib/cn";
 
 const navItems = [
-  { label: "Dashboard", href: "/admin/dashboard", icon: "admin_panel_settings" },
-  { label: "Studio", href: "/studio/dashboard", icon: "shelves" },
+  { label: "Dashboard", href: "/admin/dashboard", icon: "dashboard" },
+  { label: "Creators", href: "/admin/dashboard#creators", icon: "group" },
+  { label: "Content Moderation", href: "/admin/dashboard#moderation", icon: "fact_check" },
+  { label: "Analytics", href: "/admin/dashboard#analytics", icon: "analytics" },
+  { label: "Payments", href: "/admin/dashboard#payments", icon: "payments" },
+  { label: "Settings", href: "/admin/dashboard#settings", icon: "settings" },
 ] as const;
 
 export function AdminShell({
@@ -23,29 +26,25 @@ export function AdminShell({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-[#f7f4ef] text-[var(--ink)] lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
-      <aside className="border-b border-[var(--line)] bg-white/78 px-5 py-5 backdrop-blur-xl lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:border-b-0 lg:border-r lg:px-6 lg:py-7">
-        <Link className="inline-flex" href="/admin/dashboard">
-          <BrandMark className="text-2xl" />
+    <div className="min-h-screen bg-white text-[var(--ink)] lg:grid lg:grid-cols-[256px_minmax(0,1fr)]">
+      <aside className="border-b border-[var(--line)] bg-white px-5 py-5 lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:border-b-0 lg:border-r lg:px-4 lg:py-6">
+        <Link className="inline-flex items-center gap-3 px-2" href="/admin/dashboard">
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--teal-700)] text-xl font-bold text-white">
+            L
+          </span>
+          <span className="text-xl font-bold tracking-tight">LinkShelf Admin</span>
         </Link>
-        <div className="mt-7 rounded-3xl border border-[var(--line)] bg-[var(--surface-low)] p-4">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--muted)]">
-            Super Admin
-          </p>
-          <p className="mt-2 text-lg font-bold">{user.displayName}</p>
-          <p className="mt-1 text-sm font-semibold text-[var(--teal-700)]">
-            Brand identity and revenue control
-          </p>
-        </div>
-        <nav aria-label="Admin" className="mt-6 grid grid-cols-2 gap-2 lg:grid-cols-1">
+
+        <nav aria-label="Admin" className="mt-8 grid grid-cols-2 gap-2 lg:grid-cols-1">
           {navItems.map((item) => {
-            const active = pathname === item.href;
+            const active = pathname === "/admin/dashboard" && item.label === "Dashboard";
             return (
               <Link
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--ink)]",
-                  active && "bg-[var(--teal-700)] text-white hover:bg-[var(--teal-700)] hover:text-white",
+                  "flex items-center gap-3 rounded-full px-4 py-3 text-sm font-bold text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--teal-700)]",
+                  active &&
+                    "bg-[var(--teal-700)] text-white shadow-[0_14px_30px_rgba(0,191,174,0.2)] hover:bg-[var(--teal-700)] hover:text-white",
                 )}
                 href={item.href}
                 key={item.href}
@@ -58,14 +57,26 @@ export function AdminShell({
             );
           })}
         </nav>
-        <div className="mt-auto hidden rounded-3xl bg-[var(--glow)] p-5 lg:block">
-          <p className="text-sm font-bold text-[var(--ink)]">80/20 monitor</p>
-          <p className="mt-2 text-sm leading-6 text-[var(--ink)]/80">
-            Review affiliate attribution, withdrawal queues, and platform revenue controls.
-          </p>
+
+        <div className="mt-auto hidden rounded-2xl bg-[var(--surface-low)] p-4 lg:block">
+          <div className="flex items-center gap-3">
+            <div className="grid h-10 w-10 place-items-center rounded-full bg-[var(--ink)] text-sm font-bold text-white">
+              SA
+            </div>
+            <div>
+              <p className="text-sm font-bold leading-tight">{user.displayName}</p>
+              <p className="text-xs font-semibold text-[var(--muted)]">System Root</p>
+            </div>
+          </div>
+          <button
+            className="mt-3 min-h-10 w-full rounded-lg border border-[var(--line)] bg-white text-xs font-bold text-[var(--ink)] transition-colors hover:bg-[var(--surface-low)]"
+            type="button"
+          >
+            Support Portal
+          </button>
         </div>
       </aside>
-      <main className="min-w-0 px-5 py-8 sm:px-8 lg:px-10 lg:py-10">{children}</main>
+      <main className="min-w-0 overflow-y-auto px-5 py-6 sm:px-8 lg:px-6">{children}</main>
     </div>
   );
 }

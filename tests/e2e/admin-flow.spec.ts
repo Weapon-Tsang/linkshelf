@@ -6,8 +6,8 @@ test("administrator enters through secret Google gate and reviews dashboard", as
   await page.getByRole("button", { name: "Continue with Google" }).click();
 
   await expect(page).toHaveURL(/\/admin\/dashboard$/);
-  await expect(page.getByRole("heading", { name: "Unified brand operations" })).toBeVisible();
-  await expect(page.getByText("FAN 1")).toBeVisible();
-  await page.getByRole("button", { name: "Export CSV" }).click();
+  await expect(page.getByRole("heading", { name: "Global Revenue Ledger" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Traffic Split Monitor" })).toBeVisible();
+  await page.getByRole("button", { name: "Export Report" }).click();
   await expect(page.getByText("CSV ready")).toBeVisible();
 });

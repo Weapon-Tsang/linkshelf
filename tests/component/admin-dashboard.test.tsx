@@ -2,10 +2,38 @@ import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AdminDashboard } from "@/features/admin/admin-dashboard";
+import { AdminShell } from "@/features/admin/admin-shell";
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/admin/dashboard",
+}));
 
 afterEach(() => cleanup());
 
 describe("Super Admin dashboard", () => {
+  it("renders the Stitch admin navigation rail", () => {
+    render(
+      <AdminShell user={{ displayName: "Super Admin" }}>
+        <p>Admin workspace</p>
+      </AdminShell>,
+    );
+
+    expect(screen.getByText("LinkShelf Admin")).toBeVisible();
+    expect(screen.getByText("System Root")).toBeVisible();
+    const nav = screen.getByRole("navigation", { name: "Admin" });
+    for (const label of [
+      "Dashboard",
+      "Creators",
+      "Content Moderation",
+      "Analytics",
+      "Payments",
+      "Settings",
+    ]) {
+      expect(nav).toHaveTextContent(label);
+    }
+    expect(screen.getByRole("button", { name: "Support Portal" })).toBeVisible();
+  });
+
   it("filters creators, edits thresholds, reviews withdrawals, and exports CSV", async () => {
     const user = userEvent.setup();
     const onApprove = vi.fn();
@@ -52,8 +80,34 @@ describe("Super Admin dashboard", () => {
       />,
     );
 
-    expect(screen.getByText("$56.97")).toBeVisible();
-    expect(screen.getByText("FAN 1")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Global Revenue Ledger" })).toBeVisible();
+    expect(
+      screen.getByText("Platform-wide financial health and system performance."),
+    ).toBeVisible();
+    expect(screen.getByRole("button", { name: "Export Report" })).toBeVisible();
+
+    for (const label of [
+      "Total Commission Pool",
+      "Disbursed Amount",
+      "Pending Withdrawals",
+      "Global Active IDs",
+    ]) {
+      expect(screen.getByRole("article", { name: label })).toBeVisible();
+    }
+
+    expect(screen.getByRole("region", { name: "Traffic Split Monitor" })).toBeVisible();
+    expect(screen.getByText("80/20 Routing State")).toBeVisible();
+    expect(screen.getByText("Optimized")).toBeVisible();
+    expect(screen.getByText("SID_8492")).toBeVisible();
+    expect(screen.getByRole("region", { name: "Global Thresholds" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "Withdrawal Approval Pool" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "Active Creator Directory" })).toBeVisible();
+    expect(
+      screen.getByRole("table", { name: "Withdrawal Approval Pool table" }),
+    ).toHaveClass("min-w-[560px]");
+    expect(
+      screen.getByRole("table", { name: "Active Creator Directory table" }),
+    ).toHaveClass("min-w-[560px]");
 
     await user.type(screen.getByLabelText("Filter creators"), "liam");
     expect(screen.getByText("liamshoots")).toBeVisible();
@@ -69,7 +123,7 @@ describe("Super Admin dashboard", () => {
     expect(onApprove).toHaveBeenCalledWith("withdrawal-jamie-pending");
     expect(onReject).toHaveBeenCalledWith("withdrawal-jamie-pending");
 
-    await user.click(screen.getByRole("button", { name: "Export CSV" }));
+    await user.click(screen.getByRole("button", { name: "Export Report" }));
     expect(onExportCsv).toHaveBeenCalledTimes(1);
     expect(screen.getByText("CSV ready")).toBeVisible();
   });
