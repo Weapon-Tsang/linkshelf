@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AnalyticsView } from "@/features/studio/analytics-view";
@@ -21,9 +21,45 @@ describe("Studio analytics, comments, and settings tools", () => {
       />,
     );
 
+    expect(screen.getByRole("heading", { name: "Analytics Overview" })).toBeVisible();
+    expect(
+      screen.getByText("Monitor your shelf performance and audience engagement."),
+    ).toBeVisible();
+
     for (const label of ["7D", "30D", "90D", "Custom"]) {
       expect(screen.getByRole("button", { name: label })).toBeVisible();
     }
+    expect(screen.getByRole("button", { name: "30D" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+
+    for (const [label, value] of [
+      ["Total Views", "1.2M"],
+      ["Total Saves", "45.8K"],
+      ["Total Comments", "8,402"],
+      ["Avg. CTR", "14.2%"],
+    ] as const) {
+      const card = screen.getByRole("article", { name: label });
+      expect(within(card).getByText(label)).toBeVisible();
+      expect(within(card).getByText(value)).toBeVisible();
+    }
+
+    const shelfPerformance = screen.getByRole("region", { name: "Shelf Performance" });
+    expect(within(shelfPerformance).getByText("Photography Kit 2024")).toBeVisible();
+    expect(within(shelfPerformance).getByText("Ultimate Desk Setup")).toBeVisible();
+    expect(within(shelfPerformance).getByText("Travel Essentials")).toBeVisible();
+    expect(
+      within(shelfPerformance).getByRole("img", {
+        name: "Photography Kit camera gear flat lay",
+      }),
+    ).toHaveAttribute("src", expect.stringContaining("analytics-photography-kit.png"));
+    expect(
+      within(shelfPerformance).getByRole("img", {
+        name: "Ultimate Desk Setup shelf preview",
+      }),
+    ).toHaveAttribute("src", expect.stringContaining("analytics-desk-setup.png"));
+
     await user.click(screen.getByRole("button", { name: "90D" }));
     expect(screen.getByRole("button", { name: "90D" })).toHaveAttribute(
       "aria-pressed",
@@ -31,7 +67,16 @@ describe("Studio analytics, comments, and settings tools", () => {
     );
     await user.click(screen.getByRole("button", { name: "Custom" }));
     expect(screen.getByLabelText("Custom date range")).toBeVisible();
-    expect(screen.getByText("Traffic sources")).toBeVisible();
+    const trafficSources = screen.getByRole("region", { name: "Traffic Sources" });
+    for (const [label, value] of [
+      ["Instagram", "45%"],
+      ["TikTok", "30%"],
+      ["Twitter", "15%"],
+      ["Direct", "10%"],
+    ] as const) {
+      expect(within(trafficSources).getByText(label)).toBeVisible();
+      expect(within(trafficSources).getByText(value)).toBeVisible();
+    }
   });
 
   it("renders comment shelf and sort filters", async () => {
