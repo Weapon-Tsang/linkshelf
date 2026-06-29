@@ -57,7 +57,7 @@ const targets = [
     id: "studio-management-one-column",
     reference: "studio-management-one-column.jpg",
     role: "creator",
-    route: "/studio/shelves",
+    route: "/studio/shelves?layout=list",
     viewport: desktop,
     state: "authenticated creator one-column shelf management route",
   },

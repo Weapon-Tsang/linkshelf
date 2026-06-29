@@ -5,6 +5,7 @@ import type { ManagedShelf, ShelfManagementFilter } from "@/features/shelves/act
 import { cn } from "@/lib/cn";
 
 type ShelfAction = (formData: FormData) => void | Promise<void>;
+export type ShelfManagementLayout = "grid" | "list";
 
 const filters: Array<{ label: string; value: ShelfManagementFilter }> = [
   { label: "All", value: "ALL" },
@@ -12,10 +13,11 @@ const filters: Array<{ label: string; value: ShelfManagementFilter }> = [
   { label: "Drafts", value: "DRAFT" },
 ];
 
-function filterHref(filter: ShelfManagementFilter, query: string) {
+function filterHref(filter: ShelfManagementFilter, query: string, layout: ShelfManagementLayout) {
   const params = new URLSearchParams();
   if (filter !== "ALL") params.set("status", filter);
   if (query) params.set("q", query);
+  if (layout === "list") params.set("layout", "list");
   const search = params.toString();
   return search ? `/studio/shelves?${search}` : "/studio/shelves";
 }
@@ -33,6 +35,7 @@ export function ShelfManagementView({
   totals,
   query,
   status,
+  layout = "grid",
   publishShelfAction,
   deleteShelfAction,
 }: {
@@ -44,9 +47,12 @@ export function ShelfManagementView({
   };
   readonly query: string;
   readonly status: ShelfManagementFilter;
+  readonly layout?: ShelfManagementLayout;
   readonly publishShelfAction?: ShelfAction;
   readonly deleteShelfAction?: ShelfAction;
 }) {
+  const isListLayout = layout === "list";
+
   return (
     <div className="mx-auto max-w-5xl">
       <header className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
@@ -55,6 +61,7 @@ export function ShelfManagementView({
         <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
           <form action="/studio/shelves" className="relative min-w-0 flex-1 lg:w-72" method="get">
             {status !== "ALL" ? <input name="status" type="hidden" value={status} /> : null}
+            {isListLayout ? <input name="layout" type="hidden" value="list" /> : null}
             <label className="sr-only" htmlFor="studio-shelf-search">
               Search shelves
             </label>
@@ -91,7 +98,7 @@ export function ShelfManagementView({
                       : "border-[var(--line)] bg-white text-[var(--muted)] hover:text-[var(--ink)]",
                   )}
                   data-active={active ? "true" : "false"}
-                  href={filterHref(filter.value, query)}
+                  href={filterHref(filter.value, query, layout)}
                   key={filter.value}
                 >
                   {filter.label} · {count}
@@ -103,26 +110,35 @@ export function ShelfManagementView({
       </header>
 
       <section className="mt-8">
-        <div className="grid gap-6 xl:grid-cols-2">
+        <div className={isListLayout ? "flex flex-col gap-6" : "grid gap-6 xl:grid-cols-2"}>
           {shelves.map((shelf) => (
             <article
               aria-label={`${shelf.title} shelf card`}
               className={cn(
-                "grid gap-5 rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)] md:grid-cols-[6.75rem_minmax(0,1fr)_auto]",
-                shelf.id === "shelf-photography" && "ring-2 ring-[var(--teal-700)]",
+                isListLayout
+                  ? "flex items-center rounded-2xl border-2 bg-white p-8 shadow-[0_12px_32px_rgba(11,19,43,0.08)] transition-all"
+                  : "grid gap-5 rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)] md:grid-cols-[6.75rem_minmax(0,1fr)_auto]",
+                shelf.id === "shelf-photography" &&
+                  (isListLayout ? "border-[var(--teal-700)]" : "ring-2 ring-[var(--teal-700)]"),
+                shelf.id !== "shelf-photography" && isListLayout && "border-transparent",
               )}
               key={shelf.id}
             >
-              <div className="overflow-hidden rounded-xl bg-[#f2f0f4]">
+              <div
+                className={cn(
+                  "h-24 w-24 self-start overflow-hidden rounded-xl bg-[#f2f0f4] md:h-24 md:w-24",
+                  isListLayout && "mr-6 shrink-0",
+                )}
+              >
                 {shelf.coverUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     alt={`${shelf.title} cover`}
-                    className="h-32 w-full object-cover md:h-24"
+                    className="h-full w-full object-cover"
                     src={shelf.coverUrl}
                   />
                 ) : (
-                  <div className="grid h-32 place-items-center text-[var(--teal-700)] md:h-24">
+                  <div className="grid h-full w-full place-items-center text-[var(--teal-700)]">
                     <span aria-hidden="true" className="material-symbols-outlined">
                       image
                     </span>
@@ -130,7 +146,7 @@ export function ShelfManagementView({
                 )}
               </div>
 
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-xl font-black leading-tight tracking-[-0.04em]">
                     {shelf.title}
@@ -159,7 +175,14 @@ export function ShelfManagementView({
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 md:justify-end">
+              <div
+                aria-label={`Shelf actions for ${shelf.title}`}
+                className={cn(
+                  isListLayout
+                    ? "ml-6 flex items-center gap-3 border-l border-[var(--line)]/70 pl-6"
+                    : "flex items-start gap-3 md:justify-end",
+                )}
+              >
                 <Link
                   aria-label={`Edit ${shelf.title}`}
                   className="grid h-10 w-10 place-items-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--teal-700)]"

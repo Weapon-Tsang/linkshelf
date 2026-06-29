@@ -79,7 +79,7 @@ describe("creator shelf management", () => {
     expect(Object.getPrototypeOf(result.totals)).toBe(Object.prototype);
   });
 
-  it("falls back to Stitch cover art when localized assets are unavailable", () => {
+  it("uses the Stitch management flat-lay for the seeded Photography Kit without overriding custom covers", () => {
     const result = listCreatorShelves(database, creatorSession, {
       status: "ALL",
     });
@@ -87,8 +87,24 @@ describe("creator shelf management", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
 
-    expect(result.shelves.find((shelf) => shelf.id === "shelf-photography")?.coverUrl)
-      .toMatch(/^https:\/\/lh3\.googleusercontent\.com\/aida-public\//);
+    expect(result.shelves.find((shelf) => shelf.id === "shelf-photography")?.coverUrl).toBe(
+      "/stitch/assets/0074830e959aaeb9f506d75bd6d046ba65d6525f2cab5fc10c2381b115d66bcf.png",
+    );
+
+    database
+      .prepare("UPDATE shelves SET cover_url = ? WHERE id = ?")
+      .run("https://images.linkshelf.local/custom-cover.jpg", "shelf-photography");
+
+    const customResult = listCreatorShelves(database, creatorSession, {
+      status: "ALL",
+    });
+
+    expect(customResult.ok).toBe(true);
+    if (!customResult.ok) return;
+
+    expect(customResult.shelves.find((shelf) => shelf.id === "shelf-photography")?.coverUrl).toBe(
+      "https://images.linkshelf.local/custom-cover.jpg",
+    );
   });
 
   it("publishes drafts and soft-deletes shelves without exposing deleted records", () => {

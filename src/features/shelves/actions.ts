@@ -29,6 +29,28 @@ const shelfCoverFallbacks: Record<string, string> = {
   "shelf-travel": STITCH_ASSET_SOURCES.shelfTravel,
 };
 
+const STUDIO_MANAGEMENT_COVERS: Record<string, string> = {
+  "shelf-photography":
+    "/stitch/assets/0074830e959aaeb9f506d75bd6d046ba65d6525f2cab5fc10c2381b115d66bcf.png",
+};
+
+const STITCH_SHELF_PHOTOGRAPHY_LOCAL_DEFAULT =
+  "/stitch/assets/96c9519d9300a2f8994e1e55b705271ac1ca2a4940dbdf8fbbc46c819a50bf9a.png";
+
+function resolveManagementCoverUrl(shelf: Pick<ManagedShelfRow, "id" | "coverUrl">) {
+  const preferredCover = STUDIO_MANAGEMENT_COVERS[shelf.id];
+  if (
+    preferredCover &&
+    (!shelf.coverUrl ||
+      shelf.coverUrl === STITCH_ASSET_SOURCES.shelfPhotography ||
+      shelf.coverUrl === STITCH_SHELF_PHOTOGRAPHY_LOCAL_DEFAULT)
+  ) {
+    return preferredCover;
+  }
+
+  return shelf.coverUrl ?? shelfCoverFallbacks[shelf.id] ?? null;
+}
+
 export type ShelfListResult =
   | {
       readonly ok: true;
@@ -304,7 +326,7 @@ export function listCreatorShelves(
     creator: { ...creator.creator },
     shelves: shelves.map((shelf) => ({
       ...shelf,
-      coverUrl: shelf.coverUrl ?? shelfCoverFallbacks[shelf.id] ?? null,
+      coverUrl: resolveManagementCoverUrl(shelf),
       productCount: toNumber(shelf.productCount),
     })),
     totals,
