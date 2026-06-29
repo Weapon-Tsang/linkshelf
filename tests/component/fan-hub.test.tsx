@@ -161,6 +161,32 @@ describe("Fan Hub dashboard", () => {
     expect(screen.getByRole("heading", { name: "Saved Collections" })).toBeVisible();
     expect(screen.getByText("14 Items Saved")).toBeVisible();
     expect(screen.getByText("28 Items Saved")).toBeVisible();
+    const minimalistPreview = screen.getByRole("img", {
+      name: "Minimalist Setup v2 shelf preview",
+    });
+    expect(minimalistPreview).toHaveAttribute(
+      "src",
+      expect.stringMatching(/^\/stitch\/assets\/.+\.(jpg|png|webp)$/),
+    );
+    expect(minimalistPreview.closest("div")).toHaveClass("h-20", "w-20");
+    expect(
+      screen.getByRole("img", { name: "Fall Reading List shelf preview" }),
+    ).toHaveAttribute(
+      "src",
+      expect.stringMatching(/^\/stitch\/assets\/.+\.(jpg|png|webp)$/),
+    );
+    expect(
+      screen.getByRole("img", { name: "Outdoor Adventure collection cover" }),
+    ).toHaveAttribute(
+      "src",
+      expect.stringMatching(/^\/stitch\/assets\/.+\.(jpg|png|webp)$/),
+    );
+    expect(
+      screen.getByRole("img", { name: "Dream Home collection cover" }),
+    ).toHaveAttribute(
+      "src",
+      expect.stringMatching(/^\/stitch\/assets\/.+\.(jpg|png|webp)$/),
+    );
     const utilityNav = screen.getByRole("navigation", { name: "Fan dashboard utility" });
     expect(utilityNav).toBeVisible();
     expect(utilityNav).toHaveClass("justify-center");

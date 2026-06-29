@@ -1,5 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
 import { STITCH_ASSET_SOURCES } from "@/lib/db/seed";
+import { FAN_HUB_CARD_IMAGE_SOURCES } from "@/lib/stitch-fan-hub-assets";
 
 export const PLATFORM_AFFILIATE_TAG = "linkshelf-platform-20";
 
@@ -21,14 +22,14 @@ const fanHubShareVisuals: Record<
 > = {
   "share-jamie-photography": {
     shelfTitle: "Minimalist Setup v2",
-    coverUrl: STITCH_ASSET_SOURCES.shelfDesk,
+    coverUrl: FAN_HUB_CARD_IMAGE_SOURCES.sharedMinimalist,
     clicks: 1200,
     shareCount: 342,
     itemCount: 12,
   },
   "share-jamie-travel": {
     shelfTitle: "Fall Reading List",
-    coverUrl: STITCH_ASSET_SOURCES.shelfTravel,
+    coverUrl: FAN_HUB_CARD_IMAGE_SOURCES.sharedReading,
     clicks: 840,
     shareCount: 128,
     itemCount: 8,
@@ -53,7 +54,7 @@ const fanHubSavedVisuals: Record<
   "shelf-photography": {
     title: "Dream Home",
     creatorHandle: "HomeInspo",
-    coverUrl: STITCH_ASSET_SOURCES.shelfDesk,
+    coverUrl: FAN_HUB_CARD_IMAGE_SOURCES.savedDreamHome,
     itemCount: 28,
   },
 };

@@ -3,13 +3,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { SocialChannelType } from "@/features/shelves/types";
+import { resolveFanHubCardImage } from "@/lib/stitch-fan-hub-assets";
 
 const fallbackImages = {
   fanAvatar: "/stitch/assets/fan-dashboard-avatar.png",
-  sharedShelf:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDDvrAb2jD7VtsS147Vz1lwCSzKfiIX4WS48D-2qIrME2AAWlItEeJkDPwnebAS1_qf6nESgiineyZvbnbp39Yl-tCZLVyHibLCg3v_GdirMDlZDMN-HplLqFDm5VO0jLu1-kHIwmPiNrowEPiyGYH0Rcj9r8f1RppmCplamJdAYlkhIykkgGT7z73wMtQ58Vwrp59SGnpgbKUUJKSIv0CL9lfIFzTju1F626GPsgU_KEYeCD7AhhtW3UYOOGdGd4B54ISdO8HKs18",
-  savedCollection:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuCJZPAUG0W1xXyc-vRnkwf6ci5qupRSRn0Uu9weM0gO-GF0XqNYVpcfvqtjZjR4hbR7TIZAHf8L8M3_EWlu41lj2CNW8tdvdZUzb8rrpcqHDH1zbCA_tS2zrap6jXMoTCiFUzpno9ZGx-Qc_ZY39JY74H2211PG4uXU8iMb4OzKw_W3leBFIt1_qzwxCoUFp2xjA9RhbZyz4l9RX8cuqFCgo_KrJ6CulDk2NlJhjyjBnFWYabgD5dmMfElRjdtRLBPJVq3xZmf4ncM",
 } as const;
 
 export interface HubSavedShelf {
@@ -364,12 +361,12 @@ export function HubDashboard({
                 className="flex items-center gap-3 rounded-[22px] bg-white p-3 shadow-[var(--shadow-card)] transition-transform hover:translate-x-1"
                 key={share.id}
               >
-                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-[var(--surface-low)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- Stitch export assets are remote fixtures and match the existing public-page image strategy. */}
+                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-[var(--surface-low)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- Fan Hub card art is localized from Stitch source imagery for visual QA. */}
                   <img
-                    alt=""
+                    alt={`${share.shelfTitle} shelf preview`}
                     className="h-full w-full object-cover"
-                    src={share.coverUrl ?? fallbackImages.sharedShelf}
+                    src={resolveFanHubCardImage(share.coverUrl, "shared", index)}
                   />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -423,11 +420,11 @@ export function HubDashboard({
                 key={shelf.id}
               >
                 <div className="relative h-32 overflow-hidden bg-[var(--surface-low)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- Stitch export assets are remote fixtures and match the existing public-page image strategy. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element -- Fan Hub card art is localized from Stitch source imagery for visual QA. */}
                   <img
-                    alt=""
+                    alt={`${shelf.title} collection cover`}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    src={shelf.coverUrl ?? fallbackImages.savedCollection}
+                    src={resolveFanHubCardImage(shelf.coverUrl, "saved", index)}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
                   <p className="absolute bottom-3 left-3 text-sm font-bold text-white">
