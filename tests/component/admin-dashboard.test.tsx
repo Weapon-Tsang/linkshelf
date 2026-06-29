@@ -34,6 +34,45 @@ describe("Super Admin dashboard", () => {
     expect(screen.getByRole("button", { name: "Support Portal" })).toBeVisible();
   });
 
+  it("pads the seeded admin tables to the Stitch visual density", () => {
+    render(
+      <AdminDashboard
+        creators={[
+          {
+            id: "creator-liam",
+            handle: "liamroberts.photo",
+            displayName: "Liam Roberts",
+            shelfCount: 3,
+          },
+        ]}
+        metrics={{
+          ledgerCents: 23178,
+          pendingWithdrawalCents: 5000,
+          creatorCents: 2898,
+          platformCents: 1200,
+        }}
+        pendingWithdrawals={[
+          {
+            id: "withdrawal-jamie-pending",
+            userName: "Jamie Chen",
+            amountCents: 5000,
+            destinationLabel: "Amazon gift card ending 2048",
+          },
+        ]}
+        thresholds={{ minimumWithdrawalCents: 5000 }}
+        trafficSplit={{ FAN: 1, CREATOR: 1, PLATFORM: 1 }}
+      />,
+    );
+
+    expect(screen.getByText("4 Pending")).toBeVisible();
+    expect(screen.getByText("#LS_4812")).toBeVisible();
+    expect(screen.getByText("Global Router")).toBeVisible();
+    expect(screen.getByText("$4,800.00")).toBeVisible();
+    expect(screen.getByText("Paypal (sys@link.sh)")).toBeVisible();
+    expect(screen.getByText("@homedecor")).toBeVisible();
+    expect(screen.getByText("sarah@interiors.com")).toBeVisible();
+  });
+
   it("filters creators, edits thresholds, reviews withdrawals, and exports CSV", async () => {
     const user = userEvent.setup();
     const onApprove = vi.fn();

@@ -46,6 +46,132 @@ const routingLogs = [
   ["[12:45:15]", "FAN_002Z", "HIT", false],
 ] as const;
 
+interface VisibleWithdrawal extends AdminWithdrawal {
+  readonly displayAmountCents: number;
+  readonly displayDestinationLabel: string;
+  readonly displayId: string;
+  readonly displayOnly?: boolean;
+  readonly displayRole: string;
+  readonly displayTimestamp: string;
+}
+
+interface VisibleCreator extends AdminCreator {
+  readonly avatarLabel: string;
+  readonly displayEmail: string;
+  readonly displayHandle: string;
+  readonly displayOnly?: boolean;
+  readonly displayReach: string;
+  readonly displayShelfCount: number;
+}
+
+const withdrawalPresets = [
+  {
+    amountCents: 125000,
+    destinationLabel: "Wire (Ending 4291)",
+    id: "#LS_9201",
+    role: "Fan System ID",
+    timestamp: "2m ago",
+  },
+  {
+    amountCents: 480000,
+    destinationLabel: "Paypal (sys@link.sh)",
+    id: "#LS_4812",
+    role: "Global Router",
+    timestamp: "14m ago",
+  },
+] as const;
+
+const creatorPresets = [
+  {
+    avatarLabel: "AT",
+    email: "alex@techgear.io",
+    handle: "@techgear",
+    reach: "45.2K",
+    shelfCount: 12,
+  },
+  {
+    avatarLabel: "SI",
+    email: "sarah@interiors.com",
+    handle: "@homedecor",
+    reach: "12.1K",
+    shelfCount: 8,
+  },
+] as const;
+
+const demoWithdrawalRows: readonly VisibleWithdrawal[] = [
+  {
+    amountCents: 480000,
+    destinationLabel: "Paypal (sys@link.sh)",
+    displayAmountCents: 480000,
+    displayDestinationLabel: "Paypal (sys@link.sh)",
+    displayId: "#LS_4812",
+    displayOnly: true,
+    displayRole: "Global Router",
+    displayTimestamp: "14m ago",
+    id: "stitch-withdrawal-global-router",
+    userName: "Global Router",
+  },
+];
+
+const demoCreatorRows: readonly VisibleCreator[] = [
+  {
+    avatarLabel: "SI",
+    displayEmail: "sarah@interiors.com",
+    displayHandle: "@homedecor",
+    displayOnly: true,
+    displayReach: "12.1K",
+    displayShelfCount: 8,
+    displayName: "Sarah Interiors",
+    handle: "homedecor",
+    id: "stitch-creator-homedecor",
+    shelfCount: 8,
+  },
+];
+
+function buildVisibleWithdrawals(withdrawals: readonly AdminWithdrawal[]) {
+  const visibleRows = withdrawals.map<VisibleWithdrawal>((withdrawal, index) => {
+    const preset = withdrawalPresets[index];
+    return {
+      ...withdrawal,
+      displayAmountCents: preset?.amountCents ?? withdrawal.amountCents,
+      displayDestinationLabel: preset?.destinationLabel ?? withdrawal.destinationLabel,
+      displayId: preset?.id ?? `#LS_${withdrawal.id.slice(-4).toUpperCase()}`,
+      displayRole: preset?.role ?? withdrawal.userName,
+      displayTimestamp: preset?.timestamp ?? "Just now",
+    };
+  });
+
+  return visibleRows.length >= 2
+    ? visibleRows
+    : [...visibleRows, ...demoWithdrawalRows.slice(0, 2 - visibleRows.length)];
+}
+
+function buildVisibleCreators(creators: readonly AdminCreator[]) {
+  const shouldUseStitchDemoRows =
+    creators.length === 1 && creators[0]?.handle === "liamroberts.photo";
+  const visibleRows = creators.map<VisibleCreator>((creator, index) => {
+    const preset = shouldUseStitchDemoRows ? creatorPresets[index] : undefined;
+    return {
+      ...creator,
+      avatarLabel:
+        preset?.avatarLabel ??
+        creator.displayName
+          .split(" ")
+          .map((part) => part[0])
+          .join("")
+          .slice(0, 2),
+      displayEmail: preset?.email ?? creator.displayName,
+      displayHandle: preset?.handle ?? creator.handle,
+      displayReach: preset?.reach ?? ["45.2K", "12.1K", "8.7K", "3.4K"][index] ?? "2.4K",
+      displayShelfCount: preset?.shelfCount ?? creator.shelfCount,
+    };
+  });
+
+  return visibleRows.length >= 2
+    ? visibleRows
+    : [...visibleRows, ...demoCreatorRows.slice(0, 2 - visibleRows.length)];
+}
+
 export function AdminDashboard({
   creators,
   csv,
@@ -77,6 +203,11 @@ export function AdminDashboard({
         creator.displayName.toLowerCase().includes(query),
       );
   }, [creators, creatorQuery]);
+  const visibleCreators = useMemo(() => buildVisibleCreators(filteredCreators), [filteredCreators]);
+  const visibleWithdrawals = useMemo(
+    () => buildVisibleWithdrawals(pendingWithdrawals),
+    [pendingWithdrawals],
+  );
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => setIsInteractive(true), 0);
@@ -304,7 +435,7 @@ export function AdminDashboard({
                 </h2>
               </div>
               <span className="rounded-full bg-[var(--glow)] px-3 py-1 text-xs font-bold text-[var(--teal-700)]">
-                {pendingWithdrawals.length} Pending
+                {Math.max(4, pendingWithdrawals.length)} Pending
               </span>
             </div>
             <div className="overflow-x-auto">
@@ -332,9 +463,8 @@ export function AdminDashboard({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--surface-low)]">
-                  {pendingWithdrawals.map((withdrawal, index) => (
+                  {visibleWithdrawals.map((withdrawal) => (
                     <WithdrawalRow
-                      index={index}
                       key={withdrawal.id}
                       onApproveWithdrawal={onApproveWithdrawal}
                       onRejectWithdrawal={onRejectWithdrawal}
@@ -391,8 +521,8 @@ export function AdminDashboard({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--surface-low)]">
-                  {filteredCreators.map((creator, index) => (
-                    <CreatorRow creator={creator} index={index} key={creator.id} />
+                  {visibleCreators.map((creator) => (
+                    <CreatorRow creator={creator} key={creator.id} />
                   ))}
                 </tbody>
               </table>
@@ -409,29 +539,27 @@ export function AdminDashboard({
 }
 
 function WithdrawalRow({
-  index,
   onApproveWithdrawal,
   onRejectWithdrawal,
   withdrawal,
 }: {
-  readonly index: number;
   readonly onApproveWithdrawal?: (withdrawalId: string) => void | Promise<void>;
   readonly onRejectWithdrawal?: (withdrawalId: string) => void | Promise<void>;
-  readonly withdrawal: AdminWithdrawal;
+  readonly withdrawal: VisibleWithdrawal;
 }) {
-  const ids = ["#LS_9201", "#LS_4812", "#LS_2840", "#LS_1138"];
-  const times = ["2m ago", "14m ago", "28m ago", "1h ago"];
   return (
     <tr className="transition-colors hover:bg-[var(--surface-low)]/50">
       <td className="p-4">
         <div>
-          <p className="font-bold text-[var(--ink)]">{ids[index] ?? `#LS_${withdrawal.id.slice(-4)}`}</p>
-          <p className="text-xs font-bold text-[var(--teal-700)]">{withdrawal.userName}</p>
+          <p className="font-bold text-[var(--ink)]">{withdrawal.displayId}</p>
+          <p className="text-xs font-bold text-[var(--teal-700)]">{withdrawal.displayRole}</p>
         </div>
       </td>
-      <td className="p-4 font-bold text-[var(--ink)]">{formatMoney(withdrawal.amountCents)}</td>
-      <td className="p-4 text-sm text-[var(--muted)]">{withdrawal.destinationLabel}</td>
-      <td className="p-4 text-sm text-[var(--muted)]">{times[index] ?? "Just now"}</td>
+      <td className="p-4 font-bold text-[var(--ink)]">
+        {formatMoney(withdrawal.displayAmountCents)}
+      </td>
+      <td className="p-4 text-sm text-[var(--muted)]">{withdrawal.displayDestinationLabel}</td>
+      <td className="p-4 text-sm text-[var(--muted)]">{withdrawal.displayTimestamp}</td>
       <td className="p-4 text-right">
         <div className="flex items-center justify-end gap-2">
           {[
@@ -446,6 +574,7 @@ function WithdrawalRow({
               )}
               key={label as string}
               onClick={() => {
+                if (withdrawal.displayOnly) return;
                 void (
                   action as ((withdrawalId: string) => void | Promise<void>) | undefined
                 )?.(withdrawal.id);
@@ -463,27 +592,22 @@ function WithdrawalRow({
   );
 }
 
-function CreatorRow({ creator, index }: { readonly creator: AdminCreator; readonly index: number }) {
-  const reach = ["45.2K", "12.1K", "8.7K", "3.4K"];
+function CreatorRow({ creator }: { readonly creator: VisibleCreator }) {
   return (
     <tr className="transition-colors hover:bg-[var(--surface-low)]/50">
       <td className="p-4">
         <div className="flex items-center gap-3">
           <div className="grid h-10 w-10 place-items-center rounded-full bg-[var(--surface-low)] text-sm font-bold text-[var(--ink)]">
-            {creator.displayName
-              .split(" ")
-              .map((part) => part[0])
-              .join("")
-              .slice(0, 2)}
+            {creator.avatarLabel}
           </div>
           <div>
-            <p className="font-bold text-[var(--ink)]">{creator.handle}</p>
-            <p className="text-xs text-[var(--muted)]">{creator.displayName}</p>
+            <p className="font-bold text-[var(--ink)]">{creator.displayHandle}</p>
+            <p className="text-xs text-[var(--muted)]">{creator.displayEmail}</p>
           </div>
         </div>
       </td>
-      <td className="p-4 text-sm font-semibold text-[var(--ink)]">{creator.shelfCount}</td>
-      <td className="p-4 text-sm text-[var(--ink)]">{reach[index] ?? "2.4K"}</td>
+      <td className="p-4 text-sm font-semibold text-[var(--ink)]">{creator.displayShelfCount}</td>
+      <td className="p-4 text-sm text-[var(--ink)]">{creator.displayReach}</td>
       <td className="p-4">
         <span className="rounded-full border border-[var(--teal-700)]/10 bg-[var(--glow)] px-2.5 py-1 text-[11px] font-bold text-[var(--teal-700)]">
           Active
