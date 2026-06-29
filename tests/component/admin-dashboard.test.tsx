@@ -148,7 +148,9 @@ describe("Super Admin dashboard", () => {
       screen.getByRole("table", { name: "Active Creator Directory table" }),
     ).toHaveClass("min-w-[560px]");
 
-    await user.type(screen.getByLabelText("Filter creators"), "liam");
+    expect(screen.queryByLabelText("Filter creator directory")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Filter creators" }));
+    await user.type(screen.getByLabelText("Filter creator directory"), "liam");
     expect(screen.getByText("liamshoots")).toBeVisible();
     expect(screen.queryByText("averykit")).toBeNull();
 

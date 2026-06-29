@@ -190,6 +190,7 @@ export function AdminDashboard({
   readonly onSaveThreshold?: (minimumWithdrawalCents: number) => void | Promise<void>;
 }) {
   const [creatorQuery, setCreatorQuery] = useState("");
+  const [creatorFilterOpen, setCreatorFilterOpen] = useState(false);
   const [threshold, setThreshold] = useState(String(thresholds.minimumWithdrawalCents / 100));
   const [csvReady, setCsvReady] = useState(false);
   const [isInteractive, setIsInteractive] = useState(false);
@@ -479,21 +480,37 @@ export function AdminDashboard({
             aria-labelledby="creator-directory-heading"
             className="overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
           >
-            <div className="flex flex-col justify-between gap-4 border-b border-[var(--line)] p-6 sm:flex-row sm:items-center">
+            <div className="flex justify-between gap-4 border-b border-[var(--line)] p-6">
               <h2
                 className="text-xl font-bold tracking-[-0.02em]"
                 id="creator-directory-heading"
               >
                 Active Creator Directory
               </h2>
-              <label className="grid gap-2 text-sm font-bold text-[var(--muted)] sm:w-64">
-                Filter creators
-                <input
-                  className="min-h-10 rounded-xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold text-[var(--ink)]"
-                  onChange={(event) => setCreatorQuery(event.target.value)}
-                  value={creatorQuery}
-                />
-              </label>
+              <div className="relative">
+                <button
+                  aria-expanded={creatorFilterOpen}
+                  className="grid h-10 w-10 place-items-center rounded-lg bg-[var(--surface-low)] text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
+                  onClick={() => setCreatorFilterOpen((open) => !open)}
+                  type="button"
+                >
+                  <span className="sr-only">Filter creators</span>
+                  <span aria-hidden="true" className="material-symbols-outlined text-xl">
+                    filter_alt
+                  </span>
+                </button>
+                {creatorFilterOpen ? (
+                  <label className="absolute right-0 top-12 z-20 grid w-72 gap-2 rounded-2xl border border-[var(--line)] bg-white p-4 text-sm font-bold text-[var(--muted)] shadow-[var(--shadow-card)]">
+                    Filter creator directory
+                    <input
+                      autoFocus
+                      className="min-h-10 rounded-xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-sm font-semibold text-[var(--ink)]"
+                      onChange={(event) => setCreatorQuery(event.target.value)}
+                      value={creatorQuery}
+                    />
+                  </label>
+                ) : null}
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table
