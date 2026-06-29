@@ -133,8 +133,8 @@ describe("Super Admin dashboard", () => {
     ]) {
       const metricCard = screen.getByRole("article", { name: label });
       expect(metricCard).toBeVisible();
-      expect(metricCard).toHaveClass("min-h-36");
-      expect(metricCard).not.toHaveClass("min-h-40");
+      expect(metricCard).toHaveClass("min-h-32");
+      expect(metricCard).not.toHaveClass("min-h-36", "min-h-40");
     }
 
     expect(screen.getByRole("region", { name: "Traffic Split Monitor" })).toBeVisible();
@@ -186,5 +186,69 @@ describe("Super Admin dashboard", () => {
     await user.click(screen.getByRole("button", { name: "Export Report" }));
     expect(onExportCsv).toHaveBeenCalledTimes(1);
     expect(screen.getByText("CSV ready")).toBeVisible();
+  });
+
+  it("uses compact density tokens for the Super Admin first screen", () => {
+    render(
+      <AdminDashboard
+        creators={[
+          {
+            id: "creator-liam",
+            handle: "liamshoots",
+            displayName: "Liam Roberts",
+            shelfCount: 3,
+          },
+        ]}
+        metrics={{
+          ledgerCents: 5697,
+          pendingWithdrawalCents: 5000,
+          creatorCents: 2898,
+          platformCents: 1200,
+        }}
+        pendingWithdrawals={[
+          {
+            id: "withdrawal-jamie-pending",
+            userName: "Jamie Chen",
+            amountCents: 5000,
+            destinationLabel: "Amazon gift card ending 2048",
+          },
+        ]}
+        thresholds={{ minimumWithdrawalCents: 5000 }}
+        trafficSplit={{ FAN: 1, CREATOR: 1, PLATFORM: 1 }}
+      />,
+    );
+
+    const dashboardRoot = screen
+      .getByRole("heading", { name: "Global Revenue Ledger" })
+      .closest(".mx-auto");
+    expect(dashboardRoot).toHaveClass("gap-6");
+    expect(dashboardRoot).not.toHaveClass("gap-8");
+
+    for (const label of [
+      "Total Commission Pool",
+      "Disbursed Amount",
+      "Pending Withdrawals",
+      "Global Active IDs",
+    ]) {
+      const metricCard = screen.getByRole("article", { name: label });
+      expect(metricCard).toHaveClass("min-h-32", "p-5");
+      expect(metricCard).not.toHaveClass("min-h-36", "p-6");
+    }
+
+    const trafficRegion = screen.getByRole("region", { name: "Traffic Split Monitor" });
+    expect(trafficRegion).toHaveClass("p-5");
+    expect(trafficRegion.parentElement).toHaveClass("gap-5");
+    expect(trafficRegion.parentElement).not.toHaveClass("gap-6");
+    expect(screen.getByRole("region", { name: "Global Thresholds" })).toHaveClass("p-5");
+
+    const withdrawalRegion = screen.getByRole("region", {
+      name: "Withdrawal Approval Pool",
+    });
+    expect(withdrawalRegion.parentElement).toHaveClass("gap-5");
+    expect(withdrawalRegion.parentElement).not.toHaveClass("gap-6");
+    expect(screen.getByRole("columnheader", { name: "UID/Role" })).toHaveClass("p-3");
+    expect(screen.getByRole("columnheader", { name: "Creator" })).toHaveClass("p-3");
+    expect(screen.getByText("$4,800.00").closest("td")).toHaveClass("p-3");
+    expect(screen.getByText("@homedecor").closest("td")).toHaveClass("p-3");
   });
 });

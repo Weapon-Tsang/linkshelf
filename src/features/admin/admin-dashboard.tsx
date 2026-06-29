@@ -214,8 +214,8 @@ export function AdminDashboard({
   }, []);
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-8">
-      <header className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+    <div className="mx-auto flex max-w-[1280px] flex-col gap-6">
+      <header className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
         <div>
           <h1 className="text-4xl font-bold tracking-[-0.04em] sm:text-[40px]">
             Global Revenue Ledger
@@ -253,11 +253,11 @@ export function AdminDashboard({
         </p>
       ) : null}
 
-      <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {overviewMetrics.map((metric) => (
           <article
             aria-label={metric.label}
-            className="flex min-h-36 flex-col justify-between rounded-2xl border border-[var(--line)] bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
+            className="flex min-h-32 flex-col justify-between rounded-2xl border border-[var(--line)] bg-white p-5 shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
             key={metric.label}
           >
             <div className="flex items-start justify-between gap-4">
@@ -286,11 +286,11 @@ export function AdminDashboard({
         ))}
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <aside className="flex flex-col gap-6 lg:col-span-1">
+      <div className="grid gap-5 lg:grid-cols-3">
+        <aside className="flex flex-col gap-5 lg:col-span-1">
           <section
             aria-labelledby="traffic-split-heading"
-            className="rounded-2xl border border-[var(--line)] bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
+            className="rounded-2xl border border-[var(--line)] bg-white p-5 shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
           >
             <div className="flex items-center justify-between border-b border-[var(--line)] pb-4">
               <div className="flex items-center gap-3">
@@ -362,7 +362,7 @@ export function AdminDashboard({
 
           <section
             aria-labelledby="global-thresholds-heading"
-            className="rounded-2xl border border-[var(--line)] bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
+            className="rounded-2xl border border-[var(--line)] bg-white p-5 shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
           >
             <div className="flex items-center gap-3 border-b border-[var(--line)] pb-4">
               <span
@@ -456,12 +456,12 @@ export function AdminDashboard({
           </section>
         </aside>
 
-        <section className="flex flex-col gap-6 lg:col-span-2">
+        <section className="flex flex-col gap-5 lg:col-span-2">
           <section
             aria-labelledby="withdrawal-pool-heading"
             className="overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
           >
-            <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] p-6">
+            <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] p-5">
               <div className="flex items-center gap-3">
                 <span aria-hidden="true" className="material-symbols-outlined text-[var(--muted)]">
                   account_balance_wallet
@@ -484,19 +484,19 @@ export function AdminDashboard({
               >
                 <thead>
                   <tr className="border-b border-[var(--line)] bg-[var(--surface-low)]/30">
-                    <th className="p-4 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
+                    <th className="p-3 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
                       UID/Role
                     </th>
-                    <th className="p-4 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
+                    <th className="p-3 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
                       Amount
                     </th>
-                    <th className="p-4 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
+                    <th className="p-3 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
                       Account
                     </th>
-                    <th className="p-4 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
+                    <th className="p-3 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
                       Timestamp
                     </th>
-                    <th className="p-4 text-right text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
+                    <th className="p-3 text-right text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
                       Actions
                     </th>
                   </tr>
@@ -519,7 +519,7 @@ export function AdminDashboard({
             aria-labelledby="creator-directory-heading"
             className="overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
           >
-            <div className="flex justify-between gap-4 border-b border-[var(--line)] p-6">
+            <div className="flex justify-between gap-4 border-b border-[var(--line)] p-5">
               <h2
                 className="text-xl font-bold tracking-[-0.02em]"
                 id="creator-directory-heading"
@@ -558,19 +558,19 @@ export function AdminDashboard({
               >
                 <thead>
                   <tr className="border-b border-[var(--line)] bg-[var(--surface-low)]/30">
-                    <th className="p-4 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
+                    <th className="p-3 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
                       Creator
                     </th>
-                    <th className="p-4 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
+                    <th className="p-3 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
                       Shelves
                     </th>
-                    <th className="p-4 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
+                    <th className="p-3 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
                       Reach
                     </th>
-                    <th className="p-4 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
+                    <th className="p-3 text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
                       Referral Status
                     </th>
-                    <th className="p-4 text-right text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
+                    <th className="p-3 text-right text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]" scope="col">
                       Actions
                     </th>
                   </tr>
@@ -607,22 +607,22 @@ function WithdrawalRow({
 
   return (
     <tr className="transition-colors hover:bg-[var(--surface-low)]/50">
-      <td className="p-4">
+      <td className="p-3">
         <div>
           <p className="font-bold text-[var(--ink)]">{withdrawal.displayId}</p>
           <p className="text-xs font-bold text-[var(--teal-700)]">{withdrawal.displayRole}</p>
         </div>
       </td>
-      <td className="p-4 font-bold text-[var(--ink)]">
+      <td className="p-3 font-bold text-[var(--ink)]">
         {formatMoney(withdrawal.displayAmountCents)}
       </td>
-      <td className="p-4 text-sm text-[var(--muted)]">{withdrawal.displayDestinationLabel}</td>
-      <td className="p-4 text-sm text-[var(--muted)]">{withdrawal.displayTimestamp}</td>
-      <td className="p-4 text-right">
+      <td className="p-3 text-sm text-[var(--muted)]">{withdrawal.displayDestinationLabel}</td>
+      <td className="p-3 text-sm text-[var(--muted)]">{withdrawal.displayTimestamp}</td>
+      <td className="p-3 text-right">
         <div className="flex items-center justify-end gap-2">
           <button
             aria-label={`View withdrawal ${withdrawal.userName}`}
-            className="rounded-lg p-2 text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
+            className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
             onClick={() => setDetailsOpen(true)}
             type="button"
           >
@@ -632,7 +632,7 @@ function WithdrawalRow({
           </button>
           <button
             aria-label={`Approve ${withdrawal.userName}`}
-            className="rounded-lg p-2 text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
+            className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
             onClick={() => {
               if (!canReview) return;
               void onApproveWithdrawal?.(withdrawal.id);
@@ -729,7 +729,7 @@ function WithdrawalRow({
 function CreatorRow({ creator }: { readonly creator: VisibleCreator }) {
   return (
     <tr className="transition-colors hover:bg-[var(--surface-low)]/50">
-      <td className="p-4">
+      <td className="p-3">
         <div className="flex items-center gap-3">
           <div className="grid h-10 w-10 place-items-center rounded-full bg-[var(--surface-low)] text-sm font-bold text-[var(--ink)]">
             {creator.avatarLabel}
@@ -740,18 +740,18 @@ function CreatorRow({ creator }: { readonly creator: VisibleCreator }) {
           </div>
         </div>
       </td>
-      <td className="p-4 text-sm font-semibold text-[var(--ink)]">{creator.displayShelfCount}</td>
-      <td className="p-4 text-sm text-[var(--ink)]">{creator.displayReach}</td>
-      <td className="p-4">
+      <td className="p-3 text-sm font-semibold text-[var(--ink)]">{creator.displayShelfCount}</td>
+      <td className="p-3 text-sm text-[var(--ink)]">{creator.displayReach}</td>
+      <td className="p-3">
         <span className="rounded-full border border-[var(--teal-700)]/10 bg-[var(--glow)] px-2.5 py-1 text-[11px] font-bold text-[var(--teal-700)]">
           Active
         </span>
       </td>
-      <td className="p-4 text-right">
+      <td className="p-3 text-right">
         <div className="flex items-center justify-end gap-2 text-[var(--muted)]">
           <button
             aria-label={`Impersonate ${creator.handle}`}
-            className="rounded-lg p-2 transition-colors hover:text-[var(--teal-700)]"
+            className="rounded-lg p-1.5 transition-colors hover:text-[var(--teal-700)]"
             type="button"
           >
             <span aria-hidden="true" className="material-symbols-outlined text-xl">
@@ -760,7 +760,7 @@ function CreatorRow({ creator }: { readonly creator: VisibleCreator }) {
           </button>
           <button
             aria-label={`Block ${creator.handle}`}
-            className="rounded-lg p-2 transition-colors hover:text-red-600"
+            className="rounded-lg p-1.5 transition-colors hover:text-red-600"
             type="button"
           >
             <span aria-hidden="true" className="material-symbols-outlined text-xl">
