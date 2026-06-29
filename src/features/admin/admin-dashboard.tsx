@@ -192,6 +192,7 @@ export function AdminDashboard({
   const [creatorQuery, setCreatorQuery] = useState("");
   const [creatorFilterOpen, setCreatorFilterOpen] = useState(false);
   const [threshold, setThreshold] = useState(String(thresholds.minimumWithdrawalCents / 100));
+  const [thresholdDialogOpen, setThresholdDialogOpen] = useState(false);
   const [csvReady, setCsvReady] = useState(false);
   const [isInteractive, setIsInteractive] = useState(false);
   const filteredCreators = useMemo(() => {
@@ -396,24 +397,64 @@ export function AdminDashboard({
                 value="92"
               />
             </div>
-            <label className="mt-5 grid gap-2 text-sm font-bold text-[var(--muted)]">
-              Minimum withdrawal threshold
-              <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-base font-semibold text-[var(--ink)]"
-                inputMode="decimal"
-                onChange={(event) => setThreshold(event.target.value)}
-                value={threshold}
-              />
-            </label>
             <button
-              className="mt-4 min-h-11 w-full rounded-xl bg-[var(--ink)] px-5 text-sm font-bold text-white"
-              onClick={() => {
-                void onSaveThreshold?.(Math.round(Number(threshold || 0) * 100));
-              }}
+              className="mt-6 min-h-11 w-full rounded-xl bg-[var(--ink)] px-5 text-sm font-bold text-white transition-colors hover:bg-black"
+              onClick={() => setThresholdDialogOpen(true)}
               type="button"
             >
-              Save threshold
+              Apply Global Rules
             </button>
+            {thresholdDialogOpen ? (
+              <div
+                aria-label="Global Threshold Rules"
+                aria-modal="true"
+                className="fixed inset-0 z-50 grid place-items-center bg-[var(--ink)]/20 p-4 text-left backdrop-blur-sm"
+                role="dialog"
+              >
+                <div className="w-full max-w-md rounded-3xl border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-card)]">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+                        Platform rules
+                      </p>
+                      <h3 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-[var(--ink)]">
+                        Global Threshold Rules
+                      </h3>
+                    </div>
+                    <button
+                      aria-label="Close global threshold rules"
+                      className="rounded-full p-2 text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--ink)]"
+                      onClick={() => setThresholdDialogOpen(false)}
+                      type="button"
+                    >
+                      <span aria-hidden="true" className="material-symbols-outlined">
+                        close
+                      </span>
+                    </button>
+                  </div>
+                  <label className="mt-5 grid gap-2 text-sm font-bold text-[var(--muted)]">
+                    Minimum withdrawal threshold
+                    <input
+                      autoFocus
+                      className="min-h-11 rounded-xl border border-[var(--line)] bg-[var(--surface-low)] px-4 text-base font-semibold text-[var(--ink)]"
+                      inputMode="decimal"
+                      onChange={(event) => setThreshold(event.target.value)}
+                      value={threshold}
+                    />
+                  </label>
+                  <button
+                    className="mt-5 min-h-11 w-full rounded-xl bg-[var(--ink)] px-5 text-sm font-bold text-white"
+                    onClick={() => {
+                      void onSaveThreshold?.(Math.round(Number(threshold || 0) * 100));
+                      setThresholdDialogOpen(false);
+                    }}
+                    type="button"
+                  >
+                    Save threshold
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </section>
         </aside>
 

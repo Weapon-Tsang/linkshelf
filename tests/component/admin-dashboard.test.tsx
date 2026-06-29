@@ -139,6 +139,8 @@ describe("Super Admin dashboard", () => {
     expect(screen.getByText("Optimized")).toBeVisible();
     expect(screen.getByText("SID_8492")).toBeVisible();
     expect(screen.getByRole("region", { name: "Global Thresholds" })).toBeVisible();
+    expect(screen.queryByLabelText("Minimum withdrawal threshold")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Apply Global Rules" })).toBeVisible();
     expect(screen.getByRole("region", { name: "Withdrawal Approval Pool" })).toBeVisible();
     expect(screen.getByRole("region", { name: "Active Creator Directory" })).toBeVisible();
     expect(
@@ -154,6 +156,8 @@ describe("Super Admin dashboard", () => {
     expect(screen.getByText("liamshoots")).toBeVisible();
     expect(screen.queryByText("averykit")).toBeNull();
 
+    await user.click(screen.getByRole("button", { name: "Apply Global Rules" }));
+    expect(screen.getByRole("dialog", { name: "Global Threshold Rules" })).toBeVisible();
     await user.clear(screen.getByLabelText("Minimum withdrawal threshold"));
     await user.type(screen.getByLabelText("Minimum withdrawal threshold"), "75");
     await user.click(screen.getByRole("button", { name: "Save threshold" }));
