@@ -158,8 +158,12 @@ describe("Super Admin dashboard", () => {
     expect(onSaveThreshold).toHaveBeenCalledWith(7500);
 
     await user.click(screen.getByRole("button", { name: "Approve Jamie Chen" }));
-    await user.click(screen.getByRole("button", { name: "Reject Jamie Chen" }));
     expect(onApprove).toHaveBeenCalledWith("withdrawal-jamie-pending");
+
+    expect(screen.queryByRole("button", { name: "Reject Jamie Chen" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "View withdrawal Jamie Chen" }));
+    expect(screen.getByRole("dialog", { name: "Withdrawal Details" })).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Reject withdrawal Jamie Chen" }));
     expect(onReject).toHaveBeenCalledWith("withdrawal-jamie-pending");
 
     await user.click(screen.getByRole("button", { name: "Export Report" }));

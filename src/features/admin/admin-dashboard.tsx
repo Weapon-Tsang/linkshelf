@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { cn } from "@/lib/cn";
 import type { AdminCreator, AdminWithdrawal, AdminDashboardData } from "./actions";
 
 function formatMoney(cents: number) {
@@ -547,6 +546,9 @@ function WithdrawalRow({
   readonly onRejectWithdrawal?: (withdrawalId: string) => void | Promise<void>;
   readonly withdrawal: VisibleWithdrawal;
 }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const canReview = !withdrawal.displayOnly;
+
   return (
     <tr className="transition-colors hover:bg-[var(--surface-low)]/50">
       <td className="p-4">
@@ -562,31 +564,107 @@ function WithdrawalRow({
       <td className="p-4 text-sm text-[var(--muted)]">{withdrawal.displayTimestamp}</td>
       <td className="p-4 text-right">
         <div className="flex items-center justify-end gap-2">
-          {[
-            ["Approve", "check_circle", onApproveWithdrawal, "hover:text-[var(--teal-700)]"],
-            ["Reject", "cancel", onRejectWithdrawal, "hover:text-red-600"],
-          ].map(([label, icon, action, className]) => (
-            <button
-              aria-label={`${label as string} ${withdrawal.userName}`}
-              className={cn(
-                "rounded-lg p-2 text-[var(--muted)] transition-colors",
-                className as string,
-              )}
-              key={label as string}
-              onClick={() => {
-                if (withdrawal.displayOnly) return;
-                void (
-                  action as ((withdrawalId: string) => void | Promise<void>) | undefined
-                )?.(withdrawal.id);
-              }}
-              type="button"
-            >
-              <span aria-hidden="true" className="material-symbols-outlined text-xl">
-                {icon as string}
-              </span>
-            </button>
-          ))}
+          <button
+            aria-label={`View withdrawal ${withdrawal.userName}`}
+            className="rounded-lg p-2 text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
+            onClick={() => setDetailsOpen(true)}
+            type="button"
+          >
+            <span aria-hidden="true" className="material-symbols-outlined text-xl">
+              visibility
+            </span>
+          </button>
+          <button
+            aria-label={`Approve ${withdrawal.userName}`}
+            className="rounded-lg p-2 text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
+            onClick={() => {
+              if (!canReview) return;
+              void onApproveWithdrawal?.(withdrawal.id);
+            }}
+            type="button"
+          >
+            <span aria-hidden="true" className="material-symbols-outlined text-xl">
+              check_circle
+            </span>
+          </button>
         </div>
+        {detailsOpen ? (
+          <div
+            aria-label="Withdrawal Details"
+            aria-modal="true"
+            className="fixed inset-0 z-50 grid place-items-center bg-[var(--ink)]/20 p-4 text-left backdrop-blur-sm"
+            role="dialog"
+          >
+            <div className="w-full max-w-md rounded-3xl border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-card)]">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+                    Withdrawal review
+                  </p>
+                  <h3 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-[var(--ink)]">
+                    {withdrawal.displayId}
+                  </h3>
+                </div>
+                <button
+                  aria-label="Close withdrawal details"
+                  className="rounded-full p-2 text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--ink)]"
+                  onClick={() => setDetailsOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden="true" className="material-symbols-outlined">
+                    close
+                  </span>
+                </button>
+              </div>
+
+              <dl className="mt-5 grid gap-3 rounded-2xl bg-[var(--surface-low)] p-4 text-sm">
+                <div className="flex justify-between gap-4">
+                  <dt className="font-semibold text-[var(--muted)]">Role</dt>
+                  <dd className="font-bold text-[var(--ink)]">{withdrawal.displayRole}</dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="font-semibold text-[var(--muted)]">Amount</dt>
+                  <dd className="font-bold text-[var(--ink)]">
+                    {formatMoney(withdrawal.displayAmountCents)}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="font-semibold text-[var(--muted)]">Account</dt>
+                  <dd className="text-right font-bold text-[var(--ink)]">
+                    {withdrawal.displayDestinationLabel}
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <button
+                  className="min-h-11 flex-1 rounded-xl border border-[var(--line)] px-4 text-sm font-bold text-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={!canReview}
+                  onClick={() => {
+                    if (!canReview) return;
+                    setDetailsOpen(false);
+                    void onRejectWithdrawal?.(withdrawal.id);
+                  }}
+                  type="button"
+                >
+                  Reject withdrawal {withdrawal.userName}
+                </button>
+                <button
+                  className="min-h-11 flex-1 rounded-xl bg-[var(--teal-700)] px-4 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={!canReview}
+                  onClick={() => {
+                    if (!canReview) return;
+                    setDetailsOpen(false);
+                    void onApproveWithdrawal?.(withdrawal.id);
+                  }}
+                  type="button"
+                >
+                  Approve {withdrawal.userName}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </td>
     </tr>
   );
