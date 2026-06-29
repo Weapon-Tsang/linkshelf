@@ -41,8 +41,6 @@ const routingLogs = [
   ["[12:45:01]", "SID_8492", "HIT", true],
   ["[12:45:04]", "FAN_001X", "HIT", false],
   ["[12:45:09]", "CID_TECH_9", "HIT", true],
-  ["[12:45:12]", "FAN_004Y", "HIT", false],
-  ["[12:45:15]", "FAN_002Z", "HIT", false],
 ] as const;
 
 interface VisibleWithdrawal extends AdminWithdrawal {
@@ -259,7 +257,7 @@ export function AdminDashboard({
         {overviewMetrics.map((metric) => (
           <article
             aria-label={metric.label}
-            className="flex min-h-40 flex-col justify-between rounded-2xl border border-[var(--line)] bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
+            className="flex min-h-36 flex-col justify-between rounded-2xl border border-[var(--line)] bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
             key={metric.label}
           >
             <div className="flex items-start justify-between gap-4">
@@ -289,7 +287,7 @@ export function AdminDashboard({
       </section>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <aside className="grid gap-6 lg:col-span-1">
+        <aside className="flex flex-col gap-6 lg:col-span-1">
           <section
             aria-labelledby="traffic-split-heading"
             className="rounded-2xl border border-[var(--line)] bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
@@ -458,7 +456,7 @@ export function AdminDashboard({
           </section>
         </aside>
 
-        <section className="grid gap-6 lg:col-span-2">
+        <section className="flex flex-col gap-6 lg:col-span-2">
           <section
             aria-labelledby="withdrawal-pool-heading"
             className="overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.04)]"

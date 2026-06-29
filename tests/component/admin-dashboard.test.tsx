@@ -131,18 +131,29 @@ describe("Super Admin dashboard", () => {
       "Pending Withdrawals",
       "Global Active IDs",
     ]) {
-      expect(screen.getByRole("article", { name: label })).toBeVisible();
+      const metricCard = screen.getByRole("article", { name: label });
+      expect(metricCard).toBeVisible();
+      expect(metricCard).toHaveClass("min-h-36");
+      expect(metricCard).not.toHaveClass("min-h-40");
     }
 
     expect(screen.getByRole("region", { name: "Traffic Split Monitor" })).toBeVisible();
     expect(screen.getByText("80/20 Routing State")).toBeVisible();
     expect(screen.getByText("Optimized")).toBeVisible();
     expect(screen.getByText("SID_8492")).toBeVisible();
+    expect(screen.queryByText("FAN_004Y")).not.toBeInTheDocument();
     expect(screen.getByRole("region", { name: "Global Thresholds" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "Traffic Split Monitor" }).parentElement).toHaveClass(
+      "flex",
+      "flex-col",
+    );
     expect(screen.queryByLabelText("Minimum withdrawal threshold")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Apply Global Rules" })).toBeVisible();
     expect(screen.getByRole("region", { name: "Withdrawal Approval Pool" })).toBeVisible();
     expect(screen.getByRole("region", { name: "Active Creator Directory" })).toBeVisible();
+    expect(
+      screen.getByRole("region", { name: "Withdrawal Approval Pool" }).parentElement,
+    ).toHaveClass("flex", "flex-col");
     expect(
       screen.getByRole("table", { name: "Withdrawal Approval Pool table" }),
     ).toHaveClass("min-w-[560px]");
