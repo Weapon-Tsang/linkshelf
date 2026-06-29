@@ -30,20 +30,30 @@ const shelfCoverFallbacks: Record<string, string> = {
 };
 
 const STUDIO_MANAGEMENT_COVERS: Record<string, string> = {
+  "shelf-desk":
+    "/stitch/assets/b7e85946622ee48277e08ef5b30c90d409722169390b77c54d42e44d50995402.png",
   "shelf-photography":
     "/stitch/assets/0074830e959aaeb9f506d75bd6d046ba65d6525f2cab5fc10c2381b115d66bcf.png",
+  "shelf-travel":
+    "/stitch/assets/314fef063d4fdce7f87176908a0870330df83b2a7d6f7c7d0c573f4b1fa9218a.png",
 };
 
-const STITCH_SHELF_PHOTOGRAPHY_LOCAL_DEFAULT =
-  "/stitch/assets/96c9519d9300a2f8994e1e55b705271ac1ca2a4940dbdf8fbbc46c819a50bf9a.png";
+const LOCALIZED_SEEDED_SHELF_COVERS: Record<string, string> = {
+  "shelf-desk":
+    "/stitch/assets/91d86d1c5fa89201715c677cc5d8847a63c6dbd94999b3de36dceab0397c4952.png",
+  "shelf-photography":
+    "/stitch/assets/96c9519d9300a2f8994e1e55b705271ac1ca2a4940dbdf8fbbc46c819a50bf9a.png",
+  "shelf-travel":
+    "/stitch/assets/736b4d2d33b22335e10e2bde3775cb389fad493c273b1ce59f316f2bfe5b4986.png",
+};
 
 function resolveManagementCoverUrl(shelf: Pick<ManagedShelfRow, "id" | "coverUrl">) {
   const preferredCover = STUDIO_MANAGEMENT_COVERS[shelf.id];
   if (
     preferredCover &&
     (!shelf.coverUrl ||
-      shelf.coverUrl === STITCH_ASSET_SOURCES.shelfPhotography ||
-      shelf.coverUrl === STITCH_SHELF_PHOTOGRAPHY_LOCAL_DEFAULT)
+      shelf.coverUrl === shelfCoverFallbacks[shelf.id] ||
+      shelf.coverUrl === LOCALIZED_SEEDED_SHELF_COVERS[shelf.id])
   ) {
     return preferredCover;
   }

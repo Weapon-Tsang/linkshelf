@@ -12,14 +12,14 @@ for (const viewport of viewports) {
   test(`major routes avoid horizontal overflow at ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport);
 
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     await expect(page.getByRole("heading", { name: /stop killing your conversions/i })).toBeVisible();
     await expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
     ).toBe(true);
 
     await loginAs(page, "creator", "/studio/dashboard");
-    await page.goto("/studio/dashboard");
+    await page.goto("/studio/dashboard", { waitUntil: "domcontentloaded" });
     await expect(page.getByRole("heading", { name: "Recent Activities" })).toBeVisible();
     await expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),

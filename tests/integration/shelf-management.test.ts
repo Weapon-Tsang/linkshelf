@@ -79,7 +79,7 @@ describe("creator shelf management", () => {
     expect(Object.getPrototypeOf(result.totals)).toBe(Object.prototype);
   });
 
-  it("uses the Stitch management flat-lay for the seeded Photography Kit without overriding custom covers", () => {
+  it("uses Stitch management thumbnails for seeded shelves without overriding custom covers", () => {
     const result = listCreatorShelves(database, creatorSession, {
       status: "ALL",
     });
@@ -87,9 +87,14 @@ describe("creator shelf management", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
 
-    expect(result.shelves.find((shelf) => shelf.id === "shelf-photography")?.coverUrl).toBe(
-      "/stitch/assets/0074830e959aaeb9f506d75bd6d046ba65d6525f2cab5fc10c2381b115d66bcf.png",
-    );
+    expect(Object.fromEntries(result.shelves.map((shelf) => [shelf.id, shelf.coverUrl]))).toMatchObject({
+      "shelf-desk":
+        "/stitch/assets/b7e85946622ee48277e08ef5b30c90d409722169390b77c54d42e44d50995402.png",
+      "shelf-photography":
+        "/stitch/assets/0074830e959aaeb9f506d75bd6d046ba65d6525f2cab5fc10c2381b115d66bcf.png",
+      "shelf-travel":
+        "/stitch/assets/314fef063d4fdce7f87176908a0870330df83b2a7d6f7c7d0c573f4b1fa9218a.png",
+    });
 
     database
       .prepare("UPDATE shelves SET cover_url = ? WHERE id = ?")

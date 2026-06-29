@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("landing page renders the premium creator funnel", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
 
   await expect(
     page.getByRole("heading", { name: /stop killing your conversions/i }),
