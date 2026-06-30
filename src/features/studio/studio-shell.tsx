@@ -46,6 +46,7 @@ export function StudioShell({
 }) {
   const pathname = usePathname();
   const isCreateWorkflow = pathname === "/studio/create";
+  const showCreateCta = pathname !== "/studio/dashboard";
 
   if (isCreateWorkflow) {
     return (
@@ -68,19 +69,24 @@ export function StudioShell({
           Workspace for {creator.displayName} @{creator.handle}
         </p>
 
-        <Link
-          className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--teal-700)] px-4 text-sm font-bold text-white shadow-[0_12px_26px_rgba(0,124,114,0.22)] transition-colors hover:bg-[var(--ink)]"
-          href="/studio/create"
-        >
-          <span aria-hidden="true" className="material-symbols-outlined text-lg">
-            add
-          </span>
-          Create New Shelf
-        </Link>
+        {showCreateCta ? (
+          <Link
+            className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--teal-700)] px-4 text-sm font-bold text-white shadow-[0_12px_26px_rgba(0,124,114,0.22)] transition-colors hover:bg-[var(--ink)]"
+            href="/studio/create"
+          >
+            <span aria-hidden="true" className="material-symbols-outlined text-lg">
+              add
+            </span>
+            Create New Shelf
+          </Link>
+        ) : null}
 
         <nav
           aria-label="Studio"
-          className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-5 lg:grid-cols-1"
+          className={cn(
+            "grid grid-cols-2 gap-2 sm:grid-cols-5 lg:grid-cols-1",
+            showCreateCta ? "mt-7" : "mt-11",
+          )}
         >
           {navigationItems.map((item) => {
             const active =

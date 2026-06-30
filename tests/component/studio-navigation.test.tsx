@@ -72,4 +72,31 @@ describe("StudioShell navigation", () => {
     expect(screen.queryByRole("link", { name: /create new shelf/i })).not.toBeInTheDocument();
     expect(screen.queryByText("Alex Rivera")).not.toBeInTheDocument();
   });
+
+  it("keeps the sidebar create CTA off the dashboard while preserving it for shelf management", () => {
+    currentPathname = "/studio/dashboard";
+
+    const renderShell = (label: string) => (
+      <StudioShell
+        creator={{
+          displayName: "Liam Roberts",
+          handle: "liamroberts.photo",
+        }}
+      >
+        <p>{label}</p>
+      </StudioShell>
+    );
+
+    const { rerender } = render(renderShell("Dashboard"));
+    expect(screen.queryByRole("link", { name: /create new shelf/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: /studio/i })).toHaveClass("mt-11");
+
+    currentPathname = "/studio/shelves";
+    rerender(renderShell("Shelves"));
+    expect(screen.getByRole("link", { name: /create new shelf/i })).toHaveAttribute(
+      "href",
+      "/studio/create",
+    );
+    expect(screen.getByRole("navigation", { name: /studio/i })).toHaveClass("mt-7");
+  });
 });
