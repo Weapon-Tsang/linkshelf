@@ -76,6 +76,7 @@ describe("Studio shelf management Stitch structure", () => {
 
     const thirdCard = screen.getByRole("article", { name: /Travel Essentials/i });
     expect(within(thirdCard).getByText(/18 links/i)).toBeVisible();
+    expect(within(thirdCard).getByText(/Last updated Oct 12/i)).toBeVisible();
   });
 
   it("renders the Stitch one-column management state and keeps layout in controls", () => {

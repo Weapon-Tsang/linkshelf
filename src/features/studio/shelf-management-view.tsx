@@ -33,6 +33,7 @@ function statusLabel(status: ManagedShelf["status"]) {
 }
 
 function updatedLabel(shelf: ManagedShelf) {
+  if (shelf.id === "shelf-travel") return "Oct 12";
   return shelf.id === "shelf-photography" ? "2 hrs ago" : "yesterday";
 }
 
