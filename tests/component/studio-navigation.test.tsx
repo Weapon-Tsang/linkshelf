@@ -50,6 +50,11 @@ describe("StudioShell navigation", () => {
     );
     expect(screen.getByText("Alex Rivera")).toBeVisible();
     expect(screen.getByText("Pro Plan")).toBeVisible();
+    expect(screen.getByRole("img", { name: "Alex Rivera avatar" })).toHaveAttribute(
+      "src",
+      "/stitch/assets/settings-avatar.png",
+    );
+    expect(screen.queryByText("AR")).not.toBeInTheDocument();
   });
 
   it("renders the create shelf workflow as a full-canvas editor without the sidebar", () => {

@@ -113,12 +113,12 @@ export function StudioShell({
         </nav>
 
         <div className="mt-auto hidden items-center gap-3 lg:flex">
-          <div
-            aria-hidden="true"
-            className="grid h-10 w-10 place-items-center rounded-full bg-[linear-gradient(135deg,#00bfae,#0b132b)] text-sm font-black text-white"
-          >
-            AR
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element -- Static Stitch source asset keeps the Studio shell avatar visually aligned with the approved mockup. */}
+          <img
+            alt="Alex Rivera avatar"
+            className="h-10 w-10 rounded-full object-cover"
+            src="/stitch/assets/settings-avatar.png"
+          />
           <div>
             <p className="text-sm font-bold">Alex Rivera</p>
             <p className="text-xs font-semibold text-[var(--muted)]">Pro Plan</p>
