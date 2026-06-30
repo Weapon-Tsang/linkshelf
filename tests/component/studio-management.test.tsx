@@ -11,7 +11,7 @@ const shelves = [
     category: "Photography",
     status: "PUBLISHED" as const,
     coverUrl: "/stitch/assets/0074830e959aaeb9f506d75bd6d046ba65d6525f2cab5fc10c2381b115d66bcf.png",
-    productCount: 12,
+    productCount: 3,
     updatedAt: "2026-06-26T10:00:00.000Z",
   },
   {
@@ -22,8 +22,19 @@ const shelves = [
     category: "Workspace",
     status: "DRAFT" as const,
     coverUrl: "/stitch/assets/desk-setup.jpg",
-    productCount: 5,
+    productCount: 2,
     updatedAt: "2026-06-25T10:00:00.000Z",
+  },
+  {
+    id: "shelf-travel",
+    slug: "travel-essentials",
+    title: "Travel Essentials",
+    description: "Lightweight gear for location shoots.",
+    category: "Travel",
+    status: "PUBLISHED" as const,
+    coverUrl: "/stitch/assets/studio-management-travel-essentials.png",
+    productCount: 2,
+    updatedAt: "2026-06-24T10:00:00.000Z",
   },
 ];
 
@@ -38,7 +49,7 @@ describe("Studio shelf management Stitch structure", () => {
         query=""
         shelves={shelves}
         status="ALL"
-        totals={{ all: 2, drafts: 1, published: 1 }}
+        totals={{ all: 3, drafts: 1, published: 2 }}
       />,
     );
 
@@ -62,6 +73,9 @@ describe("Studio shelf management Stitch structure", () => {
     const secondCard = screen.getByRole("article", { name: /Desk Setup 2024/i });
     expect(within(secondCard).getByText("DRAFT")).toBeVisible();
     expect(within(secondCard).getByText(/5 links/i)).toBeVisible();
+
+    const thirdCard = screen.getByRole("article", { name: /Travel Essentials/i });
+    expect(within(thirdCard).getByText(/18 links/i)).toBeVisible();
   });
 
   it("renders the Stitch one-column management state and keeps layout in controls", () => {
@@ -71,7 +85,7 @@ describe("Studio shelf management Stitch structure", () => {
         query="gear"
         shelves={shelves}
         status="PUBLISHED"
-        totals={{ all: 2, drafts: 1, published: 1 }}
+        totals={{ all: 3, drafts: 1, published: 2 }}
       />,
     );
 

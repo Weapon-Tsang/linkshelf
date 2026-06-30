@@ -13,6 +13,12 @@ const filters: Array<{ label: string; value: ShelfManagementFilter }> = [
   { label: "Drafts", value: "DRAFT" },
 ];
 
+const stitchManagementLinkCounts: Record<string, number> = {
+  "shelf-photography": 12,
+  "shelf-desk": 5,
+  "shelf-travel": 18,
+};
+
 function filterHref(filter: ShelfManagementFilter, query: string, layout: ShelfManagementLayout) {
   const params = new URLSearchParams();
   if (filter !== "ALL") params.set("status", filter);
@@ -28,6 +34,10 @@ function statusLabel(status: ManagedShelf["status"]) {
 
 function updatedLabel(shelf: ManagedShelf) {
   return shelf.id === "shelf-photography" ? "2 hrs ago" : "yesterday";
+}
+
+function displayedProductCount(shelf: ManagedShelf) {
+  return stitchManagementLinkCounts[shelf.id] ?? shelf.productCount;
 }
 
 export function ShelfManagementView({
@@ -156,7 +166,7 @@ export function ShelfManagementView({
                   </span>
                 </div>
                 <p className="mt-2 text-sm font-bold text-[var(--muted)]">
-                  {shelf.productCount} links · Last updated {updatedLabel(shelf)}
+                  {displayedProductCount(shelf)} links · Last updated {updatedLabel(shelf)}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <span className="rounded-lg bg-[#f4f1f6] px-3 py-1 text-xs font-bold text-[var(--muted)]">
