@@ -73,6 +73,46 @@ describe("Super Admin dashboard", () => {
     expect(screen.getByText("sarah@interiors.com")).toBeVisible();
   });
 
+  it("uses Stitch source avatars for the seeded creator directory rows", () => {
+    render(
+      <AdminDashboard
+        creators={[
+          {
+            id: "creator-liam",
+            handle: "liamroberts.photo",
+            displayName: "Liam Roberts",
+            shelfCount: 3,
+          },
+        ]}
+        metrics={{
+          ledgerCents: 23178,
+          pendingWithdrawalCents: 5000,
+          creatorCents: 2898,
+          platformCents: 1200,
+        }}
+        pendingWithdrawals={[
+          {
+            id: "withdrawal-jamie-pending",
+            userName: "Jamie Chen",
+            amountCents: 5000,
+            destinationLabel: "Amazon gift card ending 2048",
+          },
+        ]}
+        thresholds={{ minimumWithdrawalCents: 5000 }}
+        trafficSplit={{ FAN: 1, CREATOR: 1, PLATFORM: 1 }}
+      />,
+    );
+
+    expect(screen.getByRole("img", { name: "@techgear avatar" })).toHaveAttribute(
+      "src",
+      "/stitch/assets/7129370135c370b58ea016092ea1aa4e43a1106676b4834ba1b999070366c886.png",
+    );
+    expect(screen.getByRole("img", { name: "@homedecor avatar" })).toHaveAttribute(
+      "src",
+      "/stitch/assets/bed5e5526036aa3d6bab9d9c21b7a054aab1d9a29f23de70ca54a247e9f9e85f.png",
+    );
+  });
+
   it("filters creators, edits thresholds, reviews withdrawals, and exports CSV", async () => {
     const user = userEvent.setup();
     const onApprove = vi.fn();

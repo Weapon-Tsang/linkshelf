@@ -54,6 +54,7 @@ interface VisibleWithdrawal extends AdminWithdrawal {
 
 interface VisibleCreator extends AdminCreator {
   readonly avatarLabel: string;
+  readonly avatarUrl?: string;
   readonly displayEmail: string;
   readonly displayHandle: string;
   readonly displayOnly?: boolean;
@@ -81,6 +82,8 @@ const withdrawalPresets = [
 const creatorPresets = [
   {
     avatarLabel: "AT",
+    avatarUrl:
+      "/stitch/assets/7129370135c370b58ea016092ea1aa4e43a1106676b4834ba1b999070366c886.png",
     email: "alex@techgear.io",
     handle: "@techgear",
     reach: "45.2K",
@@ -88,6 +91,8 @@ const creatorPresets = [
   },
   {
     avatarLabel: "SI",
+    avatarUrl:
+      "/stitch/assets/bed5e5526036aa3d6bab9d9c21b7a054aab1d9a29f23de70ca54a247e9f9e85f.png",
     email: "sarah@interiors.com",
     handle: "@homedecor",
     reach: "12.1K",
@@ -113,6 +118,8 @@ const demoWithdrawalRows: readonly VisibleWithdrawal[] = [
 const demoCreatorRows: readonly VisibleCreator[] = [
   {
     avatarLabel: "SI",
+    avatarUrl:
+      "/stitch/assets/bed5e5526036aa3d6bab9d9c21b7a054aab1d9a29f23de70ca54a247e9f9e85f.png",
     displayEmail: "sarah@interiors.com",
     displayHandle: "@homedecor",
     displayOnly: true,
@@ -157,6 +164,7 @@ function buildVisibleCreators(creators: readonly AdminCreator[]) {
           .map((part) => part[0])
           .join("")
           .slice(0, 2),
+      avatarUrl: preset?.avatarUrl,
       displayEmail: preset?.email ?? creator.displayName,
       displayHandle: preset?.handle ?? creator.handle,
       displayReach: preset?.reach ?? ["45.2K", "12.1K", "8.7K", "3.4K"][index] ?? "2.4K",
@@ -731,9 +739,18 @@ function CreatorRow({ creator }: { readonly creator: VisibleCreator }) {
     <tr className="transition-colors hover:bg-[var(--surface-low)]/50">
       <td className="p-3">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-[var(--surface-low)] text-sm font-bold text-[var(--ink)]">
-            {creator.avatarLabel}
-          </div>
+          {creator.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- Stitch admin avatars are static local visual QA assets.
+            <img
+              alt={`${creator.displayHandle} avatar`}
+              className="h-10 w-10 rounded-full bg-[var(--surface-low)] object-cover"
+              src={creator.avatarUrl}
+            />
+          ) : (
+            <div className="grid h-10 w-10 place-items-center rounded-full bg-[var(--surface-low)] text-sm font-bold text-[var(--ink)]">
+              {creator.avatarLabel}
+            </div>
+          )}
           <div>
             <p className="font-bold text-[var(--ink)]">{creator.displayHandle}</p>
             <p className="text-xs text-[var(--muted)]">{creator.displayEmail}</p>
