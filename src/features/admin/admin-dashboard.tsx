@@ -283,7 +283,7 @@ export function AdminDashboard({
               </span>
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+              <p className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">
                 {metric.label}
               </p>
               <p className="mt-1 text-4xl font-bold tracking-[-0.04em] text-[var(--ink)]">

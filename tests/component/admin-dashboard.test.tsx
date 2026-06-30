@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AdminDashboard } from "@/features/admin/admin-dashboard";
@@ -273,6 +273,15 @@ describe("Super Admin dashboard", () => {
       const metricCard = screen.getByRole("article", { name: label });
       expect(metricCard).toHaveClass("min-h-32", "p-5");
       expect(metricCard).not.toHaveClass("min-h-36", "p-6");
+      expect(within(metricCard).getByText(label)).toHaveClass(
+        "whitespace-nowrap",
+        "text-[10px]",
+        "tracking-[0.1em]",
+      );
+      expect(within(metricCard).getByText(label)).not.toHaveClass(
+        "text-xs",
+        "tracking-[0.14em]",
+      );
     }
 
     const trafficRegion = screen.getByRole("region", { name: "Traffic Split Monitor" });
