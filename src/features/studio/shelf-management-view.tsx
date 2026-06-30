@@ -32,7 +32,6 @@ function updatedLabel(shelf: ManagedShelf) {
 
 export function ShelfManagementView({
   shelves,
-  totals,
   query,
   status,
   layout = "grid",
@@ -83,12 +82,6 @@ export function ShelfManagementView({
           <div className="flex flex-wrap gap-2" role="list" aria-label="Shelf filters">
             {filters.map((filter) => {
               const active = filter.value === status;
-              const count =
-                filter.value === "ALL"
-                  ? totals.all
-                  : filter.value === "PUBLISHED"
-                    ? totals.published
-                    : totals.drafts;
               return (
                 <Link
                   className={cn(
@@ -101,7 +94,7 @@ export function ShelfManagementView({
                   href={filterHref(filter.value, query, layout)}
                   key={filter.value}
                 >
-                  {filter.label} · {count}
+                  {filter.label}
                 </Link>
               );
             })}

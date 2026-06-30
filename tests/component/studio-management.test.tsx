@@ -77,10 +77,11 @@ describe("Studio shelf management Stitch structure", () => {
 
     expect(screen.getByDisplayValue("gear")).toBeVisible();
     expect(screen.getByDisplayValue("list")).toHaveAttribute("name", "layout");
-    expect(screen.getByRole("link", { name: "Drafts · 1" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Drafts" })).toHaveAttribute(
       "href",
       "/studio/shelves?status=DRAFT&q=gear&layout=list",
     );
+    expect(screen.queryByRole("link", { name: "Drafts · 1" })).not.toBeInTheDocument();
 
     const firstCard = screen.getByRole("article", { name: /Photography Kit/i });
     expect(firstCard).toHaveClass("flex", "items-center", "p-8");
