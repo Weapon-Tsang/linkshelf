@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { BrandMark } from "@/components/brand/brand-mark";
 import { cn } from "@/lib/cn";
 
 const navItems = [
@@ -30,7 +29,7 @@ export function HubShell({
         className="border-b border-[var(--line)] bg-white px-5 py-5 shadow-[0_4px_20px_rgba(11,19,43,0.04)] lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[256px] lg:flex-col lg:border-b-0 lg:border-r lg:px-8 lg:py-9 lg:shadow-none"
       >
         <Link className="inline-flex flex-col items-start" href="/hub/dashboard">
-          <BrandMark className="text-2xl" />
+          <span className="text-2xl font-bold tracking-tight text-[var(--ink)]">LinkShelf</span>
           <span className="mt-1 text-sm font-semibold text-[var(--muted)]">
             Creator Economy
           </span>

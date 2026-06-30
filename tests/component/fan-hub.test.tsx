@@ -42,6 +42,9 @@ describe("Fan Hub dashboard", () => {
       "href",
       "/liamroberts.photo",
     );
+    expect(within(screen.getByRole("complementary", { name: "Fan Hub side rail" })).queryByText(
+      "dataset",
+    )).not.toBeInTheDocument();
   });
 
   it("uses the Stitch side rail scale without duplicating top utility navigation", () => {
