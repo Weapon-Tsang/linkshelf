@@ -166,7 +166,7 @@ export function ShelfManagementView({
                     {statusLabel(shelf.status)}
                   </span>
                 </div>
-                <p className="mt-2 text-sm font-bold text-[var(--muted)]">
+                <p className="mt-2 text-xs font-bold text-[var(--muted)]">
                   {displayedProductCount(shelf)} links · Last updated {updatedLabel(shelf)}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
