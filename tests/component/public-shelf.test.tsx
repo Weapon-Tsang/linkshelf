@@ -105,6 +105,8 @@ describe("public LinkShelf surfaces", () => {
     expect(screen.getByRole("button", { name: "Share to earn" })).toBeVisible();
     expect(screen.getByRole("link", { name: "X" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Copy" })).toBeVisible();
+    expect(screen.queryByText("Get it")).not.toBeInTheDocument();
+    expect(screen.getByText("open_in_new")).toBeVisible();
     expect(screen.queryByText("FACEBOOK")).not.toBeInTheDocument();
   });
 

@@ -88,12 +88,19 @@ export function ProductCard({
 
           <a
             aria-label={`Get ${product.title}`}
-            className="inline-flex items-center gap-1 rounded-full bg-[#eae7ea] px-4 py-2 text-sm font-bold text-[var(--ink)] transition-colors hover:bg-[var(--teal-700)] hover:text-white"
+            className={
+              compact
+                ? "inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--teal-500)]/12 text-[var(--teal-700)] transition-colors hover:bg-[var(--teal-700)] hover:text-white"
+                : "inline-flex items-center gap-1 rounded-full bg-[#eae7ea] px-4 py-2 text-sm font-bold text-[var(--ink)] transition-colors hover:bg-[var(--teal-700)] hover:text-white"
+            }
             href={productHref(product.id, shareCode)}
           >
-            Get it
-            <span aria-hidden="true" className="material-symbols-outlined text-base">
-              shopping_bag
+            {compact ? null : "Get it"}
+            <span
+              aria-hidden="true"
+              className={compact ? "material-symbols-outlined text-xl" : "material-symbols-outlined text-base"}
+            >
+              {compact ? "open_in_new" : "shopping_bag"}
             </span>
           </a>
         </div>
