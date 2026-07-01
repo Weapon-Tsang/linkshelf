@@ -106,11 +106,16 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
          created_at, updated_at)
       VALUES
         ('creator-liam', 'user-creator', 'liamroberts.photo', 'Liam Roberts',
-          'Photographer and filmmaker sharing the gear behind every frame.', 'Photography',
+          'Landscape & travel photographer. I curate and share the professional gear and editing tools I trust in the field.', 'Photography',
           ${asset(STITCH_ASSET_SOURCES.profileAvatar)},
           ${asset(STITCH_ASSET_SOURCES.profileCover)}, 'liamcreator-20',
           '${CREATED_AT}', '${CREATED_AT}')
       ON CONFLICT(id) DO UPDATE SET
+        bio = CASE
+          WHEN creator_profiles.bio = 'Photographer and filmmaker sharing the gear behind every frame.'
+          THEN excluded.bio
+          ELSE creator_profiles.bio
+        END,
         avatar_url = COALESCE(creator_profiles.avatar_url, excluded.avatar_url),
         cover_url = COALESCE(creator_profiles.cover_url, excluded.cover_url);
 

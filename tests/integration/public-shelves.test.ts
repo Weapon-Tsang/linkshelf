@@ -33,6 +33,7 @@ describe("public shelf queries", () => {
     expect(result.profile.creator).toMatchObject({
       handle: "liamroberts.photo",
       displayName: "Liam Roberts",
+      bio: "Landscape & travel photographer. I curate and share the professional gear and editing tools I trust in the field.",
       category: "Photography",
     });
     expect(result.profile.shelves.map((shelf) => shelf.id)).toEqual([

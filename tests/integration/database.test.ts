@@ -47,6 +47,10 @@ describe("local database", () => {
     migrate(db);
     seed(db);
 
+    db.prepare("UPDATE creator_profiles SET bio = ? WHERE id = ?").run(
+      "Photographer and filmmaker sharing the gear behind every frame.",
+      "creator-liam",
+    );
     db.prepare("UPDATE wallet_entries SET amount_cents = 1599 WHERE id = ?").run("wallet-fan-pending");
     db.prepare("UPDATE wallet_entries SET created_at = ?, cleared_at = ? WHERE id = ?").run(
       "2026-06-24T10:00:01.000Z",
@@ -56,6 +60,15 @@ describe("local database", () => {
 
     seed(db);
 
+    expect(
+      (
+        db
+          .prepare("SELECT bio FROM creator_profiles WHERE id = ?")
+          .get("creator-liam") as { bio: string }
+      ).bio,
+    ).toBe(
+      "Landscape & travel photographer. I curate and share the professional gear and editing tools I trust in the field.",
+    );
     expect(
       (
         db
