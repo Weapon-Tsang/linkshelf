@@ -42,6 +42,7 @@ function displayedProductCount(shelf: ManagedShelf) {
 }
 
 export function ShelfManagementView({
+  creatorHandle,
   shelves,
   query,
   status,
@@ -49,6 +50,7 @@ export function ShelfManagementView({
   publishShelfAction,
   deleteShelfAction,
 }: {
+  readonly creatorHandle: string;
   readonly shelves: readonly ManagedShelf[];
   readonly totals: {
     readonly all: number;
@@ -62,6 +64,14 @@ export function ShelfManagementView({
   readonly deleteShelfAction?: ShelfAction;
 }) {
   const isListLayout = layout === "list";
+  const actionControlBaseClass = cn(
+    "grid place-items-center rounded-full text-[var(--muted)] transition-colors",
+    isListLayout ? "h-10 w-10" : "h-8 w-8",
+  );
+  const actionControlClass = cn(
+    actionControlBaseClass,
+    "hover:bg-[var(--surface-low)] hover:text-[var(--teal-700)]",
+  );
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -121,7 +131,7 @@ export function ShelfManagementView({
               className={cn(
                 isListLayout
                   ? "flex items-center rounded-2xl border-2 bg-white p-8 shadow-[0_12px_32px_rgba(11,19,43,0.08)] transition-all"
-                  : "grid gap-5 rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)] md:grid-cols-[6.75rem_minmax(0,1fr)_auto]",
+                  : "grid gap-4 rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)] md:grid-cols-[6rem_minmax(0,1fr)_auto]",
                 shelf.id === "shelf-photography" &&
                   (isListLayout ? "border-[var(--teal-700)]" : "ring-2 ring-[var(--teal-700)]"),
                 shelf.id !== "shelf-photography" && isListLayout && "border-transparent",
@@ -184,12 +194,12 @@ export function ShelfManagementView({
                 className={cn(
                   isListLayout
                     ? "ml-6 flex items-center gap-3 border-l border-[var(--line)]/70 pl-6"
-                    : "flex items-start gap-3 md:justify-end",
+                    : "flex items-start gap-2 md:justify-end",
                 )}
               >
                 <Link
                   aria-label={`Edit ${shelf.title}`}
-                  className="grid h-10 w-10 place-items-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--teal-700)]"
+                  className={actionControlClass}
                   href={`/studio/shelves/${shelf.id}/edit`}
                 >
                   <span aria-hidden="true" className="material-symbols-outlined text-xl">
@@ -197,12 +207,24 @@ export function ShelfManagementView({
                   </span>
                 </Link>
 
+                {shelf.status === "PUBLISHED" ? (
+                  <Link
+                    aria-label={`View ${shelf.title}`}
+                    className={actionControlClass}
+                    href={`/${creatorHandle}/${shelf.slug}`}
+                  >
+                    <span aria-hidden="true" className="material-symbols-outlined text-xl">
+                      rocket_launch
+                    </span>
+                  </Link>
+                ) : null}
+
                 {shelf.status === "DRAFT" && publishShelfAction ? (
                   <form action={publishShelfAction}>
                     <input name="shelfId" type="hidden" value={shelf.id} />
                     <button
                       aria-label={`Publish ${shelf.title}`}
-                      className="grid h-10 w-10 place-items-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-low)] hover:text-[var(--teal-700)]"
+                      className={actionControlClass}
                       type="submit"
                     >
                       <span aria-hidden="true" className="material-symbols-outlined text-xl">
@@ -224,7 +246,10 @@ export function ShelfManagementView({
                     <input name="shelfId" type="hidden" value={shelf.id} />
                     <button
                       aria-label={`Delete ${shelf.title}`}
-                      className="grid h-10 w-10 place-items-center rounded-full text-[var(--muted)] transition-colors hover:bg-[#fff2f2] hover:text-[var(--danger)]"
+                      className={cn(
+                        actionControlBaseClass,
+                        "hover:bg-[#fff2f2] hover:text-[var(--danger)]",
+                      )}
                       type="submit"
                     >
                       <span aria-hidden="true" className="material-symbols-outlined text-xl">

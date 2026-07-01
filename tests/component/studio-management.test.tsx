@@ -46,6 +46,7 @@ describe("Studio shelf management Stitch structure", () => {
   it("renders visual shelf cards with thumbnails, status pills, and icon actions", () => {
     render(
       <ShelfManagementView
+        creatorHandle="liamroberts.photo"
         query=""
         shelves={shelves}
         status="ALL"
@@ -54,6 +55,8 @@ describe("Studio shelf management Stitch structure", () => {
     );
 
     const firstCard = screen.getByRole("article", { name: /Photography Kit/i });
+    expect(firstCard).toHaveClass("gap-4");
+    expect(firstCard.className).toContain("md:grid-cols-[6rem_minmax(0,1fr)_auto]");
     const firstCover = within(firstCard).getByRole("img", { name: /Photography Kit cover/i });
     expect(firstCover).toHaveAttribute(
       "src",
@@ -66,9 +69,15 @@ describe("Studio shelf management Stitch structure", () => {
       "md:h-24",
       "md:w-24",
     );
+    expect(within(firstCard).getByLabelText("Shelf actions for Photography Kit")).toHaveClass(
+      "gap-2",
+    );
     expect(within(firstCard).getByText(/12 links/i)).toBeVisible();
     expect(within(firstCard).getByText("PUBLISHED")).toBeVisible();
     expect(within(firstCard).getByRole("link", { name: "Edit Photography Kit" })).toBeVisible();
+    const firstViewLink = within(firstCard).getByRole("link", { name: "View Photography Kit" });
+    expect(firstViewLink).toHaveAttribute("href", "/liamroberts.photo/photography-kit");
+    expect(firstViewLink).toHaveClass("h-8", "w-8");
 
     const secondCard = screen.getByRole("article", { name: /Desk Setup 2024/i });
     expect(within(secondCard).getByText("DRAFT")).toBeVisible();
@@ -84,6 +93,7 @@ describe("Studio shelf management Stitch structure", () => {
   it("renders the Stitch one-column management state and keeps layout in controls", () => {
     render(
       <ShelfManagementView
+        creatorHandle="liamroberts.photo"
         layout="list"
         query="gear"
         shelves={shelves}

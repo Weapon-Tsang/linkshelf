@@ -85,6 +85,7 @@ export default async function StudioShelvesPage({
 
   return (
     <ShelfManagementView
+      creatorHandle={studio.creator.handle}
       deleteShelfAction={deleteShelfAction}
       publishShelfAction={publishShelfAction}
       layout={layout}
