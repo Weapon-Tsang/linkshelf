@@ -299,5 +299,6 @@ describe("Super Admin dashboard", () => {
     expect(screen.getByRole("columnheader", { name: "Creator" })).toHaveClass("p-3");
     expect(screen.getByText("$4,800.00").closest("td")).toHaveClass("p-3");
     expect(screen.getByText("@homedecor").closest("td")).toHaveClass("p-3");
+    expect(screen.queryByText(/LinkShelf Admin Console/)).not.toBeInTheDocument();
   });
 });

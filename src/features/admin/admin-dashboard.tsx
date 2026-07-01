@@ -593,10 +593,6 @@ export function AdminDashboard({
           </section>
         </section>
       </div>
-
-      <footer className="border-t border-[var(--line)] py-6 text-center text-xs font-semibold text-[var(--muted)]">
-        LinkShelf Admin Console v2.4.0 • Brand Aligned Infrastructure • © 2024
-      </footer>
     </div>
   );
 }
