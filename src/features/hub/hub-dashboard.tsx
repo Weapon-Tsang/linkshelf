@@ -246,12 +246,6 @@ export function HubDashboard({
             <p className="mt-2 text-sm font-semibold text-[var(--teal-700)]">
               + {formatMoney(summary.pendingCents)} pending clearance
             </p>
-            <p className="mt-5 text-sm leading-6 text-[var(--muted)]">
-              Lifetime rewards:{" "}
-              <span className="font-bold text-[var(--ink)]">
-                {formatMoney(summary.lifetimeCents)}
-              </span>
-            </p>
           </div>
           <button
             className="relative mt-8 h-14 rounded-2xl bg-[var(--teal-700)] px-5 text-sm font-bold text-white shadow-[0_14px_30px_rgba(0,191,174,0.22)] disabled:cursor-not-allowed disabled:opacity-60"

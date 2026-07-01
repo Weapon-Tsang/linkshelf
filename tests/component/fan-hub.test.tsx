@@ -141,6 +141,7 @@ describe("Fan Hub dashboard", () => {
 
     expect(screen.getByRole("heading", { name: "Affiliate ID Binding" })).toBeVisible();
     expect(screen.getByText("Available Balance")).toBeVisible();
+    expect(screen.queryByText(/Lifetime rewards/)).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Rewards History" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Download CSV" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Source" })).toBeVisible();
