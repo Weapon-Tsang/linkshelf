@@ -20,18 +20,32 @@ export function PublicNav() {
           </a>
           <a
             className="text-sm font-medium text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
+            href="#features"
+          >
+            Features
+          </a>
+          <a
+            className="text-sm font-medium text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
             href="#pricing"
           >
             Pricing
           </a>
         </div>
 
-        <a
-          className="hidden rounded-full bg-[var(--ink)] px-6 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 md:inline-flex"
-          href={CREATOR_LOGIN_HREF}
-        >
-          Get Started
-        </a>
+        <div className="hidden items-center gap-4 md:flex">
+          <a
+            className="text-sm font-semibold text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
+            href={CREATOR_LOGIN_HREF}
+          >
+            Log In
+          </a>
+          <a
+            className="rounded-full bg-[var(--ink)] px-6 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            href={CREATOR_LOGIN_HREF}
+          >
+            Get Started
+          </a>
+        </div>
 
         <a
           aria-label="Get Started"

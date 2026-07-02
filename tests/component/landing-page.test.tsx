@@ -27,6 +27,11 @@ describe("LandingPage", () => {
       "href",
       "/login?returnTo=%2Fstudio%2Fdashboard",
     );
+    expect(screen.getByRole("link", { name: "Features" })).toHaveAttribute("href", "#features");
+    expect(screen.getByRole("link", { name: "Log In" })).toHaveAttribute(
+      "href",
+      "/login?returnTo=%2Fstudio%2Fdashboard",
+    );
     expect(screen.getAllByRole("link", { name: "Get Started" })).toHaveLength(2);
     expect(screen.getByRole("link", { name: "Claim Your Visual Shelf Now" })).toHaveAttribute(
       "href",

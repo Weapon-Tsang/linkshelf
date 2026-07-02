@@ -160,7 +160,7 @@ export function LandingPage() {
                 <PrimaryCta className="w-full sm:w-auto">Start Your Shelf</PrimaryCta>
                 <a
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#131a33] px-8 py-4 text-sm font-bold text-[#131a33] transition-colors hover:bg-[#131a33] hover:text-white sm:w-auto"
-                  href="#demo"
+                  href="#features"
                 >
                   <span aria-hidden="true" className="material-symbols-outlined">
                     play_circle
@@ -176,7 +176,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-white py-24" id="demo">
+        <section className="bg-white py-24" id="features">
           <div className="mx-auto max-w-[1280px] px-5 md:px-10">
             <div className="mb-16 text-center">
               <h2 className="mb-4 text-4xl font-semibold tracking-[-0.02em] text-[#131a33]">
