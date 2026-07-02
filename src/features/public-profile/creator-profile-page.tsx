@@ -28,6 +28,13 @@ const channelIcons = {
   COPY: "link",
 } as const;
 
+const platformDisplays = [
+  { host: "instagram.com", icon: "photo_camera", label: "Instagram" },
+  { host: "tiktok.com", icon: "music_note", label: "TikTok" },
+  { host: "youtube.com", icon: "smart_display", label: "YouTube" },
+  { host: "youtu.be", icon: "smart_display", label: "YouTube" },
+] as const;
+
 function shelfHref(handle: string, shelf: PublicProfileShelf) {
   return `/${handle}/${shelf.slug}`;
 }
@@ -51,6 +58,25 @@ function channelHref(channel: PublicSocialChannel) {
   }
 
   return safeExternalHref(channel.value);
+}
+
+function channelDisplay(channel: PublicSocialChannel) {
+  try {
+    const hostname = new URL(channelHref(channel)).hostname.replace(/^www\./, "");
+    const platform = platformDisplays.find(
+      (display) => hostname === display.host || hostname.endsWith(`.${display.host}`),
+    );
+    if (platform) {
+      return platform;
+    }
+  } catch {
+    // Fall back to the share-channel type display below.
+  }
+
+  return {
+    icon: channelIcons[channel.type],
+    label: channelLabels[channel.type],
+  };
 }
 
 export function CreatorProfilePage({
@@ -132,18 +158,22 @@ export function CreatorProfilePage({
           <p className="max-w-2xl text-xl leading-9 text-[var(--ink)]">{profile.creator.bio}</p>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            {profile.socialChannels.map((channel) => (
-              <a
-                className="landing-glass-card inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
-                href={channelHref(channel)}
-                key={channel.id}
-              >
-                <span aria-hidden="true" className="material-symbols-outlined text-xl">
-                  {channelIcons[channel.type]}
-                </span>
-                {channelLabels[channel.type]}
-              </a>
-            ))}
+            {profile.socialChannels.map((channel) => {
+              const display = channelDisplay(channel);
+
+              return (
+                <a
+                  className="landing-glass-card inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
+                  href={channelHref(channel)}
+                  key={channel.id}
+                >
+                  <span aria-hidden="true" className="material-symbols-outlined text-xl">
+                    {display.icon}
+                  </span>
+                  {display.label}
+                </a>
+              );
+            })}
           </div>
         </section>
 

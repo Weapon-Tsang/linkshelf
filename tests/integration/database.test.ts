@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createDatabase } from "@/lib/db/client";
@@ -57,6 +57,36 @@ describe("local database", () => {
       "2026-06-24T10:00:01.000Z",
       "wallet-fan-tech",
     );
+    db.prepare("UPDATE shelves SET description = ? WHERE id = ?").run(
+      "My go-to gear for professional shoots and travel vlogs.",
+      "shelf-photography",
+    );
+    db.prepare("UPDATE creator_profiles SET avatar_url = ? WHERE id = ?").run(
+      "/stitch/assets/5828e4755aeb4cadc0e8d6ba09be3aeaafe7c320d72db26b11ae4d1b45141988.png",
+      "creator-liam",
+    );
+    db.exec(`
+      UPDATE social_channels SET value = '@liamshoots' WHERE id = 'channel-x';
+      UPDATE social_channels SET value = 'https://wa.me/15551234567' WHERE id = 'channel-whatsapp';
+      UPDATE social_channels SET value = 'https://linkshelf.local/liamroberts.photo' WHERE id = 'channel-copy';
+    `);
+    db.exec(`
+      UPDATE products
+      SET
+        title = 'Sony FE 24-70mm f/2.8 GM II',
+        description = 'A fast standard zoom for portraits, travel, and events.',
+        price_cents = 229800,
+        merchant = 'Amazon'
+      WHERE id = 'product-sony-lens';
+
+      UPDATE products
+      SET
+        title = 'Peak Design Carbon Tripod',
+        description = 'A compact carbon travel tripod with a fast setup.',
+        price_cents = 64995,
+        merchant = 'Amazon'
+      WHERE id = 'product-peak-tripod';
+    `);
 
     seed(db);
 
@@ -86,6 +116,65 @@ describe("local database", () => {
       createdAt: "2023-10-24T10:00:01.000Z",
       clearedAt: "2023-10-24T10:00:01.000Z",
     });
+    expect(
+      db
+        .prepare(
+          `SELECT title, description, price_cents AS priceCents, merchant
+           FROM products
+           WHERE id IN ('product-sony-lens', 'product-peak-tripod')
+           ORDER BY sort_position`,
+        )
+        .all(),
+    ).toEqual([
+      {
+        title: "Sony FE 35mm f/1.4 GM Lens",
+        description: "Stunning sharpness and beautiful bokeh.",
+        priceCents: 139_800,
+        merchant: "B&H Photo",
+      },
+      {
+        title: "Peak Design Travel Tripod",
+        description: "Compact, lightweight, and built to travel.",
+        priceCents: 34_995,
+        merchant: "Peak Design",
+      },
+    ]);
+    expect(
+      (
+        db
+          .prepare("SELECT description FROM shelves WHERE id = ?")
+          .get("shelf-photography") as { description: string }
+      ).description,
+    ).toBe(
+      "My daily driver setup for hybrid shooting. Balancing ergonomics with top-tier image quality for long studio sessions and quick location hits.",
+    );
+    expect(
+      (
+        db
+          .prepare("SELECT avatar_url AS avatarUrl FROM creator_profiles WHERE id = ?")
+          .get("creator-liam") as { avatarUrl: string }
+      ).avatarUrl,
+    ).toBe(
+      (
+        JSON.parse(
+          readFileSync(join(process.cwd(), "public", "stitch", "asset-manifest.json"), "utf8"),
+        ) as Record<string, string>
+      )[STITCH_ASSET_SOURCES.profileAvatar],
+    );
+    expect(
+      db
+        .prepare(
+          `SELECT id, value
+           FROM social_channels
+           WHERE id IN ('channel-x', 'channel-whatsapp', 'channel-copy')
+           ORDER BY sort_position`,
+        )
+        .all(),
+    ).toEqual([
+      { id: "channel-x", value: "https://instagram.com/liamroberts.photo" },
+      { id: "channel-whatsapp", value: "https://tiktok.com/@liamroberts.photo" },
+      { id: "channel-copy", value: "https://youtube.com/@liamrobertsphoto" },
+    ]);
   });
 
   it("creates file databases with production-safe pragmas", () => {

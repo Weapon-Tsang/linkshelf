@@ -6,7 +6,7 @@ const CREATED_AT = "2026-06-01T12:00:00.000Z";
 
 export const STITCH_ASSET_SOURCES = {
   profileAvatar:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuB6yXZ9XFX1GPQAI3kFISkRWCEayI2tRpGzC3J35idZQbRoXmJy708U7hGywsG3ZNl-l-N0lraWe9zfF4WE6vn7kH6dymwzEHPKWJAWeYuVAl9gd_A1gNEjTnE-1K8PlUkCMgGE-qnmzRXKvfb9NzSPEqCOO2UMCTD08xgGK3f2paZJuW7-CvYEEHs-5Oh8Z4dokyrfYCv4PN1xae0XTaGcHMlU4gN8cy9mfaEqiNy38cJuNeltF83HC4pmC-HzzSjLVcLTL_yvuPk",
+    "https://lh3.googleusercontent.com/aida/AP1WRLvvbbxp4lShDDkF8kPUTTc-9riZe43qCUvFG3AE9ikq3J2YOmo3CtrR-i4NGt0CTja0iX5vUlgnyL8ZRY3q0mrHfQwMVuWInAD7bDL9mC1uLyWgWsgBmj9sRAP7w-J1l2vZuHAWhl2IMrmkOYWJzv2j9jQlzjUZclz4sfFHIhsQeQ61wzy6gevJXNjisYIj8fbX6m3dPp1d2wvXIOG5RDTRg9vTu3t1hPPR_FfZpqgEePQr3Oajg87t_w",
   profileCover:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuAf8AcZsiFTBexC90V0RnnElBXCZAb_68Va1o3Jkn-K_9D-Reltc0984Fk62oCMa1iScrPSbunJd-OWi3pem1J-N86PvTxOATjNtAFHzQ8wJM6UowXAvoKHitU9HgnJpDi5Oi0ZElX3JH_b08mdFy-2kYvsr4NNsMt9LmvAJzq-NXAOdF2zfKhyMvgCma2jW7M3ahxPY3_ExRp6TF7NYywpebhFw0cQmFNhx1_lvuPm-VkU_BdaBryuYRR01AtIo1XBDY5ZAO0YzfU",
   shelfPhotography:
@@ -116,7 +116,14 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
           THEN excluded.bio
           ELSE creator_profiles.bio
         END,
-        avatar_url = COALESCE(creator_profiles.avatar_url, excluded.avatar_url),
+        avatar_url = CASE
+          WHEN creator_profiles.avatar_url IN (
+            'https://lh3.googleusercontent.com/aida-public/AB6AXuB6yXZ9XFX1GPQAI3kFISkRWCEayI2tRpGzC3J35idZQbRoXmJy708U7hGywsG3ZNl-l-N0lraWe9zfF4WE6vn7kH6dymwzEHPKWJAWeYuVAl9gd_A1gNEjTnE-1K8PlUkCMgGE-qnmzRXKvfb9NzSPEqCOO2UMCTD08xgGK3f2paZJuW7-CvYEEHs-5Oh8Z4dokyrfYCv4PN1xae0XTaGcHMlU4gN8cy9mfaEqiNy38cJuNeltF83HC4pmC-HzzSjLVcLTL_yvuPk',
+            '/stitch/assets/5828e4755aeb4cadc0e8d6ba09be3aeaafe7c320d72db26b11ae4d1b45141988.png'
+          ) AND excluded.avatar_url IS NOT NULL
+          THEN excluded.avatar_url
+          ELSE COALESCE(creator_profiles.avatar_url, excluded.avatar_url)
+        END,
         cover_url = COALESCE(creator_profiles.cover_url, excluded.cover_url);
 
       INSERT INTO shelves
@@ -124,7 +131,8 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
          cover_url, created_at, updated_at, deleted_at)
       VALUES
         ('shelf-photography', 'creator-liam', 'photography-kit', 'Photography Kit',
-          'My go-to gear for professional shoots and travel vlogs.', 'Photography', 'PUBLISHED',
+          'My daily driver setup for hybrid shooting. Balancing ergonomics with top-tier image quality for long studio sessions and quick location hits.',
+          'Photography', 'PUBLISHED',
           'tech', 'https://www.youtube.com/watch?v=linkshelf-photo',
           ${asset(STITCH_ASSET_SOURCES.shelfPhotography)}, '${CREATED_AT}', '${CREATED_AT}', NULL),
         ('shelf-desk', 'creator-liam', 'desk-setup-2024', 'Desk Setup 2024',
@@ -136,22 +144,28 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
           'living', 'https://www.youtube.com/watch?v=linkshelf-travel',
           ${asset(STITCH_ASSET_SOURCES.shelfTravel)}, '${CREATED_AT}', '${CREATED_AT}', NULL)
       ON CONFLICT(id) DO UPDATE SET
+        description = CASE
+          WHEN shelves.id = 'shelf-photography'
+            AND shelves.description = 'My go-to gear for professional shoots and travel vlogs.'
+          THEN excluded.description
+          ELSE shelves.description
+        END,
         cover_url = COALESCE(shelves.cover_url, excluded.cover_url);
 
       INSERT INTO products
         (id, shelf_id, title, description, price_cents, currency, merchant, destination_url,
          image_url, sort_position, hotspot_x, hotspot_y, created_at, updated_at)
       VALUES
-        ('product-sony-a7iv', 'shelf-photography', 'Sony A7IV Mirrorless Camera',
-          'A versatile full-frame hybrid camera with reliable autofocus.', 249800, 'USD', 'Amazon',
+        ('product-sony-a7iv', 'shelf-photography', 'Sony a7 IV Mirrorless Camera',
+          '33MP full-frame camera with pro performance.', 249800, 'USD', 'B&H Photo',
           'https://www.amazon.com/dp/B09JZT6YK5', ${asset(STITCH_ASSET_SOURCES.productSonyA7iv)},
           0, 55, 38, '${CREATED_AT}', '${CREATED_AT}'),
-        ('product-sony-lens', 'shelf-photography', 'Sony FE 24-70mm f/2.8 GM II',
-          'A fast standard zoom for portraits, travel, and events.', 229800, 'USD', 'Amazon',
+        ('product-sony-lens', 'shelf-photography', 'Sony FE 35mm f/1.4 GM Lens',
+          'Stunning sharpness and beautiful bokeh.', 139800, 'USD', 'B&H Photo',
           'https://www.amazon.com/dp/B0B1TQZ99S', ${asset(STITCH_ASSET_SOURCES.productSonyLens)},
           1, 25, 20, '${CREATED_AT}', '${CREATED_AT}'),
-        ('product-peak-tripod', 'shelf-photography', 'Peak Design Carbon Tripod',
-          'A compact carbon travel tripod with a fast setup.', 64995, 'USD', 'Amazon',
+        ('product-peak-tripod', 'shelf-photography', 'Peak Design Travel Tripod',
+          'Compact, lightweight, and built to travel.', 34995, 'USD', 'Peak Design',
           'https://www.amazon.com/dp/B086YB2Y2F', ${asset(STITCH_ASSET_SOURCES.productPeakTripod)},
           2, 75, 60, '${CREATED_AT}', '${CREATED_AT}'),
         ('product-ergotune', 'shelf-desk', 'ErgoTune Supreme',
@@ -172,18 +186,71 @@ export function seed(database: DatabaseSync, options: SeedOptions = {}): void {
           ${asset(STITCH_ASSET_SOURCES.productTravelBackpack)},
           1, 68, 54, '${CREATED_AT}', '${CREATED_AT}')
       ON CONFLICT(id) DO UPDATE SET
+        title = CASE
+          WHEN products.id = 'product-sony-a7iv'
+            AND products.title = 'Sony A7IV Mirrorless Camera'
+          THEN excluded.title
+          WHEN products.id = 'product-sony-lens'
+            AND products.title = 'Sony FE 24-70mm f/2.8 GM II'
+          THEN excluded.title
+          WHEN products.id = 'product-peak-tripod'
+            AND products.title = 'Peak Design Carbon Tripod'
+          THEN excluded.title
+          ELSE products.title
+        END,
+        description = CASE
+          WHEN products.id = 'product-sony-a7iv'
+            AND products.description = 'A versatile full-frame hybrid camera with reliable autofocus.'
+          THEN excluded.description
+          WHEN products.id = 'product-sony-lens'
+            AND products.description = 'A fast standard zoom for portraits, travel, and events.'
+          THEN excluded.description
+          WHEN products.id = 'product-peak-tripod'
+            AND products.description = 'A compact carbon travel tripod with a fast setup.'
+          THEN excluded.description
+          ELSE products.description
+        END,
+        price_cents = CASE
+          WHEN products.id = 'product-sony-lens'
+            AND products.price_cents = 229800
+          THEN excluded.price_cents
+          WHEN products.id = 'product-peak-tripod'
+            AND products.price_cents = 64995
+          THEN excluded.price_cents
+          ELSE products.price_cents
+        END,
+        merchant = CASE
+          WHEN products.id IN ('product-sony-a7iv', 'product-sony-lens', 'product-peak-tripod')
+            AND products.merchant = 'Amazon'
+          THEN excluded.merchant
+          ELSE products.merchant
+        END,
         image_url = COALESCE(products.image_url, excluded.image_url);
 
-      INSERT OR IGNORE INTO social_channels
+      INSERT INTO social_channels
         (id, creator_id, type, value, enabled, sort_position, created_at, updated_at)
       VALUES
-        ('channel-x', 'creator-liam', 'X', '@liamshoots', 1, 0, '${CREATED_AT}', '${CREATED_AT}'),
-        ('channel-whatsapp', 'creator-liam', 'WHATSAPP', 'https://wa.me/15551234567', 1, 1,
+        ('channel-x', 'creator-liam', 'X', 'https://instagram.com/liamroberts.photo', 1, 0,
+          '${CREATED_AT}', '${CREATED_AT}'),
+        ('channel-whatsapp', 'creator-liam', 'WHATSAPP', 'https://tiktok.com/@liamroberts.photo', 1, 1,
           '${CREATED_AT}', '${CREATED_AT}'),
         ('channel-facebook', 'creator-liam', 'FACEBOOK', 'https://facebook.com/liamshoots', 0, 2,
           '${CREATED_AT}', '${CREATED_AT}'),
-        ('channel-copy', 'creator-liam', 'COPY', 'https://linkshelf.local/liamroberts.photo', 1, 3,
-          '${CREATED_AT}', '${CREATED_AT}');
+        ('channel-copy', 'creator-liam', 'COPY', 'https://youtube.com/@liamrobertsphoto', 1, 3,
+          '${CREATED_AT}', '${CREATED_AT}')
+      ON CONFLICT(id) DO UPDATE SET
+        value = CASE
+          WHEN social_channels.id = 'channel-x'
+            AND social_channels.value = '@liamshoots'
+          THEN excluded.value
+          WHEN social_channels.id = 'channel-whatsapp'
+            AND social_channels.value = 'https://wa.me/15551234567'
+          THEN excluded.value
+          WHEN social_channels.id = 'channel-copy'
+            AND social_channels.value = 'https://linkshelf.local/liamroberts.photo'
+          THEN excluded.value
+          ELSE social_channels.value
+        END;
 
       INSERT OR IGNORE INTO saves (id, user_id, target_type, target_id, created_at)
       VALUES

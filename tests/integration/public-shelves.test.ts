@@ -36,6 +36,7 @@ describe("public shelf queries", () => {
       bio: "Landscape & travel photographer. I curate and share the professional gear and editing tools I trust in the field.",
       category: "Photography",
     });
+    expect(result.profile.creator.avatarUrl).toContain("aida/AP1WRLvvbbxp4lSh");
     expect(result.profile.shelves.map((shelf) => shelf.id)).toEqual([
       "shelf-photography",
       "shelf-travel",
@@ -46,10 +47,42 @@ describe("public shelf queries", () => {
       "WHATSAPP",
       "COPY",
     ]);
+    expect(result.profile.socialChannels.map((channel) => channel.value)).toEqual([
+      "https://instagram.com/liamroberts.photo",
+      "https://tiktok.com/@liamroberts.photo",
+      "https://youtube.com/@liamrobertsphoto",
+    ]);
     expect(result.profile.featuredProducts.map((product) => product.id)).toEqual([
       "product-sony-a7iv",
       "product-sony-lens",
       "product-peak-tripod",
+    ]);
+    expect(
+      result.profile.featuredProducts.map((product) => ({
+        title: product.title,
+        description: product.description,
+        priceCents: product.priceCents,
+        merchant: product.merchant,
+      })),
+    ).toEqual([
+      {
+        title: "Sony a7 IV Mirrorless Camera",
+        description: "33MP full-frame camera with pro performance.",
+        priceCents: 249_800,
+        merchant: "B&H Photo",
+      },
+      {
+        title: "Sony FE 35mm f/1.4 GM Lens",
+        description: "Stunning sharpness and beautiful bokeh.",
+        priceCents: 139_800,
+        merchant: "B&H Photo",
+      },
+      {
+        title: "Peak Design Travel Tripod",
+        description: "Compact, lightweight, and built to travel.",
+        priceCents: 34_995,
+        merchant: "Peak Design",
+      },
     ]);
     expect(JSON.stringify(result.profile)).not.toContain("liamcreator-20");
   });
@@ -101,6 +134,9 @@ describe("public shelf queries", () => {
     }
 
     expect(result.shelf.id).toBe("shelf-photography");
+    expect(result.shelf.description).toBe(
+      "My daily driver setup for hybrid shooting. Balancing ergonomics with top-tier image quality for long studio sessions and quick location hits.",
+    );
     expect(result.shelf.products.map((product) => product.id)).toEqual([
       "product-sony-a7iv",
       "product-sony-lens",

@@ -48,9 +48,9 @@ describe("StudioShell navigation", () => {
       "href",
       "/studio/create",
     );
-    expect(screen.getByText("Alex Rivera")).toBeVisible();
+    expect(screen.getByText("Alex River")).toBeVisible();
     expect(screen.getByText("Pro Plan")).toBeVisible();
-    expect(screen.getByRole("img", { name: "Alex Rivera avatar" })).toHaveAttribute(
+    expect(screen.getByRole("img", { name: "Alex River avatar" })).toHaveAttribute(
       "src",
       "/stitch/assets/settings-avatar.png",
     );
@@ -75,7 +75,7 @@ describe("StudioShell navigation", () => {
     expect(screen.queryByRole("navigation", { name: /studio/i })).not.toBeInTheDocument();
     expect(screen.queryByText("Creator Management")).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /create new shelf/i })).not.toBeInTheDocument();
-    expect(screen.queryByText("Alex Rivera")).not.toBeInTheDocument();
+    expect(screen.queryByText("Alex River")).not.toBeInTheDocument();
   });
 
   it("keeps the sidebar create CTA off the dashboard while preserving it for shelf management", () => {

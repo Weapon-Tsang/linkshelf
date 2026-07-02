@@ -55,8 +55,13 @@ describe("Studio shelf management Stitch structure", () => {
     );
 
     const firstCard = screen.getByRole("article", { name: /Photography Kit/i });
-    expect(firstCard).toHaveClass("gap-4");
+    expect(firstCard).toHaveClass("gap-3", "rounded-xl", "p-5", "border-2");
+    expect(firstCard).toHaveClass("border-[var(--teal-700)]");
+    expect(firstCard).not.toHaveClass("gap-4", "rounded-2xl", "p-6", "ring-2");
     expect(firstCard.className).toContain("md:grid-cols-[6rem_minmax(0,1fr)_auto]");
+    expect(within(firstCard).getByRole("heading", { name: "Photography Kit" })).toHaveClass(
+      "max-w-28",
+    );
     const firstCover = within(firstCard).getByRole("img", { name: /Photography Kit cover/i });
     expect(firstCover).toHaveAttribute(
       "src",
@@ -71,13 +76,27 @@ describe("Studio shelf management Stitch structure", () => {
     );
     expect(within(firstCard).getByLabelText("Shelf actions for Photography Kit")).toHaveClass(
       "gap-2",
+      "items-center",
+      "self-center",
+    );
+    expect(within(firstCard).getByLabelText("Shelf actions for Photography Kit")).not.toHaveClass(
+      "items-start",
     );
     expect(within(firstCard).getByText(/12 links/i)).toBeVisible();
     expect(within(firstCard).getByText("PUBLISHED")).toBeVisible();
+    expect(within(firstCard).getByText("Tech")).toBeVisible();
+    expect(within(firstCard).queryByText("Photography")).not.toBeInTheDocument();
     expect(within(firstCard).getByRole("link", { name: "Edit Photography Kit" })).toBeVisible();
     const firstViewLink = within(firstCard).getByRole("link", { name: "View Photography Kit" });
     expect(firstViewLink).toHaveAttribute("href", "/liamroberts.photo/photography-kit");
     expect(firstViewLink).toHaveClass("h-8", "w-8");
+
+    const filterRail = screen.getByRole("list", { name: "Shelf filters" });
+    expect(filterRail).toHaveClass("rounded-full", "border", "bg-white", "p-1");
+    const activeFilter = screen.getByRole("link", { name: "All" });
+    expect(activeFilter).toHaveClass("bg-[var(--glow)]", "text-[var(--teal-700)]");
+    expect(activeFilter).not.toHaveClass("border");
+    expect(screen.getByRole("link", { name: "Published" })).toHaveClass("px-5", "py-2");
 
     const secondCard = screen.getByRole("article", { name: /Desk Setup 2024/i });
     expect(within(secondCard).getByText("DRAFT")).toBeVisible();
@@ -113,6 +132,9 @@ describe("Studio shelf management Stitch structure", () => {
     const firstCard = screen.getByRole("article", { name: /Photography Kit/i });
     expect(firstCard).toHaveClass("flex", "items-center", "p-8");
     expect(firstCard).not.toHaveClass("grid");
+    expect(within(firstCard).getByRole("heading", { name: "Photography Kit" })).not.toHaveClass(
+      "max-w-28",
+    );
     expect(within(firstCard).getByRole("img", { name: /Photography Kit cover/i }).parentElement)
       .toHaveClass("mr-6", "h-24", "w-24");
     expect(within(firstCard).getByLabelText("Shelf actions for Photography Kit")).toHaveClass(

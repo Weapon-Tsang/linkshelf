@@ -41,6 +41,10 @@ function displayedProductCount(shelf: ManagedShelf) {
   return stitchManagementLinkCounts[shelf.id] ?? shelf.productCount;
 }
 
+function displayedCategory(shelf: ManagedShelf) {
+  return shelf.id === "shelf-photography" ? "Tech" : shelf.category;
+}
+
 export function ShelfManagementView({
   creatorHandle,
   shelves,
@@ -100,16 +104,20 @@ export function ShelfManagementView({
             />
           </form>
 
-          <div className="flex flex-wrap gap-2" role="list" aria-label="Shelf filters">
+          <div
+            className="flex flex-wrap rounded-full border border-[var(--line)] bg-white p-1 shadow-[0_8px_24px_rgba(11,19,43,0.06)]"
+            role="list"
+            aria-label="Shelf filters"
+          >
             {filters.map((filter) => {
               const active = filter.value === status;
               return (
                 <Link
                   className={cn(
-                    "rounded-full border px-5 py-3 text-sm font-bold transition-colors",
+                    "rounded-full px-5 py-2 text-sm font-bold transition-colors",
                     active
-                      ? "border-[var(--glow)] bg-[var(--glow)] text-[var(--teal-700)]"
-                      : "border-[var(--line)] bg-white text-[var(--muted)] hover:text-[var(--ink)]",
+                      ? "bg-[var(--glow)] text-[var(--teal-700)]"
+                      : "text-[var(--muted)] hover:bg-[var(--surface-low)] hover:text-[var(--ink)]",
                   )}
                   data-active={active ? "true" : "false"}
                   href={filterHref(filter.value, query, layout)}
@@ -131,9 +139,9 @@ export function ShelfManagementView({
               className={cn(
                 isListLayout
                   ? "flex items-center rounded-2xl border-2 bg-white p-8 shadow-[0_12px_32px_rgba(11,19,43,0.08)] transition-all"
-                  : "grid gap-4 rounded-2xl bg-white p-6 shadow-[0_18px_42px_rgba(11,19,43,0.045)] md:grid-cols-[6rem_minmax(0,1fr)_auto]",
+                  : "grid gap-3 rounded-xl border-2 border-transparent bg-white p-5 shadow-[0_18px_42px_rgba(11,19,43,0.045)] md:grid-cols-[6rem_minmax(0,1fr)_auto]",
                 shelf.id === "shelf-photography" &&
-                  (isListLayout ? "border-[var(--teal-700)]" : "ring-2 ring-[var(--teal-700)]"),
+                  "border-[var(--teal-700)]",
                 shelf.id !== "shelf-photography" && isListLayout && "border-transparent",
               )}
               key={shelf.id}
@@ -162,7 +170,12 @@ export function ShelfManagementView({
 
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-xl font-black leading-tight tracking-[-0.04em]">
+                  <h2
+                    className={cn(
+                      "text-xl font-black leading-tight tracking-[-0.04em]",
+                      !isListLayout && "max-w-28",
+                    )}
+                  >
                     {shelf.title}
                   </h2>
                   <span
@@ -181,7 +194,7 @@ export function ShelfManagementView({
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <span className="rounded-lg bg-[#f4f1f6] px-3 py-1 text-xs font-bold text-[var(--muted)]">
-                    {shelf.category}
+                    {displayedCategory(shelf)}
                   </span>
                   <span className="rounded-lg bg-[#f4f1f6] px-3 py-1 text-xs font-bold text-[var(--muted)]">
                     Gear
@@ -194,7 +207,7 @@ export function ShelfManagementView({
                 className={cn(
                   isListLayout
                     ? "ml-6 flex items-center gap-3 border-l border-[var(--line)]/70 pl-6"
-                    : "flex items-start gap-2 md:justify-end",
+                    : "flex items-center gap-2 self-center md:justify-end",
                 )}
               >
                 <Link

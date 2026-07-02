@@ -115,12 +115,12 @@ export function StudioShell({
         <div className="mt-auto hidden items-center gap-3 lg:flex">
           {/* eslint-disable-next-line @next/next/no-img-element -- Static Stitch source asset keeps the Studio shell avatar visually aligned with the approved mockup. */}
           <img
-            alt="Alex Rivera avatar"
+            alt="Alex River avatar"
             className="h-10 w-10 rounded-full object-cover"
             src="/stitch/assets/settings-avatar.png"
           />
           <div>
-            <p className="text-sm font-bold">Alex Rivera</p>
+            <p className="text-sm font-bold">Alex River</p>
             <p className="text-xs font-semibold text-[var(--muted)]">Pro Plan</p>
           </div>
         </div>

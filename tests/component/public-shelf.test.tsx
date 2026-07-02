@@ -15,8 +15,24 @@ const profile: PublicCreatorProfile = {
     coverUrl: "https://example.com/cover.jpg",
   },
   socialChannels: [
-    { id: "channel-x", type: "X", value: "@liamshoots", sortPosition: 0 },
-    { id: "channel-copy", type: "COPY", value: "https://linkshelf.local/liam", sortPosition: 1 },
+    {
+      id: "channel-x",
+      type: "X",
+      value: "https://instagram.com/liamroberts.photo",
+      sortPosition: 0,
+    },
+    {
+      id: "channel-whatsapp",
+      type: "WHATSAPP",
+      value: "https://tiktok.com/@liamroberts.photo",
+      sortPosition: 1,
+    },
+    {
+      id: "channel-copy",
+      type: "COPY",
+      value: "https://youtube.com/@liamrobertsphoto",
+      sortPosition: 2,
+    },
   ],
   shelves: [
     {
@@ -33,11 +49,11 @@ const profile: PublicCreatorProfile = {
   featuredProducts: [
     {
       id: "product-sony-a7iv",
-      title: "Sony A7IV Mirrorless Camera",
+      title: "Sony a7 IV Mirrorless Camera",
       description: "33MP full-frame camera with pro performance.",
       priceCents: 249800,
       currency: "USD",
-      merchant: "Amazon",
+      merchant: "B&H Photo",
       imageUrl: "https://example.com/camera.jpg",
       sortPosition: 0,
       shelfId: "shelf-photography",
@@ -64,11 +80,11 @@ const shelf: PublicShelf = {
   products: [
     {
       id: "product-sony-a7iv",
-      title: "Sony A7IV Mirrorless Camera",
-      description: "A versatile full-frame hybrid camera.",
+      title: "Sony a7 IV Mirrorless Camera",
+      description: "33MP full-frame camera with pro performance.",
       priceCents: 249800,
       currency: "USD",
-      merchant: "Amazon",
+      merchant: "B&H Photo",
       imageUrl: "https://example.com/camera.jpg",
       sortPosition: 0,
       hotspotX: 55,
@@ -76,11 +92,11 @@ const shelf: PublicShelf = {
     },
     {
       id: "product-peak-tripod",
-      title: "Peak Design Carbon Tripod",
-      description: "A compact carbon travel tripod.",
-      priceCents: 64995,
+      title: "Peak Design Travel Tripod",
+      description: "Compact, lightweight, and built to travel.",
+      priceCents: 34995,
       currency: "USD",
-      merchant: "Amazon",
+      merchant: "Peak Design",
       imageUrl: "https://example.com/tripod.jpg",
       sortPosition: 1,
       hotspotX: 75,
@@ -103,8 +119,18 @@ describe("public LinkShelf surfaces", () => {
       "/liamroberts.photo/photography-kit",
     );
     expect(screen.getByRole("button", { name: "Share to earn" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "X" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Copy" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Instagram" })).toHaveAttribute(
+      "href",
+      "https://instagram.com/liamroberts.photo",
+    );
+    expect(screen.getByRole("link", { name: "TikTok" })).toHaveAttribute(
+      "href",
+      "https://tiktok.com/@liamroberts.photo",
+    );
+    expect(screen.getByRole("link", { name: "YouTube" })).toHaveAttribute(
+      "href",
+      "https://youtube.com/@liamrobertsphoto",
+    );
     expect(screen.queryByText("Get it")).not.toBeInTheDocument();
     expect(screen.getByText("open_in_new")).toBeVisible();
     expect(screen.queryByText("FACEBOOK")).not.toBeInTheDocument();
@@ -120,10 +146,10 @@ describe("public LinkShelf surfaces", () => {
     );
 
     const firstProduct = screen.getByRole("article", {
-      name: "Sony A7IV Mirrorless Camera",
+      name: "Sony a7 IV Mirrorless Camera",
     });
     expect(within(firstProduct).getByText("$2,498.00")).toBeVisible();
-    expect(within(firstProduct).getByRole("link", { name: "Get Sony A7IV Mirrorless Camera" })).toHaveAttribute(
+    expect(within(firstProduct).getByRole("link", { name: "Get Sony a7 IV Mirrorless Camera" })).toHaveAttribute(
       "href",
       "/api/out/product-sony-a7iv?share=jamie-photo",
     );
@@ -135,6 +161,7 @@ describe("public LinkShelf surfaces", () => {
     expect(screen.getByRole("dialog", { name: "Share Shelf" })).toBeVisible();
     expect(screen.getByText("/liamroberts.photo/photography-kit?share=jamie-photo")).toBeVisible();
     expect(screen.getByRole("button", { name: "Share on X" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Share on WhatsApp" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Share on Copy" })).toBeVisible();
   });
 
@@ -142,7 +169,7 @@ describe("public LinkShelf surfaces", () => {
     render(<ShelfPage shelf={shelf} />);
 
     expect(
-      screen.getByRole("link", { name: "Get Peak Design Carbon Tripod" }),
+      screen.getByRole("link", { name: "Get Peak Design Travel Tripod" }),
     ).toHaveAttribute("href", "/api/out/product-peak-tripod");
   });
 });
