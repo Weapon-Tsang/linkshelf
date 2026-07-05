@@ -172,7 +172,7 @@ export function ShelfManagementView({
                 <div className="flex flex-wrap items-center gap-2">
                   <h2
                     className={cn(
-                      "text-xl font-black leading-tight tracking-[-0.04em]",
+                      "text-xl font-bold",
                       !isListLayout && "max-w-28",
                     )}
                   >
