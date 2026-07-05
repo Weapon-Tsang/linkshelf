@@ -53,11 +53,11 @@ export function HeroVisual() {
         vec3 teal = vec3(0.0, 0.749, 0.682);
         vec3 cyan = vec3(0.85, 0.95, 1.0);
         vec3 surface = vec3(0.988, 0.973, 0.984);
-        float wave = sin(uv.x * 2.0 + u_time * 0.35) * cos(uv.y * 1.5 - u_time * 0.18);
-        wave += sin(uv.y * 3.0 + u_time * 0.12) * 0.5;
-        float lift = clamp(wave * 0.38 + 0.34, 0.0, 1.0);
+        float wave = sin(uv.x * 2.0 + u_time * 0.4) * cos(uv.y * 1.5 - u_time * 0.2);
+        wave += sin(uv.y * 3.0 + u_time * 0.15) * 0.5;
+        float lift = clamp(wave * 0.4 + 0.3, 0.0, 1.0);
         vec3 color = mix(surface, cyan, lift);
-        color = mix(color, teal, clamp(uv.x * 0.52 + uv.y * 0.5 - 0.7, 0.0, 1.0) * 0.18);
+        color = mix(color, teal, clamp(uv.x * 0.5 + uv.y * 0.5 - 0.7, 0.0, 1.0) * 0.2);
         gl_FragColor = vec4(color, 1.0);
       }
     `;
@@ -108,7 +108,7 @@ export function HeroVisual() {
   }, []);
 
   return (
-    <div className="landing-hero-aurora relative h-[360px] w-full overflow-hidden rounded-[2rem] border border-white/70 shadow-[0_28px_90px_rgba(100,246,227,0.18)] lg:h-[600px]">
+    <div className="landing-hero-aurora relative h-[500px] w-full overflow-hidden rounded-[2rem] border border-white/70 shadow-[0_28px_90px_rgba(100,246,227,0.18)] lg:h-[600px]">
       <canvas
         aria-hidden="true"
         className="absolute inset-0 h-full w-full"

@@ -39,9 +39,14 @@ describe("public shelf queries", () => {
     expect(result.profile.creator.avatarUrl).toContain("aida/AP1WRLvvbbxp4lSh");
     expect(result.profile.shelves.map((shelf) => shelf.id)).toEqual([
       "shelf-photography",
+      "shelf-desk",
       "shelf-travel",
     ]);
-    expect(result.profile.shelves.every((shelf) => shelf.status === "PUBLISHED")).toBe(true);
+    expect(result.profile.shelves.map((shelf) => shelf.status)).toEqual([
+      "PUBLISHED",
+      "DRAFT",
+      "PUBLISHED",
+    ]);
     expect(result.profile.socialChannels.map((channel) => channel.type)).toEqual([
       "X",
       "WHATSAPP",

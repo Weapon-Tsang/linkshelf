@@ -78,7 +78,7 @@ export function ShelfManagementView({
   );
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto w-full max-w-6xl">
       <header className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
         <h1 className="text-4xl font-black tracking-[-0.05em] sm:text-5xl">My Shelves</h1>
 

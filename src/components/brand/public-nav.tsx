@@ -5,7 +5,7 @@ const CREATOR_LOGIN_HREF = "/login?returnTo=%2Fstudio%2Fdashboard";
 
 export function PublicNav() {
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 border-b border-[#c6c6ce]/30 bg-[var(--surface)]/82 shadow-sm backdrop-blur-md">
+    <nav className="fixed inset-x-0 top-0 z-50 w-full border-b border-[#c6c6ce]/30 bg-[var(--surface)]/82 shadow-sm backdrop-blur-md transition-all duration-300">
       <div className="mx-auto flex max-w-[1280px] items-center justify-between px-5 py-4 md:px-10">
         <Link aria-label="LinkShelf home" href="/">
           <BrandMark className="text-lg md:text-2xl" />
@@ -19,13 +19,13 @@ export function PublicNav() {
             Explore
           </a>
           <a
-            className="text-sm font-medium text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
+            className="text-sm font-medium text-[var(--muted)] transition-colors duration-300 hover:text-[var(--ink)] hover:opacity-80 active:scale-95"
             href="#features"
           >
             Features
           </a>
           <a
-            className="text-sm font-medium text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
+            className="text-sm font-medium text-[var(--muted)] transition-colors duration-300 hover:text-[var(--ink)] hover:opacity-80 active:scale-95"
             href="#pricing"
           >
             Pricing
@@ -40,7 +40,7 @@ export function PublicNav() {
             Log In
           </a>
           <a
-            className="rounded-full bg-[var(--ink)] px-6 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="rounded-full bg-[var(--ink)] px-6 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
             href={CREATOR_LOGIN_HREF}
           >
             Get Started

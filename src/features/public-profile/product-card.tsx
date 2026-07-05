@@ -21,19 +21,28 @@ export function ProductCard({
   shareCode,
   index,
   compact = false,
+  animationDelayMs,
 }: {
   readonly product: ProductCardProduct;
   readonly shareCode?: string;
   readonly index?: number;
   readonly compact?: boolean;
+  readonly animationDelayMs?: number;
 }) {
   return (
     <article
       aria-label={product.title}
       className={
         compact
-          ? "landing-glass-card landing-glow-card flex items-center gap-4 rounded-2xl p-4"
+          ? `landing-glass-card landing-glow-card group flex cursor-pointer items-center gap-4 rounded-2xl p-4${
+              typeof animationDelayMs === "number" ? " animate-fade-up" : ""
+            }`
           : "relative flex gap-4 rounded-3xl bg-white p-4 shadow-[0_12px_44px_rgba(11,19,43,0.07)] md:p-5"
+      }
+      style={
+        typeof animationDelayMs === "number"
+          ? { animationDelay: `${animationDelayMs}ms` }
+          : undefined
       }
     >
       {typeof index === "number" ? (
@@ -45,7 +54,7 @@ export function ProductCard({
       <div
         className={
           compact
-            ? "flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white p-2 shadow-sm"
+            ? "flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white p-2 shadow-sm"
             : "flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--surface-low)]"
         }
       >
@@ -63,24 +72,24 @@ export function ProductCard({
           <h3
             className={
               compact
-                ? "text-sm font-semibold text-[var(--ink)]"
+                ? "text-sm font-medium leading-5 text-[var(--ink)] transition-colors group-hover:text-[var(--teal-700)]"
                 : "text-xl font-bold tracking-[-0.02em] text-[var(--ink)] md:text-2xl"
             }
           >
             {product.title}
           </h3>
-          <p className={compact ? "mt-1 text-xs text-[var(--muted)]" : "mt-2 text-sm font-medium leading-6 text-[var(--muted)]"}>
+          <p className={compact ? "mt-1 text-xs font-normal leading-4 text-[var(--muted)]" : "mt-2 text-sm font-medium leading-6 text-[var(--muted)]"}>
             {product.description}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-[var(--ink)]">
+            <span className={compact ? "text-sm font-medium leading-5 text-[var(--ink)]" : "font-semibold text-[var(--ink)]"}>
               {formatPrice(product.priceCents, product.currency)}
             </span>
             {compact ? (
-              <span className="rounded-md bg-[var(--teal-500)]/12 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--teal-700)]">
+              <span className="rounded bg-[var(--teal-500)]/12 px-2 py-0.5 text-[10px] font-bold uppercase text-[var(--teal-700)]">
                 {product.merchant}
               </span>
             ) : null}
@@ -90,7 +99,7 @@ export function ProductCard({
             aria-label={`Get ${product.title}`}
             className={
               compact
-                ? "inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--teal-500)]/12 text-[var(--teal-700)] transition-colors hover:bg-[var(--teal-700)] hover:text-white"
+                ? "inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--teal-500)]/12 text-[var(--teal-700)] transition-all group-hover:bg-[var(--teal-700)] group-hover:text-white hover:bg-[var(--teal-700)] hover:text-white"
                 : "inline-flex items-center gap-1 rounded-full bg-[#eae7ea] px-4 py-2 text-sm font-bold text-[var(--ink)] transition-colors hover:bg-[var(--teal-700)] hover:text-white"
             }
             href={productHref(product.id, shareCode)}
@@ -98,7 +107,7 @@ export function ProductCard({
             {compact ? null : "Get it"}
             <span
               aria-hidden="true"
-              className={compact ? "material-symbols-outlined text-xl" : "material-symbols-outlined text-base"}
+              className={compact ? "material-symbols-outlined text-[20px]" : "material-symbols-outlined text-base"}
             >
               {compact ? "open_in_new" : "shopping_bag"}
             </span>

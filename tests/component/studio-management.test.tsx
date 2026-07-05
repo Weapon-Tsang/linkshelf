@@ -109,6 +109,23 @@ describe("Studio shelf management Stitch structure", () => {
     expect(thirdMeta).toHaveClass("text-xs");
   });
 
+  it("uses the Stitch max-w-6xl management content container", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const container = screen.getByRole("heading", { name: "My Shelves" }).parentElement?.parentElement;
+
+    expect(container).toHaveClass("mx-auto", "w-full", "max-w-6xl");
+    expect(container).not.toHaveClass("max-w-5xl");
+  });
+
   it("renders the Stitch one-column management state and keeps layout in controls", () => {
     render(
       <ShelfManagementView

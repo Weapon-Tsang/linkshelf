@@ -39,6 +39,25 @@ function shelfHref(handle: string, shelf: PublicProfileShelf) {
   return `/${handle}/${shelf.slug}`;
 }
 
+function ShelfCardContent({ shelf }: { readonly shelf: PublicProfileShelf }) {
+  return (
+    <>
+      <span className="landing-glass-card block aspect-square overflow-hidden rounded-2xl p-1 transition-transform group-hover:scale-[1.02]">
+        {shelf.coverUrl ? (
+          <img
+            alt=""
+            className="h-full w-full rounded-xl object-cover"
+            src={shelf.coverUrl}
+          />
+        ) : null}
+      </span>
+      <span className="mt-2 block text-center text-sm font-medium leading-5 text-[var(--ink)] group-hover:text-[var(--teal-700)]">
+        {shelf.title.replace(" 2024", "")}
+      </span>
+    </>
+  );
+}
+
 function safeExternalHref(value: string) {
   try {
     const url = new URL(value);
@@ -92,9 +111,9 @@ export function CreatorProfilePage({
     <div className="min-h-screen bg-[linear-gradient(135deg,#e0f7fa_0%,#fff_48%,#f0fdf4_100%)] text-[var(--ink)]">
       <PublicNav />
 
-      <main className="mx-auto max-w-[900px] px-5 pb-16 pt-24 md:px-6">
-        <section className="relative">
-          <div className="aspect-[21/9] overflow-hidden rounded-3xl bg-[var(--surface-low)] shadow-lg md:aspect-[3/1]">
+      <main className="mx-auto max-w-[900px] px-4 pb-10 pt-24 md:px-6">
+        <section className="relative animate-fade-up" style={{ animationDelay: "100ms" }}>
+          <div className="aspect-[21/9] overflow-hidden rounded-2xl bg-[var(--surface-low)] shadow-lg md:aspect-[3/1]">
             {profile.creator.coverUrl ? (
               <img
                 alt=""
@@ -106,16 +125,16 @@ export function CreatorProfilePage({
 
           <div className="absolute right-4 top-4 flex items-center gap-3">
             <ShareToEarnButton
-              className="hidden items-center gap-2 rounded-full border border-[var(--teal-700)]/20 bg-[var(--teal-700)]/10 px-4 py-2 text-sm font-semibold text-[var(--teal-700)] backdrop-blur-md sm:inline-flex"
+              className="hidden items-center gap-2 rounded-full border border-[var(--teal-700)]/20 bg-[var(--teal-700)]/10 px-4 py-1.5 text-[var(--teal-700)] backdrop-blur-md sm:inline-flex"
               returnTo={shareHref}
             >
-              <span aria-hidden="true" className="material-symbols-outlined text-lg">
+              <span aria-hidden="true" className="material-symbols-outlined text-[18px]">
                 monetization_on
               </span>
-              Share to earn
+              <span className="text-xs font-semibold leading-4">Share to earn</span>
             </ShareToEarnButton>
             <SaveButton
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--ink)] text-white transition-opacity hover:opacity-85"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--ink)] text-white transition-opacity hover:opacity-85 [&_.material-symbols-outlined]:text-[20px]"
               iconOnly
               isSaved={false}
               returnTo={`/${profile.creator.handle}`}
@@ -124,17 +143,17 @@ export function CreatorProfilePage({
             />
             <ShareToEarnButton
               aria-label="Share creator"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--ink)] text-white transition-opacity hover:opacity-85"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--ink)] text-white transition-opacity hover:opacity-85"
               returnTo={shareHref}
             >
-              <span aria-hidden="true" className="material-symbols-outlined">
+              <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
                 share
               </span>
             </ShareToEarnButton>
           </div>
 
-          <div className="-mt-14 flex flex-col gap-5 px-5 md:-mt-16 md:flex-row md:items-end">
-            <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-white bg-white shadow-2xl md:h-32 md:w-32">
+          <div className="-mt-12 flex flex-col gap-6 px-6 md:-mt-16 md:flex-row md:items-end">
+            <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-white shadow-2xl md:h-32 md:w-32">
               {profile.creator.avatarUrl ? (
                 <img
                   alt=""
@@ -144,18 +163,18 @@ export function CreatorProfilePage({
               ) : null}
             </div>
             <div className="pb-2">
-              <h1 className="text-4xl font-bold tracking-[-0.02em]">
+              <h1 className="text-[32px] font-semibold leading-10">
                 {profile.creator.displayName}
               </h1>
-              <p className="mt-1 text-lg font-medium text-[var(--muted)]">
+              <p className="text-base font-normal leading-6 text-[var(--muted)]">
                 @{profile.creator.handle}
               </p>
             </div>
           </div>
         </section>
 
-        <section className="mt-8 px-5">
-          <p className="max-w-2xl text-xl leading-9 text-[var(--ink)]">{profile.creator.bio}</p>
+        <section className="mt-8 px-6 animate-fade-up" style={{ animationDelay: "200ms" }}>
+          <p className="max-w-2xl text-lg leading-7 text-[var(--ink)]">{profile.creator.bio}</p>
 
           <div className="mt-6 flex flex-wrap gap-3">
             {profile.socialChannels.map((channel) => {
@@ -163,11 +182,11 @@ export function CreatorProfilePage({
 
               return (
                 <a
-                  className="landing-glass-card inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
+                  className="landing-glass-card inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium leading-5 text-[var(--muted)] transition-colors hover:text-[var(--teal-700)]"
                   href={channelHref(channel)}
                   key={channel.id}
                 >
-                  <span aria-hidden="true" className="material-symbols-outlined text-xl">
+                  <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
                     {display.icon}
                   </span>
                   {display.label}
@@ -177,56 +196,60 @@ export function CreatorProfilePage({
           </div>
         </section>
 
-        <section className="mt-14" id="shelves">
-          <div className="mb-5 flex items-center justify-between">
-            <h2 className="text-3xl font-bold tracking-[-0.02em]">Shelves</h2>
+        <section className="mt-12 animate-fade-up" id="shelves" style={{ animationDelay: "300ms" }}>
+          <div className="mb-4 flex items-center justify-between px-1">
+            <h2 className="text-[24px] font-semibold leading-8">Shelves</h2>
             <a className="text-sm font-semibold text-[var(--teal-700)] hover:underline" href="#shelves">
               View All
             </a>
           </div>
 
-          <div className="flex gap-5 overflow-x-auto pb-4">
-            {profile.shelves.map((shelf) => (
-              <Link
-                aria-label={`Open ${shelf.title} shelf`}
-                className="group w-40 shrink-0"
-                href={shelfHref(profile.creator.handle, shelf)}
-                key={shelf.id}
-              >
-                <span className="landing-glass-card block aspect-square overflow-hidden rounded-3xl p-1 transition-transform group-hover:scale-[1.02]">
-                  {shelf.coverUrl ? (
-                    <img
-                      alt=""
-                      className="h-full w-full rounded-[20px] object-cover"
-                      src={shelf.coverUrl}
-                    />
-                  ) : null}
-                </span>
-                <span className="mt-3 block text-center text-sm font-semibold text-[var(--ink)] group-hover:text-[var(--teal-700)]">
-                  {shelf.title.replace(" 2024", "")}
-                </span>
-              </Link>
-            ))}
+          <div className="no-scrollbar flex gap-5 overflow-x-auto pb-4">
+            {profile.shelves.map((shelf) =>
+              shelf.status === "PUBLISHED" ? (
+                <Link
+                  aria-label={`Open ${shelf.title} shelf`}
+                  className="group w-40 shrink-0"
+                  href={shelfHref(profile.creator.handle, shelf)}
+                  key={shelf.id}
+                >
+                  <ShelfCardContent shelf={shelf} />
+                </Link>
+              ) : (
+                <div
+                  aria-label={`${shelf.title} shelf preview`}
+                  className="group w-40 shrink-0"
+                  key={shelf.id}
+                >
+                  <ShelfCardContent shelf={shelf} />
+                </div>
+              ),
+            )}
           </div>
         </section>
 
-        <section className="mt-14">
-          <div className="mb-6 flex items-center gap-3">
+        <section className="mt-12 flex flex-col gap-4">
+          <div className="mb-2 flex items-center gap-2 px-1">
             <span aria-hidden="true" className="material-symbols-outlined text-[var(--teal-700)]">
               star
             </span>
-            <h2 className="text-3xl font-bold tracking-[-0.02em]">Featured Gear</h2>
+            <h2 className="text-[24px] font-semibold leading-8">Featured Gear</h2>
           </div>
 
-          <div className="flex flex-col gap-5">
-            {profile.featuredProducts.map((product) => (
-              <ProductCard compact key={product.id} product={product} />
+          <div className="flex flex-col gap-4">
+            {profile.featuredProducts.map((product, index) => (
+              <ProductCard
+                animationDelayMs={400 + index * 50}
+                compact
+                key={product.id}
+                product={product}
+              />
             ))}
           </div>
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter variant="profile" />
     </div>
   );
 }

@@ -209,7 +209,6 @@ export function findPublicProfileShelves(
          ON products.shelf_id = shelves.id
         AND products.deleted_at IS NULL
        WHERE shelves.creator_id = ?
-         AND shelves.status = 'PUBLISHED'
          AND shelves.deleted_at IS NULL
        GROUP BY shelves.id
        ORDER BY shelves._rowid_`,
