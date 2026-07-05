@@ -180,7 +180,7 @@ export function ShelfManagementView({
                   </h2>
                   <span
                     className={cn(
-                      "flex items-center rounded-full px-3 py-1 text-[0.65rem] font-black tracking-[0.08em]",
+                      "flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider",
                       shelf.status === "PUBLISHED"
                         ? "bg-[var(--glow)]/45 text-[var(--teal-700)]"
                         : "bg-[#fff2d6] text-[#8a5b00]",

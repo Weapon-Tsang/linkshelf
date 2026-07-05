@@ -182,6 +182,26 @@ describe("Studio shelf management Stitch structure", () => {
     expect(draftDot).toHaveClass("mr-2", "h-2", "w-2", "rounded-full", "bg-[var(--muted)]");
   });
 
+  it("uses the Stitch status pill label typography", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const publishedPill = screen.getAllByText("PUBLISHED")[0];
+    const draftPill = screen.getByText("DRAFT");
+
+    [publishedPill, draftPill].forEach((pill) => {
+      expect(pill).toHaveClass("text-[11px]", "font-semibold", "uppercase", "tracking-wider");
+      expect(pill).not.toHaveClass("text-[0.65rem]", "font-black", "tracking-[0.08em]");
+    });
+  });
+
   it("renders the Stitch one-column management state and keeps layout in controls", () => {
     render(
       <ShelfManagementView
