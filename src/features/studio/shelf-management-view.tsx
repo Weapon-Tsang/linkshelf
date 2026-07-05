@@ -96,7 +96,7 @@ export function ShelfManagementView({
               search
             </span>
             <input
-              className="min-h-12 w-full rounded-full border border-[var(--line)] bg-white pl-11 pr-5 text-sm font-semibold outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--teal-700)]"
+              className="w-full rounded-full border border-[var(--line)] bg-white py-3 pl-12 pr-6 text-base font-normal shadow-sm outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--teal-700)]"
               defaultValue={query}
               id="studio-shelf-search"
               name="q"
@@ -180,12 +180,19 @@ export function ShelfManagementView({
                   </h2>
                   <span
                     className={cn(
-                      "rounded-full px-3 py-1 text-[0.65rem] font-black tracking-[0.08em]",
+                      "flex items-center rounded-full px-3 py-1 text-[0.65rem] font-black tracking-[0.08em]",
                       shelf.status === "PUBLISHED"
                         ? "bg-[var(--glow)]/45 text-[var(--teal-700)]"
                         : "bg-[#fff2d6] text-[#8a5b00]",
                     )}
                   >
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "mr-2 h-2 w-2 rounded-full",
+                        shelf.status === "PUBLISHED" ? "bg-[var(--teal-700)]" : "bg-[var(--muted)]",
+                      )}
+                    />
                     {statusLabel(shelf.status)}
                   </span>
                 </div>

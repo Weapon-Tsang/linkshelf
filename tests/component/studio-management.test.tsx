@@ -143,6 +143,45 @@ describe("Studio shelf management Stitch structure", () => {
     expect(title).not.toHaveClass("text-4xl", "sm:text-5xl", "font-black", "tracking-[-0.05em]");
   });
 
+  it("uses the Stitch search input density on shelf management", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const searchInput = screen.getByRole("textbox", { name: "Search shelves" });
+
+    expect(searchInput).toHaveClass("pl-12", "pr-6", "py-3", "text-base", "font-normal", "shadow-sm");
+    expect(searchInput).not.toHaveClass("pl-11", "pr-5", "text-sm", "font-semibold");
+  });
+
+  it("uses Stitch dot indicators inside management status pills", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const publishedPill = screen.getAllByText("PUBLISHED")[0];
+    const draftPill = screen.getByText("DRAFT");
+    const publishedDot = publishedPill.querySelector("[aria-hidden='true']");
+    const draftDot = draftPill.querySelector("[aria-hidden='true']");
+
+    expect(publishedPill).toHaveClass("flex", "items-center");
+    expect(publishedDot).toHaveClass("mr-2", "h-2", "w-2", "rounded-full", "bg-[var(--teal-700)]");
+    expect(draftPill).toHaveClass("flex", "items-center");
+    expect(draftDot).toHaveClass("mr-2", "h-2", "w-2", "rounded-full", "bg-[var(--muted)]");
+  });
+
   it("renders the Stitch one-column management state and keeps layout in controls", () => {
     render(
       <ShelfManagementView
