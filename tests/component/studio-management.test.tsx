@@ -126,6 +126,23 @@ describe("Studio shelf management Stitch structure", () => {
     expect(container).not.toHaveClass("max-w-5xl");
   });
 
+  it("uses the Stitch headline-lg typography for the management page title", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const title = screen.getByRole("heading", { name: "My Shelves" });
+
+    expect(title).toHaveClass("text-[40px]", "leading-tight", "font-bold");
+    expect(title).not.toHaveClass("text-4xl", "sm:text-5xl", "font-black", "tracking-[-0.05em]");
+  });
+
   it("renders the Stitch one-column management state and keeps layout in controls", () => {
     render(
       <ShelfManagementView

@@ -80,7 +80,7 @@ export function ShelfManagementView({
   return (
     <div className="mx-auto w-full max-w-6xl">
       <header className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
-        <h1 className="text-4xl font-black tracking-[-0.05em] sm:text-5xl">My Shelves</h1>
+        <h1 className="text-[40px] font-bold leading-tight">My Shelves</h1>
 
         <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
           <form action="/studio/shelves" className="relative min-w-0 flex-1 lg:w-72" method="get">
