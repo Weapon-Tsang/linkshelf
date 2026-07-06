@@ -256,6 +256,24 @@ describe("Studio shelf management Stitch structure", () => {
     expect(actions).not.toHaveClass("border-transparent");
   });
 
+  it("uses the Stitch hover chrome on grid management shelf cards", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const draftCard = screen.getByRole("article", { name: /Desk Setup 2024/i });
+
+    expect(draftCard).toHaveClass("cursor-pointer", "hover:border-[var(--line)]/70");
+    expect(draftCard.className).toContain("hover:shadow-[0_8px_24px_rgba(11,19,43,0.06)]");
+    expect(draftCard).not.toHaveClass("cursor-default");
+  });
+
   it("renders the Stitch one-column management state and keeps layout in controls", () => {
     render(
       <ShelfManagementView
