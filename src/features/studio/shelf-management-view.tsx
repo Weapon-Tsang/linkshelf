@@ -169,7 +169,7 @@ export function ShelfManagementView({
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="mb-2 flex flex-wrap items-center gap-3">
                   <h2
                     className={cn(
                       "text-xl font-bold",
@@ -196,7 +196,7 @@ export function ShelfManagementView({
                     {statusLabel(shelf.status)}
                   </span>
                 </div>
-                <p className="mt-2 text-xs font-bold text-[var(--muted)]">
+                <p className="mb-3 text-xs font-bold text-[var(--muted)]">
                   {displayedProductCount(shelf)} links • Last updated {updatedLabel(shelf)}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">

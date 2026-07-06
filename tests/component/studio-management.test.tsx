@@ -253,9 +253,12 @@ describe("Studio shelf management Stitch structure", () => {
     const firstCard = screen.getByRole("article", { name: /Photography Kit/i });
     const cardTitle = within(firstCard).getByRole("heading", { name: "Photography Kit" });
     const titleRow = cardTitle.parentElement;
+    const metadata = within(firstCard).getByText("12 links • Last updated 2 hrs ago");
 
-    expect(titleRow).toHaveClass("gap-3");
+    expect(titleRow).toHaveClass("gap-3", "mb-2");
     expect(titleRow).not.toHaveClass("gap-2");
+    expect(metadata).toHaveClass("mb-3");
+    expect(metadata).not.toHaveClass("mt-2");
   });
 
   it("uses the Stitch action divider inside grid management shelf cards", () => {
