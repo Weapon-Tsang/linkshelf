@@ -82,7 +82,7 @@ export function ShelfManagementView({
       <header className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
         <h1 className="text-[40px] font-bold leading-tight">My Shelves</h1>
 
-        <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
+        <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto lg:gap-6">
           <form action="/studio/shelves" className="relative min-w-0 flex-1 lg:w-72" method="get">
             {status !== "ALL" ? <input name="status" type="hidden" value={status} /> : null}
             {isListLayout ? <input name="layout" type="hidden" value="list" /> : null}

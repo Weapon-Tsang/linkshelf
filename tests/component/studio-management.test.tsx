@@ -161,6 +161,23 @@ describe("Studio shelf management Stitch structure", () => {
     expect(searchInput).not.toHaveClass("pl-11", "pr-5", "text-sm", "font-semibold");
   });
 
+  it("uses the Stitch desktop spacing between search and filters", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const searchInput = screen.getByRole("textbox", { name: "Search shelves" });
+    const controls = searchInput.closest("form")?.parentElement;
+
+    expect(controls).toHaveClass("gap-3", "lg:gap-6");
+  });
+
   it("uses the Stitch header-to-card spacing on shelf management", () => {
     render(
       <ShelfManagementView
