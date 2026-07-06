@@ -274,6 +274,23 @@ describe("Studio shelf management Stitch structure", () => {
     expect(draftCard).not.toHaveClass("cursor-default");
   });
 
+  it("uses the Stitch metadata separator inside management shelf cards", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const firstCard = screen.getByRole("article", { name: /Photography Kit/i });
+
+    expect(within(firstCard).getByText("12 links • Last updated 2 hrs ago")).toBeVisible();
+    expect(within(firstCard).queryByText("12 links · Last updated 2 hrs ago")).not.toBeInTheDocument();
+  });
+
   it("renders the Stitch one-column management state and keeps layout in controls", () => {
     render(
       <ShelfManagementView
