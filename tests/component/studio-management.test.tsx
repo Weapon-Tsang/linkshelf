@@ -238,6 +238,24 @@ describe("Studio shelf management Stitch structure", () => {
     expect(cardTitle).not.toHaveClass("font-black", "tracking-[-0.04em]");
   });
 
+  it("uses the Stitch action divider inside grid management shelf cards", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const firstCard = screen.getByRole("article", { name: /Photography Kit/i });
+    const actions = within(firstCard).getByLabelText("Shelf actions for Photography Kit");
+
+    expect(actions).toHaveClass("ml-4", "border-l", "pl-4");
+    expect(actions).not.toHaveClass("border-transparent");
+  });
+
   it("renders the Stitch one-column management state and keeps layout in controls", () => {
     render(
       <ShelfManagementView

@@ -214,7 +214,7 @@ export function ShelfManagementView({
                 className={cn(
                   isListLayout
                     ? "ml-6 flex items-center gap-3 border-l border-[var(--line)]/70 pl-6"
-                    : "flex items-center gap-2 self-center md:justify-end",
+                    : "ml-4 flex items-center gap-2 self-center border-l border-[var(--line)]/70 pl-4 md:justify-end",
                 )}
               >
                 <Link
