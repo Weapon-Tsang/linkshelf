@@ -203,7 +203,7 @@ export function ShelfManagementView({
                 <p className="mb-3 text-xs font-bold text-[var(--muted)]">
                   {displayedProductCount(shelf)} links • Last updated {updatedLabel(shelf)}
                 </p>
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2">
                   <span className="rounded-lg bg-[#f4f1f6] px-3 py-1 text-xs font-bold text-[var(--muted)]">
                     {displayedCategory(shelf)}
                   </span>

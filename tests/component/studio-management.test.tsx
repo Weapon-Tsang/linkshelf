@@ -333,6 +333,24 @@ describe("Studio shelf management Stitch structure", () => {
     expect(within(firstCard).queryByText("12 links · Last updated 2 hrs ago")).not.toBeInTheDocument();
   });
 
+  it("uses the Stitch metadata-to-tag spacing inside management shelf cards", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const firstCard = screen.getByRole("article", { name: /Photography Kit/i });
+    const tagRow = within(firstCard).getByText("Tech").parentElement;
+
+    expect(tagRow).toHaveClass("gap-2");
+    expect(tagRow).not.toHaveClass("mt-4");
+  });
+
   it("renders the Stitch one-column management state and keeps layout in controls", () => {
     render(
       <ShelfManagementView
