@@ -131,7 +131,7 @@ export function ShelfManagementView({
         </div>
       </header>
 
-      <section className="mt-8">
+      <section className="mt-10">
         <div className={isListLayout ? "flex flex-col gap-6" : "grid gap-6 xl:grid-cols-2"}>
           {shelves.map((shelf) => (
             <article

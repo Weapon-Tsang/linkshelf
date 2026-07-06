@@ -160,6 +160,24 @@ describe("Studio shelf management Stitch structure", () => {
     expect(searchInput).not.toHaveClass("pl-11", "pr-5", "text-sm", "font-semibold");
   });
 
+  it("uses the Stitch header-to-card spacing on shelf management", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const header = screen.getByRole("heading", { name: "My Shelves" }).closest("header");
+    const cardsSection = header?.nextElementSibling;
+
+    expect(cardsSection).toHaveClass("mt-10");
+    expect(cardsSection).not.toHaveClass("mt-8");
+  });
+
   it("uses Stitch dot indicators inside management status pills", () => {
     render(
       <ShelfManagementView
