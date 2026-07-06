@@ -71,6 +71,7 @@ describe("Studio shelf management Stitch structure", () => {
       "self-start",
       "h-24",
       "w-24",
+      "shadow-sm",
       "md:h-24",
       "md:w-24",
     );

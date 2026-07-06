@@ -148,7 +148,7 @@ export function ShelfManagementView({
             >
               <div
                 className={cn(
-                  "h-24 w-24 self-start overflow-hidden rounded-xl bg-[#f2f0f4] md:h-24 md:w-24",
+                  "h-24 w-24 self-start overflow-hidden rounded-xl bg-[#f2f0f4] shadow-sm md:h-24 md:w-24",
                   isListLayout && "mr-6 shrink-0",
                 )}
               >
