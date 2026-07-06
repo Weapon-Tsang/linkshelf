@@ -139,9 +139,13 @@ export function ShelfManagementView({
               className={cn(
                 isListLayout
                   ? "flex items-center rounded-2xl border-2 bg-white p-8 shadow-[0_12px_32px_rgba(11,19,43,0.08)] transition-all"
-                  : "grid cursor-pointer gap-3 rounded-xl border-2 border-transparent bg-white p-5 shadow-[0_18px_42px_rgba(11,19,43,0.045)] transition-all hover:border-[var(--line)]/70 hover:shadow-[0_8px_24px_rgba(11,19,43,0.06)] md:grid-cols-[6rem_minmax(0,1fr)_auto]",
+                  : "grid cursor-pointer gap-3 rounded-xl border-2 border-transparent bg-white p-5 transition-all hover:border-[var(--line)]/70 hover:shadow-[0_8px_24px_rgba(11,19,43,0.06)] md:grid-cols-[6rem_minmax(0,1fr)_auto]",
                 shelf.id === "shelf-photography" &&
-                  "border-[var(--teal-700)]",
+                  cn(
+                    "border-[var(--teal-700)]",
+                    !isListLayout && "shadow-[0_12px_32px_rgba(11,19,43,0.08)]",
+                  ),
+                shelf.id !== "shelf-photography" && !isListLayout && "shadow-sm",
                 shelf.id !== "shelf-photography" && isListLayout && "border-transparent",
               )}
               key={shelf.id}

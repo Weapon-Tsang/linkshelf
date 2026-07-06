@@ -297,6 +297,25 @@ describe("Studio shelf management Stitch structure", () => {
     expect(draftCard).not.toHaveClass("cursor-default");
   });
 
+  it("uses the Stitch selected and default grid card shadows", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const selectedCard = screen.getByRole("article", { name: /Photography Kit/i });
+    const draftCard = screen.getByRole("article", { name: /Desk Setup 2024/i });
+
+    expect(selectedCard.className).toContain("shadow-[0_12px_32px_rgba(11,19,43,0.08)]");
+    expect(draftCard).toHaveClass("shadow-sm");
+    expect(draftCard.className).not.toContain("shadow-[0_18px_42px_rgba(11,19,43,0.045)]");
+  });
+
   it("uses the Stitch metadata separator inside management shelf cards", () => {
     render(
       <ShelfManagementView
