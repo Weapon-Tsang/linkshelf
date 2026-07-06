@@ -239,6 +239,25 @@ describe("Studio shelf management Stitch structure", () => {
     expect(cardTitle).not.toHaveClass("font-black", "tracking-[-0.04em]");
   });
 
+  it("uses the Stitch title/status row spacing inside management shelf cards", () => {
+    render(
+      <ShelfManagementView
+        creatorHandle="liamroberts.photo"
+        query=""
+        shelves={shelves}
+        status="ALL"
+        totals={{ all: 3, drafts: 1, published: 2 }}
+      />,
+    );
+
+    const firstCard = screen.getByRole("article", { name: /Photography Kit/i });
+    const cardTitle = within(firstCard).getByRole("heading", { name: "Photography Kit" });
+    const titleRow = cardTitle.parentElement;
+
+    expect(titleRow).toHaveClass("gap-3");
+    expect(titleRow).not.toHaveClass("gap-2");
+  });
+
   it("uses the Stitch action divider inside grid management shelf cards", () => {
     render(
       <ShelfManagementView
