@@ -55,9 +55,9 @@ describe("Studio shelf management Stitch structure", () => {
     );
 
     const firstCard = screen.getByRole("article", { name: /Photography Kit/i });
-    expect(firstCard).toHaveClass("gap-3", "rounded-xl", "p-5", "border-2");
+    expect(firstCard).toHaveClass("grid", "gap-3", "rounded-2xl", "p-6", "border-2");
     expect(firstCard).toHaveClass("border-[var(--teal-700)]");
-    expect(firstCard).not.toHaveClass("gap-4", "rounded-2xl", "p-6", "ring-2");
+    expect(firstCard).not.toHaveClass("gap-4", "rounded-xl", "p-5", "ring-2");
     expect(firstCard.className).toContain("md:grid-cols-[6rem_minmax(0,1fr)_auto]");
     expect(within(firstCard).getByRole("heading", { name: "Photography Kit" })).toHaveClass(
       "max-w-28",
