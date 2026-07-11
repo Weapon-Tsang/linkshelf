@@ -1,145 +1,150 @@
-# LinkShelf MVP Handoff
+# LinkShelf Handoff
 
-Last updated: 2026-07-03 Asia/Shanghai
+Last updated: 2026-07-11 Asia/Shanghai
+
+## Current Sprint
+
+Sprint 24: Production Readiness Baseline.
+
+Goal:
+
+- Establish the production readiness baseline without adding product features or
+  implementing OAuth, persistent DB, deployment, monitoring, or Amazon
+  Integration.
+
+Status:
+
+- Documentation baseline complete.
+- Development must stop after Sprint 24 completion and wait for user
+  confirmation before Sprint 25.
 
 ## Workspace
 
 - Repo worktree: `/Users/weapon_tsang/Documents/linkshelf/.worktrees/linkshelf-mvp`
 - Branch: `codex/linkshelf-mvp`
 - Remote: `origin https://github.com/Weapon-Tsang/linkshelf.git`
-- Purpose: continue LinkShelf MVP implementation and Stitch visual QA alignment.
+- Baseline source commit at Sprint 24 start:
+  `d5f9532 fix: align fan hub primary module shell`
 
-## Current State
+## Current Project State
 
-The MVP is a working Next.js app covering:
+The MVP product surface is functionally complete and in Feature Freeze. Active
+work has shifted to production readiness.
 
-- Public landing page
-- Public creator profile and public shelf pages
-- Creator Studio dashboard, shelf management, create shelf, analytics, comments, settings
-- Fan Hub dashboard, rewards, wallet, saved/shared shelves
-- Super Admin dashboard and admin auth gate
-- Google-only development auth flows
-- SQLite schema, deterministic seed data, seed refreshes for existing demo DBs
-- Affiliate redirect route and share/fan auth resume flow
-- 15-screen Stitch visual QA capture via `scripts/capture-design-qa.mjs`
+Completed product areas:
 
-Current QA evidence is recorded in `design-qa.md`. Latest visual capture notes timestamp:
+- Public landing page.
+- Public creator profile and public shelf pages.
+- Creator Studio dashboard, shelf management, create shelf, analytics, comments,
+  and settings.
+- Fan Hub dashboard, rewards, wallet tracking ID controls, saved collections,
+  and shared shelves.
+- Super Admin dashboard and admin gate.
+- Development auth flows and production-oriented Google auth hooks.
+- Local SQLite schema/migrations/seeds.
+- Affiliate redirect route with Amazon tag rewriting and click-event recording.
+- Share/fan auth resume flow.
+- 15-screen Stitch visual QA capture script.
 
-- `2026-07-02T16:48:53.440Z`
-- 15 captured states
+Latest visual QA evidence:
 
-## Latest Work Completed
+- `2026-07-11T08:25:23.631Z`
+- 15 captured states under `test-results/design-qa/latest/`
 
-Creator Profile / Public Shelf fidelity:
+## Sprint 24 Changes
 
-- Updated Liam profile avatar source to the Stitch AP1 Liam image and mapped it to a local asset.
-- Added local avatar asset:
-  - `public/stitch/assets/ad1d703ce47007644bd179897f9dd7b9bd7f4442104efbd165e9b66df5175b02.png`
-- Updated `public/stitch/asset-manifest.json` for that avatar source.
-- Added idempotent seed refreshes for old avatar assets.
-- Updated seeded featured gear to Stitch titles/descriptions/prices/merchant labels:
-  - `Sony a7 IV Mirrorless Camera`
-  - `Sony FE 35mm f/1.4 GM Lens`
-  - `Peak Design Travel Tripod`
-- Updated Photography Kit public shelf description to the Stitch "My daily driver setup..." copy.
-- Updated Creator Profile social display to show Instagram / TikTok / YouTube labels/icons from seeded platform URLs while preserving existing channel types used by share dialog compatibility.
+Documents created or updated:
 
-Studio management fidelity:
+- `PROJECT_STATE.md`
+- `docs/project-status.md`
+- `docs/roadmap.md`
+- `HANDOFF.md`
+- `NEXT_SESSION_PROMPT.md`
 
-- Tightened grid card density, rounded corners, padding, active card border, title width, and action alignment.
-- Converted shelf filters to a single segmented rail.
-- Updated sidebar account summary to Stitch `Alex River` with localized avatar.
-- Mapped the first management card category chip to Stitch `Tech` / `Gear` display without changing underlying shelf category data.
-- Kept `/studio/shelves?layout=list` behavior and filter/search layout state.
+No product code was intentionally changed.
 
-Documentation and QA:
+## Production Readiness Audit Summary
 
-- Updated `design-qa.md` with RED/GREEN records, latest verification, and latest visual capture timestamp.
-- Re-captured the 15 Stitch comparison states after the latest Studio management pass.
+Authentication:
 
-## Verification Already Run
+- Production-oriented NextAuth Google configuration exists.
+- Real OAuth credentials, callback URLs, production provisioning, and deployed
+  HTTPS verification remain for Sprint 25.
 
-Fresh verification before the handoff/commit:
+Database:
 
-```bash
-git diff --check
-```
+- Local SQLite works for MVP and tests.
+- Production DB provider, migration runbook, backup/restore, and seed-safety
+  policy remain for Sprint 26.
 
-Passed.
+Environment:
 
-```bash
-PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit
-```
+- Runtime env vars are used directly.
+- No `.env.example` or central validation contract was found.
 
-Passed.
+Deployment:
 
-```bash
-PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint .
-```
+- Build/test scripts exist.
+- No deployment target, descriptor, or release runbook was found.
 
-Passed.
+Monitoring:
 
-```bash
-PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/vitest run
-```
+- No production observability baseline was found.
 
-Passed: 35 files / 236 tests.
+Affiliate:
 
-```bash
-PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/next build
-```
+- Local redirect and Amazon tag rewrite are tested.
+- Real Amazon API, compliance, reporting, and reconciliation remain future work.
 
-Passed with the existing non-fatal Turbopack NFT tracing warning:
+## Remaining P1 Work
 
-- `next.config.ts` -> `src/lib/db/seed.ts` -> `src/app/api/out/[productId]/route.ts`
+Recommended sprint sequence:
 
-```bash
-PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH PW_TEST_HTML_REPORT_OPEN=never ./node_modules/.bin/playwright test
-```
+1. Sprint 25: Production Google OAuth.
+2. Sprint 26: Persistent Database.
+3. Sprint 27: Deployment.
+4. Sprint 28: Monitoring.
+5. Sprint 29: Amazon Integration.
+6. Sprint 30: Release Candidate, Visual QA, and final release validation.
 
-Passed: 12/12.
+## Remaining P2 Visual QA
 
-```bash
-PATH=/Users/weapon_tsang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node scripts/capture-design-qa.mjs
-```
+Defer to Release Candidate unless a visual issue blocks usability,
+accessibility, or release confidence:
 
-Passed: 15 captured visual states.
+- Landing page hero/supporting/carousel/footer/nav proportions.
+- Creator Profile broader layout scale/proportions.
+- Studio dashboard shell width/spacing.
+- Studio management remaining card/content proportion drift.
+- Studio create spacing/proportion micro-fidelity.
+- Settings/analytics/comments shell/sidebar/copy/avatar drift.
+- Fan dashboard horizontal density/module width/micro-spacing.
+- Share modal reference-state mismatch.
+- Super Admin typography/proportion drift.
 
-Note: `next build`, Playwright, and visual capture need local process/port access and may require sandbox escalation in Codex Desktop.
+## Current Risks
 
-## Remaining Work
+- Production auth has not been verified against real Google OAuth credentials.
+- Local SQLite should not be assumed to satisfy production persistence.
+- Deployment platform compatibility with `node:sqlite` is not proven.
+- Monitoring is absent.
+- Amazon integration is fixture/local-redirect based, not production-complete.
+- Long-lived project state now exists in docs, but future windows must keep those
+  docs updated instead of relying on chat history.
 
-No known P0/P1 functional blocker remains. Most remaining work is P2 visual/data fidelity:
+## Definition Of Done For Sprint 24
 
-- Landing page: hero proportions, supporting sections, carousel exposure, footer/nav spacing.
-- Creator Profile: layout density, card proportions, public profile draft shelf visibility decision.
-- Public shelf/share modal: confirm whether Stitch `share-modal.png` is the correct modal-open state; current app opens a real bottom sheet.
-- Studio pages: shell width, card proportions, spacing, and remaining micro fidelity.
-- Fan Hub: module width, density, and micro spacing.
-- Super Admin: typography scale, horizontal proportions, and icon/photo fidelity.
-- Production readiness: production Google OAuth credentials, persistent DB strategy, secrets, deployment, real Amazon affiliate integration, monitoring.
+- Production readiness docs exist and are current.
+- Auth/DB/env/deploy/monitoring/affiliate audit is recorded.
+- Production Ready Definition of Done is defined.
+- Future sprint order is documented.
+- RC-stage Visual QA policy is documented.
+- Handoff and next-session prompt are current.
+- No product features were added.
+- Work is committed and pushed.
 
-## Guardrails
+## Next Recommended Sprint
 
-- Do not revert user changes.
-- Do not remove the worktree unless the user explicitly asks.
-- Preserve Google-only auth unless the user changes product direction.
-- Preserve `/studio/shelves?layout=list` and filter/search state behavior.
-- Preserve share/fan auth resume behavior with `shareModal=1`.
-- When changing seed data, add/update deterministic refresh paths for existing local demo DBs.
-- Use TDD for code/behavior changes.
-- Re-run `scripts/capture-design-qa.mjs` and update `design-qa.md` after visual changes.
+Sprint 25: Production Google OAuth.
 
-## Suggested Next Window Prompt
-
-```text
-这是 Linkshelf MVP 项目的延续开发窗口。请先读取：
-
-- HANDOFF.md
-- design-qa.md
-- package.json
-- 当前 git status
-- 最近 3 个 commit
-
-工作目录是 /Users/weapon_tsang/Documents/linkshelf/.worktrees/linkshelf-mvp，分支是 codex/linkshelf-mvp。请总结当前项目状态、最新提交、已完成内容、验证结果、剩余 P2 问题，然后继续按 TDD + visual QA 的节奏推进下一处可测试的小收敛点。优先从 design-qa.md 里剩余的 Stitch visual drift 选择低风险任务；不要重做已完成的 Creator Profile avatar/featured gear/social label 或 Studio management segmented filter/category-tag/account-name 工作。继续开发直至本轮额度用完。
-```
+Do not start Sprint 25 until the user explicitly confirms it.
