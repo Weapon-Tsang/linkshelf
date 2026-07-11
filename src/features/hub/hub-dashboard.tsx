@@ -173,7 +173,7 @@ export function HubDashboard({
 
       <section
         aria-labelledby="affiliate-binding-heading"
-        className="rounded-[28px] bg-white p-5 shadow-[var(--shadow-card)]"
+        className="rounded-2xl bg-white p-8 shadow-[var(--shadow-card)]"
       >
         <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] md:items-center">
           <div>
@@ -226,7 +226,7 @@ export function HubDashboard({
       </section>
 
       <div className="grid items-start gap-5 lg:grid-cols-12">
-        <article className="relative flex min-h-[260px] flex-col justify-between overflow-hidden rounded-[28px] bg-white p-5 shadow-[var(--shadow-card)] lg:col-span-4">
+        <article className="relative flex min-h-[260px] flex-col justify-between overflow-hidden rounded-2xl bg-white p-8 shadow-[var(--shadow-card)] lg:col-span-4">
           <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-[var(--glow)] blur-3xl" />
           <div className="relative">
             <div className="mb-8 flex items-center justify-between gap-4">
@@ -262,7 +262,7 @@ export function HubDashboard({
 
         <section
           aria-labelledby="rewards-history-heading"
-          className="overflow-hidden rounded-[28px] bg-white p-5 shadow-[var(--shadow-card)] lg:col-span-8"
+          className="overflow-hidden rounded-2xl bg-white p-8 shadow-[var(--shadow-card)] lg:col-span-8"
         >
           <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <h2

@@ -208,6 +208,35 @@ describe("Fan Hub dashboard", () => {
     expect(screen.queryByRole("button", { name: "Save tracking ID" })).not.toBeInTheDocument();
   });
 
+  it("uses the Stitch primary module card shell density", () => {
+    render(
+      <HubDashboard
+        savedShelves={[]}
+        shares={[]}
+        summary={{
+          availableCents: 12850,
+          pendingCents: 1230,
+          lifetimeCents: 14080,
+          affiliateTag: "fan-demo-20",
+          entries: [],
+        }}
+      />,
+    );
+
+    const affiliateModule = screen
+      .getByRole("heading", { name: "Affiliate ID Binding" })
+      .closest("section");
+    const balanceModule = screen.getByText("Available Balance").closest("article");
+    const rewardsModule = screen
+      .getByRole("heading", { name: "Rewards History" })
+      .closest("section");
+
+    [affiliateModule, balanceModule, rewardsModule].forEach((module) => {
+      expect(module).toHaveClass("rounded-2xl", "p-8");
+      expect(module).not.toHaveClass("rounded-[28px]", "p-5");
+    });
+  });
+
   it("keeps the dashboard modules interactive for tracking ID, withdrawal, and CSV export", async () => {
     const user = userEvent.setup();
     const onSaveTrackingId = vi.fn();
