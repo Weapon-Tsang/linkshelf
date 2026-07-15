@@ -1,6 +1,6 @@
 # LinkShelf Roadmap
 
-Last updated: 2026-07-11 Asia/Shanghai
+Last updated: 2026-07-15 Asia/Shanghai
 
 ## Release Strategy
 
@@ -17,8 +17,8 @@ Sprint sequence:
 6. Sprint 29: Amazon Integration.
 7. Sprint 30: Release Candidate, Visual QA, and final performance/release pass.
 
-Do not start a later sprint until the current sprint is complete and the user has
-confirmed the next sprint goal.
+Do not start a later sprint until the current sprint is complete and the next
+sprint goal is explicit in the active user instruction.
 
 ## Sprint 24: Production Readiness Baseline
 
@@ -69,6 +69,12 @@ Definition of Done:
 - Admin/creator/fan access rules are documented and tested.
 - Handoff clearly states whether a real deployed callback was verified or what
   remains blocked by credentials.
+
+Status:
+
+- Complete for local/HTTPS-like verification.
+- Real Google credential and deployed callback verification remains blocked by
+  missing external credentials and deployment.
 
 ## Sprint 26: Persistent Database
 

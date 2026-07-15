@@ -1,7 +1,7 @@
 import type { DatabaseSync } from "node:sqlite";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getAuthSession } from "@/features/auth/adapter";
+import { resolveServerAuthSession } from "@/features/auth/server";
 import { listCreatorShelves } from "@/features/shelves/actions";
 import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
 import { AnalyticsView } from "@/features/studio/analytics-view";
@@ -53,7 +53,7 @@ function readAnalyticsMetrics(database: DatabaseSync, creatorId: string) {
 
 export default async function StudioAnalyticsPage() {
   const database = getSharedPublicShelvesDatabase();
-  const session = getAuthSession(database, { headers: await headers() });
+  const session = await resolveServerAuthSession(await headers(), "/studio/analytics");
   const studio = listCreatorShelves(database, session);
 
   if (!session) {

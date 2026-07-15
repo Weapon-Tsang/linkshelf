@@ -28,12 +28,13 @@ Project Operating System remains active:
 - Do not add product features by default.
 - Do not continue visual polish unless it belongs to the approved sprint.
 - All work must belong to one approved sprint.
-- If Sprint 24 is complete, do not start Sprint 25 automatically.
+- Do not add work outside the active approved production sprint.
 
-Sprint 24 should be complete. First output a Project Health Report and confirm
+Sprint 25 should be complete. First output a Project Health Report and confirm
 that the recommended next sprint is:
 
-Sprint 25: Production Google OAuth
+Sprint 26: Persistent Database
 
-Wait for explicit user confirmation before implementing Sprint 25.
+The user has said future sprint confirmations are not required in this flow, but
+still keep every change scoped to the current sprint.
 ```

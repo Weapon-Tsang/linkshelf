@@ -1,17 +1,15 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { getAuthSession } from "@/features/auth/adapter";
+import { resolveServerAuthSession } from "@/features/auth/server";
 import { AdminShell } from "@/features/admin/admin-shell";
-import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
 
 export default async function AdminLayout({
   children,
 }: {
   readonly children: ReactNode;
 }) {
-  const database = getSharedPublicShelvesDatabase();
-  const session = getAuthSession(database, { headers: await headers() });
+  const session = await resolveServerAuthSession(await headers(), "/admin/dashboard");
   if (!session) {
     redirect("/admin-secret?returnTo=/admin/dashboard");
   }

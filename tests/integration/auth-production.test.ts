@@ -197,4 +197,72 @@ describe("configured production Auth.js", () => {
     deletedDatabase.close();
     await expect(resolveAuthSession(request)).resolves.toBeNull();
   });
+
+  it("resolves a production Auth.js cookie from server component headers", async () => {
+    const { resolveServerAuthSession } = await import("@/features/auth/server");
+    const token = await encode({
+      token: { localUserId: "user-creator" },
+      secret: PRODUCTION_SECRET,
+    });
+    const headers = new Headers({
+      cookie: `__Secure-next-auth.session-token=${token}`,
+      host: "linkshelf.test",
+      "x-forwarded-proto": "https",
+    });
+
+    await expect(
+      resolveServerAuthSession(headers, "/studio/dashboard"),
+    ).resolves.toMatchObject({
+      user: { id: "user-creator", role: "CREATOR" },
+    });
+  });
+
+  it("resolves role-aware production server sessions for protected surfaces", async () => {
+    const { resolveServerAuthSession } = await import("@/features/auth/server");
+    const cases = [
+      ["user-creator", "/studio/dashboard", "CREATOR"],
+      ["user-fan", "/hub/dashboard", "FAN"],
+      ["user-admin", "/admin/dashboard", "ADMIN"],
+    ] as const;
+
+    for (const [localUserId, pathname, role] of cases) {
+      const token = await encode({
+        token: { localUserId },
+        secret: PRODUCTION_SECRET,
+      });
+      const headers = new Headers({
+        cookie: `__Secure-next-auth.session-token=${token}`,
+        host: "linkshelf.test",
+        "x-forwarded-proto": "https",
+      });
+
+      await expect(resolveServerAuthSession(headers, pathname)).resolves.toMatchObject({
+        user: { id: localUserId, role },
+      });
+    }
+  });
+
+  it("treats partial production Google configuration as disabled", async () => {
+    const { createAuthOptions, hasGoogleAuthConfiguration } = await import("@/auth");
+
+    for (const environment of [
+      {
+        NODE_ENV: "production",
+        AUTH_SECRET: PRODUCTION_SECRET,
+        AUTH_GOOGLE_ID: "configured-google-id",
+        AUTH_GOOGLE_SECRET: "",
+      },
+      {
+        NODE_ENV: "production",
+        AUTH_SECRET: PRODUCTION_SECRET,
+        AUTH_GOOGLE_ID: "",
+        AUTH_GOOGLE_SECRET: "configured-google-secret",
+      },
+    ]) {
+      expect(hasGoogleAuthConfiguration(environment)).toBe(false);
+      const options = createAuthOptions(environment);
+      expect(options.providers).toEqual([]);
+      expect(options.secret).toBeUndefined();
+    }
+  });
 });

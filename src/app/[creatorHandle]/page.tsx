@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { redirect } from "next/navigation";
-import { getAuthSession } from "@/features/auth/adapter";
+import { resolveServerAuthSession } from "@/features/auth/server";
 import { readResumeEntryCookie } from "@/features/auth/session";
 import { resumeCreatorEngagement } from "@/features/engagement/resume";
 import { CreatorProfilePage } from "@/features/public-profile/creator-profile-page";
@@ -50,7 +50,10 @@ export default async function CreatorPage({ params, searchParams }: CreatorPageP
   }
 
   const requestHeaders = await headers();
-  const session = getAuthSession(database, { headers: requestHeaders });
+  const session = await resolveServerAuthSession(
+    requestHeaders,
+    `/${result.profile.creator.handle}`,
+  );
   const resume = resumeCreatorEngagement(database, {
     resume: search.resume,
     creatorId: result.profile.creator.id,

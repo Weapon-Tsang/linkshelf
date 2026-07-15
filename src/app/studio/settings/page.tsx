@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getAuthSession } from "@/features/auth/adapter";
+import { resolveServerAuthSession } from "@/features/auth/server";
 import {
   deleteCreatorAccount,
   getStudioSettings,
@@ -23,7 +23,7 @@ const SOCIAL_CHANNELS = new Set<SocialChannelType>([
 
 async function getStudioSession(returnTo: string) {
   const database = getSharedPublicShelvesDatabase();
-  const session = getAuthSession(database, { headers: await headers() });
+  const session = await resolveServerAuthSession(await headers(), returnTo);
   if (!session) {
     redirect(`/login?returnTo=${encodeURIComponent(returnTo)}`);
   }

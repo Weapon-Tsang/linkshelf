@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { getAuthSession } from "@/features/auth/adapter";
+import { resolveServerAuthSession } from "@/features/auth/server";
 import { listCreatorShelves } from "@/features/shelves/actions";
 import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
 import { StudioShell } from "@/features/studio/studio-shell";
@@ -12,7 +12,7 @@ export default async function StudioLayout({
   readonly children: ReactNode;
 }) {
   const database = getSharedPublicShelvesDatabase();
-  const session = getAuthSession(database, { headers: await headers() });
+  const session = await resolveServerAuthSession(await headers(), "/studio/dashboard");
   if (!session) {
     redirect("/login?returnTo=/studio/dashboard");
   }

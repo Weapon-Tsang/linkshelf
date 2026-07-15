@@ -1,6 +1,6 @@
 # LinkShelf Project Status
 
-Last updated: 2026-07-11 Asia/Shanghai
+Last updated: 2026-07-15 Asia/Shanghai
 
 ## Project Health Report
 
@@ -10,20 +10,22 @@ Current development phase:
 
 Current sprint:
 
-- Sprint 24: Production Readiness Baseline.
+- Sprint 25: Production Google OAuth.
 
 Current completion level:
 
 - MVP product surface: functionally complete.
 - Visual QA: broad 15-screen evidence loop exists; remaining issues are P2
   fidelity drift unless otherwise noted.
-- Production readiness: not complete. Core production foundations need dedicated
+- Production readiness: not complete. OAuth is code-complete for Sprint 25, but
+  DB, deployment, monitoring, and Amazon integration still need dedicated
   sprints.
 
 Current blockers:
 
 - P0: none known.
-- P1: production Google OAuth is not fully configured for a real environment.
+- P1: production Google OAuth live callback verification is blocked until real
+  Google credentials and a deployed HTTPS origin exist.
 - P1: persistent production database strategy is not selected or deployed.
 - P1: deployment target, environment contract, and release runbook are absent.
 - P1: monitoring/observability baseline is absent.
@@ -31,13 +33,14 @@ Current blockers:
 
 Current risks:
 
-- The app has production-oriented auth code, but credentials, callback URLs,
-  account provisioning, and production role mapping have not been exercised in a
-  real deployed environment.
+- Production Google OAuth code now maps Auth.js JWT sessions into protected
+  Studio, Fan Hub, and Super Admin surfaces; real Google consent has not been
+  exercised against a deployed callback URL.
 - The app uses local `node:sqlite` with WAL and seed behavior; this is not yet a
   production persistence plan.
-- Environment variables are consumed directly by runtime code without a committed
-  `.env.example` or startup validation contract.
+- `.env.example` and `docs/production-google-oauth.md` now document the OAuth
+  environment contract; broader startup validation and deployment env ownership
+  remain open.
 - The build passes with an existing non-fatal Turbopack NFT tracing warning
   around SQLite imports; deployment platform compatibility still needs proof.
 - Affiliate redirect logic is tested locally, but real Amazon API/compliance,
@@ -46,8 +49,7 @@ Current risks:
 
 Highest priority:
 
-- Finish Sprint 24 documentation baseline, then start Sprint 25 for Production
-  Google OAuth only after explicit user confirmation.
+- Start Sprint 26: Persistent Database.
 
 ## Sprint 24 Scope
 
@@ -78,6 +80,44 @@ Out of scope:
 - Amazon Integration implementation.
 - Opportunistic UI polish.
 
+## Sprint 25 Scope
+
+Goal:
+
+- Make Google-only production authentication real, documented, and verified
+  within local/HTTPS-like constraints.
+
+Completed:
+
+- Added `.env.example`.
+- Added `docs/production-google-oauth.md` with Google Cloud callback setup,
+  required variables, subject provisioning, admin policy, and live-verification
+  checklist.
+- Added `src/features/auth/server.ts` so protected App Router surfaces resolve
+  production Auth.js JWT cookies instead of only development cookies.
+- Routed Studio, Fan Hub, Super Admin, and authenticated public resume flows
+  through the shared server auth helper.
+- Expanded production auth tests for server-component headers, role-aware
+  production sessions, and partial credential states.
+
+Verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm test`: passed, 314 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing warning.
+- `pnpm test:e2e`: passed, 12 tests.
+
+Out of scope retained:
+
+- Non-Google providers.
+- Persistent DB implementation.
+- Deployment rollout.
+- Monitoring.
+- Amazon Integration.
+- Visual polish.
+
 ## Production Readiness Audit
 
 ### Authentication
@@ -93,20 +133,24 @@ Current state:
   admin flows.
 - Admin entry and share/fan resume cookies have signed challenge flows.
 - Production auth coverage exists in `tests/integration/auth-production.test.ts`.
+- Protected App Router surfaces now resolve production Auth.js JWT cookies
+  through `resolveServerAuthSession()`.
+- `.env.example` and `docs/production-google-oauth.md` define the OAuth setup
+  and provisioning contract.
 
 Production gaps:
 
-- No real OAuth client credentials or callback URLs are documented.
-- No production account provisioning workflow is documented for mapping Google
-  subjects to local users.
-- No explicit environment matrix exists for local, preview, staging, and
-  production.
-- Session/cookie behavior needs deployed HTTPS verification.
-- Admin access policy needs final release sign-off.
+- Real OAuth client credentials were not available in this workspace.
+- Deployed HTTPS callback verification remains blocked until a deployment exists.
+- Production persistence for provisioned users remains local SQLite until Sprint
+  26.
+- Deployment-specific cookie behavior needs recheck once Sprint 27 selects a
+  host.
 
 Backlog:
 
-- Sprint 25 should harden and verify production Google OAuth end to end.
+- Sprint 27 should re-run live OAuth callback checks on the selected deployment
+  target after Sprint 26 persistence work.
 
 ### Database
 
@@ -136,14 +180,13 @@ Backlog:
 Current state:
 
 - Runtime code directly reads `AUTH_SECRET`, `AUTH_GOOGLE_ID`,
-  `AUTH_GOOGLE_SECRET`, `LINKSHELF_DB_PATH`, `NODE_ENV`, and `CI`.
+  `AUTH_GOOGLE_SECRET`, `NEXTAUTH_URL`, `LINKSHELF_DB_PATH`, `NODE_ENV`, and
+  `CI`.
 - `siteConfig.defaultPlatformTag` contains the current platform affiliate tag.
-- No `.env.example` was found during the Sprint 24 audit.
+- `.env.example` documents the OAuth production contract.
 
 Production gaps:
 
-- Required environment variables are not documented in a single committed
-  contract.
 - There is no environment validation module or startup check.
 - Secret ownership, rotation, and preview/prod separation are undefined.
 - Affiliate/platform configuration is partly code-level rather than fully

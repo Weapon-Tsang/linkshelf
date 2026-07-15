@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { redirect } from "next/navigation";
-import { getAuthSession } from "@/features/auth/adapter";
+import { resolveServerAuthSession } from "@/features/auth/server";
 import { readResumeEntryCookie } from "@/features/auth/session";
 import { resumeShelfEngagement } from "@/features/engagement/resume";
 import { ShelfPage } from "@/features/public-profile/shelf-page";
@@ -91,7 +91,10 @@ export default async function PublicShelfRoute({ params, searchParams }: ShelfRo
   }
 
   const requestHeaders = await headers();
-  const session = getAuthSession(database, { headers: requestHeaders });
+  const session = await resolveServerAuthSession(
+    requestHeaders,
+    `/${result.shelf.creator.handle}/${result.shelf.slug}`,
+  );
   const resume = resumeShelfEngagement(database, {
     resume: search.resume,
     channel: search.channel,

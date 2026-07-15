@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { getAuthSession } from "@/features/auth/adapter";
+import { resolveServerAuthSession } from "@/features/auth/server";
 import { extractMetadata } from "@/features/shelves/metadata-adapter";
 import {
   getShelfEditorData,
@@ -19,7 +19,7 @@ interface EditShelfPageProps {
 
 async function getStudioContext(returnTo: string) {
   const database = getSharedPublicShelvesDatabase();
-  const session = getAuthSession(database, { headers: await headers() });
+  const session = await resolveServerAuthSession(await headers(), returnTo);
   if (!session) {
     redirect(`/login?returnTo=${encodeURIComponent(returnTo)}`);
   }

@@ -1,30 +1,29 @@
 # LinkShelf Handoff
 
-Last updated: 2026-07-11 Asia/Shanghai
+Last updated: 2026-07-15 Asia/Shanghai
 
 ## Current Sprint
 
-Sprint 24: Production Readiness Baseline.
+Sprint 25: Production Google OAuth.
 
 Goal:
 
-- Establish the production readiness baseline without adding product features or
-  implementing OAuth, persistent DB, deployment, monitoring, or Amazon
-  Integration.
+- Make Google-only production authentication real, documented, and verified
+  within local/HTTPS-like constraints.
 
 Status:
 
-- Documentation baseline complete.
-- Development must stop after Sprint 24 completion and wait for user
-  confirmation before Sprint 25.
+- Sprint 25 implementation complete.
+- Real Google consent/deployed callback verification remains blocked by missing
+  external Google credentials and deployment.
 
 ## Workspace
 
 - Repo worktree: `/Users/weapon_tsang/Documents/linkshelf/.worktrees/linkshelf-mvp`
 - Branch: `codex/linkshelf-mvp`
 - Remote: `origin https://github.com/Weapon-Tsang/linkshelf.git`
-- Baseline source commit at Sprint 24 start:
-  `d5f9532 fix: align fan hub primary module shell`
+- Baseline source commit at Sprint 25 start:
+  `747724b docs: establish production readiness baseline`
 
 ## Current Project State
 
@@ -40,7 +39,8 @@ Completed product areas:
 - Fan Hub dashboard, rewards, wallet tracking ID controls, saved collections,
   and shared shelves.
 - Super Admin dashboard and admin gate.
-- Development auth flows and production-oriented Google auth hooks.
+- Development auth flows and production Google OAuth hooks.
+- Production Auth.js JWT session resolution for protected App Router surfaces.
 - Local SQLite schema/migrations/seeds.
 - Affiliate redirect route with Amazon tag rewriting and click-event recording.
 - Share/fan auth resume flow.
@@ -51,25 +51,44 @@ Latest visual QA evidence:
 - `2026-07-11T08:25:23.631Z`
 - 15 captured states under `test-results/design-qa/latest/`
 
-## Sprint 24 Changes
+Latest Sprint 25 verification:
 
-Documents created or updated:
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm test`: passed, 314 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
+  warning.
+- `pnpm test:e2e`: passed, 12 tests.
 
+## Sprint 25 Changes
+
+Code and documents created or updated:
+
+- `.env.example`
+- `src/features/auth/server.ts`
+- protected Studio, Fan Hub, Super Admin, and authenticated public route files
+- `tests/integration/auth-production.test.ts`
+- `docs/production-google-oauth.md`
+- `docs/superpowers/specs/2026-07-15-production-google-oauth-design.md`
+- `docs/superpowers/plans/2026-07-15-production-google-oauth.md`
 - `PROJECT_STATE.md`
 - `docs/project-status.md`
 - `docs/roadmap.md`
 - `HANDOFF.md`
 - `NEXT_SESSION_PROMPT.md`
 
-No product code was intentionally changed.
+No product features or visual polish were intentionally added.
 
 ## Production Readiness Audit Summary
 
 Authentication:
 
-- Production-oriented NextAuth Google configuration exists.
-- Real OAuth credentials, callback URLs, production provisioning, and deployed
-  HTTPS verification remain for Sprint 25.
+- Production Google OAuth configuration exists and is documented.
+- Production server routes now resolve Auth.js JWT cookies through
+  `resolveServerAuthSession()`.
+- Real OAuth credentials and deployed HTTPS callback verification remain blocked
+  by external setup.
 
 Database:
 
@@ -79,8 +98,9 @@ Database:
 
 Environment:
 
-- Runtime env vars are used directly.
-- No `.env.example` or central validation contract was found.
+- `.env.example` and `docs/production-google-oauth.md` document the OAuth env
+  contract.
+- Broader startup validation remains for a later production readiness pass.
 
 Deployment:
 
@@ -100,12 +120,11 @@ Affiliate:
 
 Recommended sprint sequence:
 
-1. Sprint 25: Production Google OAuth.
-2. Sprint 26: Persistent Database.
-3. Sprint 27: Deployment.
-4. Sprint 28: Monitoring.
-5. Sprint 29: Amazon Integration.
-6. Sprint 30: Release Candidate, Visual QA, and final release validation.
+1. Sprint 26: Persistent Database.
+2. Sprint 27: Deployment.
+3. Sprint 28: Monitoring.
+4. Sprint 29: Amazon Integration.
+5. Sprint 30: Release Candidate, Visual QA, and final release validation.
 
 ## Remaining P2 Visual QA
 
@@ -124,7 +143,8 @@ accessibility, or release confidence:
 
 ## Current Risks
 
-- Production auth has not been verified against real Google OAuth credentials.
+- Production auth has not been verified against real Google OAuth credentials or
+  a deployed callback URL.
 - Local SQLite should not be assumed to satisfy production persistence.
 - Deployment platform compatibility with `node:sqlite` is not proven.
 - Monitoring is absent.
@@ -132,19 +152,17 @@ accessibility, or release confidence:
 - Long-lived project state now exists in docs, but future windows must keep those
   docs updated instead of relying on chat history.
 
-## Definition Of Done For Sprint 24
+## Definition Of Done For Sprint 25
 
-- Production readiness docs exist and are current.
-- Auth/DB/env/deploy/monitoring/affiliate audit is recorded.
-- Production Ready Definition of Done is defined.
-- Future sprint order is documented.
-- RC-stage Visual QA policy is documented.
-- Handoff and next-session prompt are current.
+- Production OAuth env contract exists.
+- Google Cloud callback setup is documented.
+- Local Google subject provisioning is documented.
+- Production Auth.js cookies authorize protected surfaces.
+- Admin/creator/fan access rules are documented and tested.
+- Handoff states live Google callback verification is blocked by missing
+  credentials/deployment.
 - No product features were added.
-- Work is committed and pushed.
 
 ## Next Recommended Sprint
 
-Sprint 25: Production Google OAuth.
-
-Do not start Sprint 25 until the user explicitly confirms it.
+Sprint 26: Persistent Database.

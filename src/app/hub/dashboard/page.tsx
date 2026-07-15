@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getAuthSession } from "@/features/auth/adapter";
+import { resolveServerAuthSession } from "@/features/auth/server";
 import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
 import { HubDashboard } from "@/features/hub/hub-dashboard";
 import {
@@ -13,7 +13,7 @@ import {
 
 async function getFanSession() {
   const database = getSharedPublicShelvesDatabase();
-  const session = getAuthSession(database, { headers: await headers() });
+  const session = await resolveServerAuthSession(await headers(), "/hub/dashboard");
   if (!session) {
     redirect("/login?returnTo=/hub/dashboard");
   }

@@ -1,8 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { getAuthSession } from "@/features/auth/adapter";
-import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
+import { resolveServerAuthSession } from "@/features/auth/server";
 import { HubShell } from "@/features/hub/hub-shell";
 
 export default async function HubLayout({
@@ -10,8 +9,7 @@ export default async function HubLayout({
 }: {
   readonly children: ReactNode;
 }) {
-  const database = getSharedPublicShelvesDatabase();
-  const session = getAuthSession(database, { headers: await headers() });
+  const session = await resolveServerAuthSession(await headers(), "/hub/dashboard");
   if (!session) {
     redirect("/login?returnTo=/hub/dashboard");
   }
