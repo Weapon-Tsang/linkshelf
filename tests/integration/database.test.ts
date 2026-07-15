@@ -4,6 +4,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createDatabase } from "@/lib/db/client";
 import { migrate } from "@/lib/db/migrate";
+import {
+  openApplicationDatabase,
+  resolveApplicationDatabasePath,
+  shouldSeedDemoData,
+} from "@/lib/db/runtime";
 import { schemaMigrations } from "@/lib/db/schema";
 import { seed, STITCH_ASSET_SOURCES } from "@/lib/db/seed";
 
@@ -191,6 +196,107 @@ describe("local database", () => {
     expect((db.prepare("PRAGMA journal_mode").get() as { journal_mode: string }).journal_mode).toBe(
       "wal",
     );
+  });
+
+  it("requires an explicit absolute production database path", () => {
+    const productionPath = join(tmpdir(), "linkshelf-production.db");
+
+    expect(
+      resolveApplicationDatabasePath({
+        NODE_ENV: "production",
+        LINKSHELF_DB_PATH: productionPath,
+      }),
+    ).toBe(productionPath);
+    expect(() =>
+      resolveApplicationDatabasePath({ NODE_ENV: "production" }),
+    ).toThrow(/LINKSHELF_DB_PATH.*required/i);
+    expect(() =>
+      resolveApplicationDatabasePath({
+        NODE_ENV: "production",
+        LINKSHELF_DB_PATH: ":memory:",
+      }),
+    ).toThrow(/file-backed/i);
+    expect(() =>
+      resolveApplicationDatabasePath({
+        NODE_ENV: "production",
+        LINKSHELF_DB_PATH: "data/linkshelf.db",
+      }),
+    ).toThrow(/absolute/i);
+    expect(resolveApplicationDatabasePath({ NODE_ENV: "development" })).toBe(
+      "data/linkshelf.db",
+    );
+    expect(shouldSeedDemoData({ NODE_ENV: "development" })).toBe(true);
+    expect(shouldSeedDemoData({ NODE_ENV: "production" })).toBe(false);
+  });
+
+  it("opens a production application database without demo seed overwrite", () => {
+    const temporaryDirectory = mkdtempSync(join(tmpdir(), "linkshelf-production-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const databasePath = join(temporaryDirectory, "persistent", "linkshelf.db");
+    const environment = {
+      NODE_ENV: "production",
+      LINKSHELF_DB_PATH: databasePath,
+    };
+
+    const db = openApplicationDatabase(environment);
+    const userCount = db.prepare("SELECT COUNT(*) AS count FROM users").get() as {
+      count: number;
+    };
+    const migrations = db
+      .prepare("SELECT COUNT(*) AS count FROM schema_migrations")
+      .get() as { count: number };
+
+    expect(userCount.count).toBe(0);
+    expect(migrations.count).toBe(schemaMigrations.length);
+
+    db.prepare(
+      `INSERT INTO users
+        (id, google_subject, email, display_name, role, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    ).run(
+      "user-production",
+      "google-production",
+      "production@linkshelf.test",
+      "Production User",
+      "CREATOR",
+      "2026-07-15T00:00:00.000Z",
+      "2026-07-15T00:00:00.000Z",
+    );
+    db.close();
+
+    const reopened = openApplicationDatabase(environment);
+    databases.push(reopened);
+
+    expect(
+      (
+        reopened
+          .prepare("SELECT display_name AS displayName FROM users WHERE id = ?")
+          .get("user-production") as { displayName: string }
+      ).displayName,
+    ).toBe("Production User");
+    expect(
+      (
+        reopened
+          .prepare("SELECT COUNT(*) AS count FROM users WHERE id = ?")
+          .get("user-creator") as { count: number }
+      ).count,
+    ).toBe(0);
+  });
+
+  it("seeds demo data outside production through the application runtime", () => {
+    const temporaryDirectory = mkdtempSync(join(tmpdir(), "linkshelf-development-"));
+    temporaryDirectories.push(temporaryDirectory);
+    const databasePath = join(temporaryDirectory, "linkshelf.db");
+    const db = openApplicationDatabase({
+      NODE_ENV: "development",
+      LINKSHELF_DB_PATH: databasePath,
+    });
+    databases.push(db);
+
+    expect(
+      (db.prepare("SELECT COUNT(*) AS count FROM users").get() as { count: number })
+        .count,
+    ).toBe(3);
   });
 
   it("runs each schema migration once", () => {

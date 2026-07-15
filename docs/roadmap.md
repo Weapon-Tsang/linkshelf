@@ -106,6 +106,11 @@ Definition of Done:
 - Seed behavior is safe for production.
 - Tests cover the selected production DB boundaries.
 
+Status:
+
+- Complete for local file-backed SQLite and explicit persistent path contract.
+- Deployment target persistent disk behavior remains for Sprint 27.
+
 ## Sprint 27: Deployment
 
 Goal:

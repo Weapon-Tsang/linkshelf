@@ -9,19 +9,19 @@ enough to shift the active work from feature delivery to production readiness.
 
 Active sprint:
 
-- Sprint 25: Production Google OAuth
+- Sprint 26: Persistent Database
 
 Current branch:
 
 - `codex/linkshelf-mvp`
 
-Baseline source commit at Sprint 25 start:
+Baseline source commit at Sprint 26 start:
 
-- `747724b docs: establish production readiness baseline`
+- `2b2241a feat: harden production google oauth`
 
-Latest known remote state at Sprint 25 start:
+Latest known remote state at Sprint 26 start:
 
-- Worktree was clean before Sprint 25 changes.
+- Worktree was clean before Sprint 26 changes.
 
 ## Completed MVP Surface
 
@@ -36,8 +36,8 @@ The current app includes:
 - Super Admin dashboard and admin gate.
 - Google-only development auth flows plus production Google OAuth configuration,
   Auth.js JWT session resolution, and documented provisioning runbook.
-- Local SQLite schema, migrations, deterministic seed data, and demo DB refresh
-  paths.
+- Production-contracted file-backed SQLite runtime, migrations, deterministic
+  non-production seed data, and demo DB refresh paths.
 - Affiliate redirect route with Amazon tag rewriting, click-event persistence,
   and fan/creator/platform split logic.
 - Share/fan auth resume flow.
@@ -75,6 +75,19 @@ Latest Sprint 25 verification:
   around `node:sqlite` usage.
 - `pnpm test:e2e`: passed, 12 tests.
 
+Latest Sprint 26 verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm test`: passed, 317 tests.
+- `pnpm test tests/integration/database.test.ts
+  tests/integration/auth-production.test.ts tests/integration/affiliate-route.test.ts`:
+  passed, 42 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing warning
+  around `node:sqlite` usage.
+- `pnpm test:e2e`: passed, 12 tests.
+
 ## Production Readiness Summary
 
 Status by area:
@@ -82,7 +95,8 @@ Status by area:
 - Authentication: production Google OAuth is code-complete and documented for
   Sprint 25; live Google credential/deployed callback verification remains
   blocked by missing external credentials and deployment.
-- Database: local SQLite is functional for MVP, not yet production persistence.
+- Database: file-backed SQLite on an explicit persistent volume path is selected
+  for MVP production; deployment compatibility must be proven in Sprint 27.
 - Environment configuration: OAuth env contract exists; broader production env
   validation remains for DB/deployment sprints.
 - Deployment: no deployment target or runbook is committed.

@@ -30,10 +30,10 @@ Project Operating System remains active:
 - All work must belong to one approved sprint.
 - Do not add work outside the active approved production sprint.
 
-Sprint 25 should be complete. First output a Project Health Report and confirm
+Sprint 26 should be complete. First output a Project Health Report and confirm
 that the recommended next sprint is:
 
-Sprint 26: Persistent Database
+Sprint 27: Deployment
 
 The user has said future sprint confirmations are not required in this flow, but
 still keep every change scoped to the current sprint.

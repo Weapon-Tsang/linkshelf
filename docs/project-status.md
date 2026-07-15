@@ -10,23 +10,22 @@ Current development phase:
 
 Current sprint:
 
-- Sprint 25: Production Google OAuth.
+- Sprint 26: Persistent Database.
 
 Current completion level:
 
 - MVP product surface: functionally complete.
 - Visual QA: broad 15-screen evidence loop exists; remaining issues are P2
   fidelity drift unless otherwise noted.
-- Production readiness: not complete. OAuth is code-complete for Sprint 25, but
-  DB, deployment, monitoring, and Amazon integration still need dedicated
-  sprints.
+- Production readiness: not complete. OAuth and the SQLite persistence contract
+  are code-complete for Sprints 25-26, but deployment, monitoring, and Amazon
+  integration still need dedicated sprints.
 
 Current blockers:
 
 - P0: none known.
 - P1: production Google OAuth live callback verification is blocked until real
   Google credentials and a deployed HTTPS origin exist.
-- P1: persistent production database strategy is not selected or deployed.
 - P1: deployment target, environment contract, and release runbook are absent.
 - P1: monitoring/observability baseline is absent.
 - P2: remaining Stitch visual drift and share-modal reference-state mismatch.
@@ -36,8 +35,8 @@ Current risks:
 - Production Google OAuth code now maps Auth.js JWT sessions into protected
   Studio, Fan Hub, and Super Admin surfaces; real Google consent has not been
   exercised against a deployed callback URL.
-- The app uses local `node:sqlite` with WAL and seed behavior; this is not yet a
-  production persistence plan.
+- The app now has a file-backed SQLite production persistence contract; actual
+  persistent disk behavior still needs deployment proof in Sprint 27.
 - `.env.example` and `docs/production-google-oauth.md` now document the OAuth
   environment contract; broader startup validation and deployment env ownership
   remain open.
@@ -49,7 +48,7 @@ Current risks:
 
 Highest priority:
 
-- Start Sprint 26: Persistent Database.
+- Start Sprint 27: Deployment.
 
 ## Sprint 24 Scope
 
@@ -118,6 +117,48 @@ Out of scope retained:
 - Amazon Integration.
 - Visual polish.
 
+## Sprint 26 Scope
+
+Goal:
+
+- Replace local-demo persistence assumptions with an explicit production
+  database contract.
+
+Completed:
+
+- Selected file-backed SQLite on an explicit persistent volume path as the MVP
+  production database strategy.
+- Added `src/lib/db/runtime.ts` to centralize path resolution, migrations, and
+  non-production seed behavior.
+- Required production `LINKSHELF_DB_PATH` to be absolute and file-backed.
+- Routed auth, public shelves, shared app surfaces, and affiliate redirects
+  through the shared database runtime.
+- Added `docs/persistent-database.md` with migration, seed-safety,
+  backup/restore, and provisioning notes.
+- Updated `.env.example` with the production persistent-path contract.
+- Added tests for production path validation, migration-only production startup,
+  non-production demo seeding, and close/reopen persistence.
+
+Verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm test`: passed, 317 tests.
+- `pnpm test tests/integration/database.test.ts tests/integration/auth-production.test.ts tests/integration/affiliate-route.test.ts`:
+  passed, 42 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing warning.
+- `pnpm test:e2e`: passed, 12 tests.
+
+Out of scope retained:
+
+- Managed database provider migration.
+- Deployment platform selection.
+- Deployment descriptors.
+- Monitoring.
+- Amazon Integration.
+- Visual polish.
+
 ## Production Readiness Audit
 
 ### Authentication
@@ -142,8 +183,8 @@ Production gaps:
 
 - Real OAuth client credentials were not available in this workspace.
 - Deployed HTTPS callback verification remains blocked until a deployment exists.
-- Production persistence for provisioned users remains local SQLite until Sprint
-  26.
+- Production persistence for provisioned users uses file-backed SQLite; deployed
+  persistent disk behavior remains unproven until Sprint 27.
 - Deployment-specific cookie behavior needs recheck once Sprint 27 selects a
   host.
 
@@ -157,23 +198,26 @@ Backlog:
 Current state:
 
 - `src/lib/db/client.ts` opens `node:sqlite` through `DatabaseSync`.
-- `LINKSHELF_DB_PATH` can override the local DB path.
+- `src/lib/db/runtime.ts` requires an explicit absolute `LINKSHELF_DB_PATH` in
+  production and defaults to `data/linkshelf.db` outside production.
 - Migrations and deterministic seed data exist.
 - Non-production database open paths seed demo data.
+- Production database open paths run migrations but do not seed demo data.
 - WAL, foreign keys, and busy timeout are enabled for file-backed SQLite.
+- `docs/persistent-database.md` documents migration, backup, restore, and
+  provisioning procedures.
 
 Production gaps:
 
-- No production database provider is selected.
-- No migration runbook is committed.
-- No backup/restore strategy is committed.
-- No data retention, seed exclusion, or production data bootstrap process is
-  defined.
 - Hosting compatibility with `node:sqlite` and persistent disk is not proven.
+- Backup automation and retention are not implemented.
+- Production data bootstrap is documented, but no admin provisioning UI exists.
 
 Backlog:
 
-- Sprint 26 should decide and implement the persistent database strategy.
+- Sprint 27 should prove the persistent volume contract on the selected
+  deployment target.
+- Sprint 28 should add monitoring/operations checks for backups and DB health.
 
 ### Environment And Secrets
 

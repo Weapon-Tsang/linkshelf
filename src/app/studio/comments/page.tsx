@@ -12,7 +12,6 @@ import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
 import { CommentsView } from "@/features/studio/comments-view";
 
 async function getStudioSession(returnTo: string) {
-  const database = getSharedPublicShelvesDatabase();
   const session = await resolveServerAuthSession(await headers(), returnTo);
   if (!session) {
     redirect(`/login?returnTo=${encodeURIComponent(returnTo)}`);
@@ -20,6 +19,7 @@ async function getStudioSession(returnTo: string) {
   if (session.user.role !== "CREATOR") {
     redirect("/forbidden");
   }
+  const database = getSharedPublicShelvesDatabase();
   return { database, session };
 }
 

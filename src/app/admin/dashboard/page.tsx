@@ -12,7 +12,6 @@ import { AdminDashboard } from "@/features/admin/admin-dashboard";
 import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
 
 async function getAdminSession() {
-  const database = getSharedPublicShelvesDatabase();
   const session = await resolveServerAuthSession(await headers(), "/admin/dashboard");
   if (!session) {
     redirect("/admin-secret?returnTo=/admin/dashboard");
@@ -20,6 +19,7 @@ async function getAdminSession() {
   if (session.user.role !== "ADMIN") {
     redirect("/forbidden");
   }
+  const database = getSharedPublicShelvesDatabase();
   return { database, session };
 }
 

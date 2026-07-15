@@ -52,13 +52,13 @@ function readAnalyticsMetrics(database: DatabaseSync, creatorId: string) {
 }
 
 export default async function StudioAnalyticsPage() {
-  const database = getSharedPublicShelvesDatabase();
   const session = await resolveServerAuthSession(await headers(), "/studio/analytics");
-  const studio = listCreatorShelves(database, session);
-
   if (!session) {
     redirect("/login?returnTo=/studio/analytics");
   }
+
+  const database = getSharedPublicShelvesDatabase();
+  const studio = listCreatorShelves(database, session);
   if (!studio.ok) {
     redirect("/forbidden");
   }

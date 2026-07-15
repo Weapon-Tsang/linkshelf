@@ -6,13 +6,13 @@ import { getSharedPublicShelvesDatabase } from "@/features/shelves/service";
 import { DashboardView } from "@/features/studio/dashboard-view";
 
 export default async function StudioDashboardPage() {
-  const database = getSharedPublicShelvesDatabase();
   const session = await resolveServerAuthSession(await headers(), "/studio/dashboard");
-  const studio = listCreatorShelves(database, session);
-
   if (!session) {
     redirect("/login?returnTo=/studio/dashboard");
   }
+
+  const database = getSharedPublicShelvesDatabase();
+  const studio = listCreatorShelves(database, session);
   if (!studio.ok) {
     redirect("/forbidden");
   }

@@ -11,12 +11,12 @@ export default async function StudioLayout({
 }: {
   readonly children: ReactNode;
 }) {
-  const database = getSharedPublicShelvesDatabase();
   const session = await resolveServerAuthSession(await headers(), "/studio/dashboard");
   if (!session) {
     redirect("/login?returnTo=/studio/dashboard");
   }
 
+  const database = getSharedPublicShelvesDatabase();
   const studio = listCreatorShelves(database, session);
   if (!studio.ok) {
     redirect("/forbidden");

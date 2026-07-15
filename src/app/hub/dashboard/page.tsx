@@ -12,7 +12,6 @@ import {
 } from "@/features/wallet/actions";
 
 async function getFanSession() {
-  const database = getSharedPublicShelvesDatabase();
   const session = await resolveServerAuthSession(await headers(), "/hub/dashboard");
   if (!session) {
     redirect("/login?returnTo=/hub/dashboard");
@@ -20,6 +19,7 @@ async function getFanSession() {
   if (session.user.role !== "FAN") {
     redirect("/forbidden");
   }
+  const database = getSharedPublicShelvesDatabase();
   return { database, session };
 }
 

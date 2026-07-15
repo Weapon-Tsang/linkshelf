@@ -1,7 +1,5 @@
 import type { DatabaseSync } from "node:sqlite";
-import { createDatabase } from "@/lib/db/client";
-import { migrate } from "@/lib/db/migrate";
-import { seed } from "@/lib/db/seed";
+import { openApplicationDatabase } from "@/lib/db/runtime";
 import {
   findEnabledSocialChannels,
   findFeaturedPublicProducts,
@@ -16,12 +14,10 @@ import type { CreatorProfileResult, PublicShelfResult } from "./types";
 let publicShelvesDatabase: DatabaseSync | null = null;
 
 export function openPublicShelvesDatabase(nodeEnv = process.env.NODE_ENV): DatabaseSync {
-  const database = createDatabase();
-  migrate(database);
-  if (nodeEnv !== "production") {
-    seed(database);
-  }
-  return database;
+  return openApplicationDatabase({
+    NODE_ENV: nodeEnv,
+    LINKSHELF_DB_PATH: process.env.LINKSHELF_DB_PATH,
+  });
 }
 
 export function getSharedPublicShelvesDatabase(): DatabaseSync {
