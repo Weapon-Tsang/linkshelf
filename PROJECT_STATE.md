@@ -9,7 +9,7 @@ enough to shift the active work from feature delivery to production readiness.
 
 Active sprint:
 
-- Sprint 28: Monitoring
+- Sprint 29: Amazon Integration
 
 Current branch:
 
@@ -26,6 +26,10 @@ Baseline source commit at Sprint 27 start:
 Baseline source commit at Sprint 28 start:
 
 - `197ea5f feat: add deployment baseline`
+
+Baseline source commit at Sprint 29 start:
+
+- `7086668 feat: add monitoring baseline`
 
 Latest known remote state at Sprint 26 start:
 
@@ -52,6 +56,8 @@ The current app includes:
   production sign-in mapping, and affiliate redirects.
 - Affiliate redirect route with Amazon tag rewriting, click-event persistence,
   and fan/creator/platform split logic.
+- Amazon integration boundary that blocks deprecated PA-API mode, documents
+  Creators API migration, and disables fixture metadata by default in production.
 - Share/fan auth resume flow.
 - 15-screen Stitch visual QA capture via `scripts/capture-design-qa.mjs`.
 
@@ -130,6 +136,20 @@ Latest Sprint 28 verification:
   warning.
 - `pnpm test:e2e`: passed, 12 tests.
 
+Latest Sprint 29 verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm vitest run tests/unit/amazon-config.test.ts tests/unit/amazon-metadata-provider.test.ts`:
+  passed, 6 tests.
+- `pnpm vitest run tests/unit/amazon-docs.test.ts tests/unit/metadata-adapter.test.ts`:
+  passed, 5 tests.
+- `pnpm test`: passed, 342 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
+  warning.
+- `pnpm test:e2e`: passed, 12 tests.
+
 ## Production Readiness Summary
 
 Status by area:
@@ -145,8 +165,9 @@ Status by area:
   host compatibility remains unverified without external credentials.
 - Monitoring: structured stdout operational events and runbook are committed;
   hosted alert delivery remains future host-specific work.
-- Affiliate integration: local redirect and Amazon tag rewrite exist; real
-  Amazon integration, compliance, and reporting are not productionized.
+- Affiliate integration: Amazon redirect/tag handling is production-hardened
+  locally; deprecated PA-API mode is blocked; live Creators API access remains
+  blocked by missing official accessible docs and credentials.
 - Visual QA: ongoing P2 fidelity backlog; remaining visual drift should move to
   Release Candidate polish unless it blocks usability, accessibility, or release
   confidence.

@@ -4,25 +4,27 @@ Last updated: 2026-07-15 Asia/Shanghai
 
 ## Current Sprint
 
-Sprint 28: Monitoring.
+Sprint 29: Amazon Integration.
 
 Goal:
 
-- Establish the minimum observability baseline for release.
+- Productionize the Amazon affiliate integration boundary.
 
 Status:
 
-- Sprint 28 implementation complete for structured stdout operational events,
-  critical flow instrumentation, and a monitoring runbook.
-- Hosted alert delivery remains external to this workspace.
+- Sprint 29 implementation complete for a production-safe Amazon integration
+  boundary, PA-API deprecation guard, fixture metadata provider, and compliance
+  runbook.
+- Live Creators API calls remain blocked until official accessible request/
+  response docs and credentials are available.
 
 ## Workspace
 
 - Repo worktree: `/Users/weapon_tsang/Documents/linkshelf/.worktrees/linkshelf-mvp`
 - Branch: `codex/linkshelf-mvp`
 - Remote: `origin https://github.com/Weapon-Tsang/linkshelf.git`
-- Baseline source commit at Sprint 28 start:
-  `197ea5f feat: add deployment baseline`
+- Baseline source commit at Sprint 29 start:
+  `7086668 feat: add monitoring baseline`
 
 ## Current Project State
 
@@ -47,6 +49,8 @@ Completed product areas:
 - Structured operational events for health, Google auth, Auth.js sign-in, and
   affiliate redirects.
 - Affiliate redirect route with Amazon tag rewriting and click-event recording.
+- Amazon integration config boundary that rejects deprecated PA-API mode and
+  disables fixture metadata by default in production.
 - Share/fan auth resume flow.
 - 15-screen Stitch visual QA capture script.
 
@@ -55,41 +59,35 @@ Latest visual QA evidence:
 - `2026-07-11T08:25:23.631Z`
 - 15 captured states under `test-results/design-qa/latest/`
 
-Latest Sprint 28 verification:
+Latest Sprint 29 verification:
 
 - `git diff --check`: passed.
 - `pnpm typecheck`: passed.
 - `pnpm lint`: passed.
-- `pnpm vitest run tests/unit/monitoring-events.test.ts tests/unit/monitoring-docs.test.ts`:
-  passed, 4 tests.
-- `pnpm vitest run tests/integration/health-route.test.ts tests/integration/affiliate-route.test.ts`:
-  passed, 9 tests.
-- `pnpm vitest run tests/integration/auth-route.test.ts tests/integration/auth-production.test.ts`:
-  passed, 26 tests.
-- `pnpm test`: passed, 333 tests.
+- `pnpm vitest run tests/unit/amazon-config.test.ts tests/unit/amazon-metadata-provider.test.ts`:
+  passed, 6 tests.
+- `pnpm vitest run tests/unit/amazon-docs.test.ts tests/unit/metadata-adapter.test.ts`:
+  passed, 5 tests.
+- `pnpm test`: passed, 342 tests.
 - `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
   warning.
 - `pnpm test:e2e`: passed, 12 tests.
 
-## Sprint 28 Changes
+## Sprint 29 Changes
 
 Code and documents created or updated:
 
-- `src/lib/monitoring/events.ts`
-- `src/app/api/health/route.ts`
-- `src/app/api/auth/google/route.ts`
-- `src/app/api/out/[productId]/route.ts`
-- `src/auth.ts`
-- `tests/unit/monitoring-events.test.ts`
-- `tests/unit/monitoring-docs.test.ts`
-- `tests/integration/health-route.test.ts`
-- `tests/integration/auth-route.test.ts`
-- `tests/integration/auth-production.test.ts`
-- `tests/integration/affiliate-route.test.ts`
+- `src/features/amazon/config.ts`
+- `src/features/amazon/metadata-provider.ts`
+- `src/features/shelves/metadata-adapter.ts`
+- `tests/unit/amazon-config.test.ts`
+- `tests/unit/amazon-metadata-provider.test.ts`
+- `tests/unit/amazon-docs.test.ts`
+- `tests/unit/metadata-adapter.test.ts`
 - `.env.example`
-- `docs/monitoring.md`
-- `docs/superpowers/specs/2026-07-15-monitoring-design.md`
-- `docs/superpowers/plans/2026-07-15-monitoring.md`
+- `docs/amazon-integration.md`
+- `docs/superpowers/specs/2026-07-15-amazon-integration-design.md`
+- `docs/superpowers/plans/2026-07-15-amazon-integration.md`
 - `PROJECT_STATE.md`
 - `docs/project-status.md`
 - `docs/roadmap.md`
@@ -149,14 +147,19 @@ Monitoring:
 Affiliate:
 
 - Local redirect and Amazon tag rewrite are tested.
-- Real Amazon API, compliance, reporting, and reconciliation remain future work.
+- PA-API mode is explicitly rejected because Amazon marks PA-API deprecated as
+  of 2026-05-15.
+- Production metadata extraction defaults to disabled instead of fake fixture
+  catalog data.
+- `docs/amazon-integration.md` documents Creators API migration, env vars,
+  affiliate disclosure, and live verification limits.
+- Payout reconciliation remains future work.
 
 ## Remaining P1 Work
 
 Recommended sprint sequence:
 
-1. Sprint 29: Amazon Integration.
-2. Sprint 30: Release Candidate, Visual QA, and final release validation.
+1. Sprint 30: Release Candidate, Visual QA, and final release validation.
 
 ## Remaining P2 Visual QA
 
@@ -181,19 +184,21 @@ accessibility, or release confidence:
   is not proven because no external host was available.
 - Backup automation and retention are not implemented.
 - Monitoring is stdout/manual-check based; no external alert delivery is wired.
-- Amazon integration is fixture/local-redirect based, not production-complete.
+- Live Creators API integration remains blocked by unavailable official docs and
+  credentials; PA-API live integration is intentionally blocked as deprecated.
 - Long-lived project state now exists in docs, but future windows must keep
   those docs updated instead of relying on chat history.
 
-## Definition Of Done For Sprint 28
+## Definition Of Done For Sprint 29
 
-- Structured events emit to stdout in production.
-- Health, auth, and affiliate redirect paths have observable signals.
-- Secret-like metadata is redacted by the monitoring helper.
-- Manual checks, alert thresholds, incident triage, and privacy boundaries are
+- Amazon integration env contract is documented.
+- Deprecated PA-API mode is rejected in code.
+- Production metadata extraction does not silently use fixtures.
+- Local fixture metadata remains deterministic for development and tests.
+- Affiliate disclosure and live Creators API verification checklist are
   documented.
-- Tests cover event shape, routing coverage, and monitoring docs.
+- Tests cover config, provider fallback, and documentation.
 
 ## Next Recommended Sprint
 
-Sprint 29: Amazon Integration.
+Sprint 30: Release Candidate.

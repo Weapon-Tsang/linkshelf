@@ -205,6 +205,13 @@ Definition of Done:
 - Compliance notes are committed.
 - Affiliate redirect and reporting assumptions are production-ready.
 
+Status:
+
+- Complete for production-safe Amazon boundary, PA-API deprecation guard,
+  deterministic fixture provider, and compliance/migration runbook.
+- Live Creators API metadata calls remain blocked until official accessible docs
+  and credentials exist.
+
 ## Sprint 30: Release Candidate
 
 Goal:

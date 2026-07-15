@@ -10,16 +10,16 @@ Current development phase:
 
 Current sprint:
 
-- Sprint 28: Monitoring.
+- Sprint 29: Amazon Integration.
 
 Current completion level:
 
 - MVP product surface: functionally complete.
 - Visual QA: broad 15-screen evidence loop exists; remaining issues are P2
   fidelity drift unless otherwise noted.
-- Production readiness: not complete. OAuth, SQLite persistence,
-  Docker/Compose deployment, and structured stdout monitoring are code-complete
-  for Sprints 25-28, but Amazon integration still needs a dedicated sprint.
+- Production readiness: near release-candidate. OAuth, SQLite persistence,
+  Docker/Compose deployment, structured stdout monitoring, and the production
+  Amazon integration boundary are code-complete for Sprints 25-29.
 
 Current blockers:
 
@@ -28,7 +28,8 @@ Current blockers:
   Google credentials and a deployed HTTPS origin exist.
 - P1: live deployment on an external host is blocked until credentials and a
   target origin exist.
-- P1: Amazon live integration is not productionized.
+- P1: live Creators API metadata calls are blocked until official accessible docs
+  and credentials exist.
 - P2: monitoring alert delivery is manual/stdout-based until a live host log
   drain is selected.
 - P2: remaining Stitch visual drift and share-modal reference-state mismatch.
@@ -47,14 +48,15 @@ Current risks:
 - The build passes with an existing non-fatal Turbopack NFT tracing warning
   around SQLite/seed imports; deployment platform compatibility still needs live
   host proof.
-- Affiliate redirect logic is tested locally, but real Amazon API/compliance,
-  reporting, and payout reconciliation are not complete.
+- Amazon PA-API is deprecated as of 2026-05-15, so live PA-API integration is
+  intentionally blocked. Creators API migration requires external docs and
+  credentials.
 - Monitoring events are available in stdout, but no hosted alerting destination
   exists in this workspace.
 
 Highest priority:
 
-- Start Sprint 29: Amazon Integration.
+- Start Sprint 30: Release Candidate.
 
 ## Sprint 24 Scope
 
@@ -252,6 +254,52 @@ Out of scope retained:
 - Affiliate payout reporting.
 - Visual polish.
 
+## Sprint 29 Scope
+
+Goal:
+
+- Productionize the Amazon affiliate integration boundary.
+
+Completed:
+
+- Confirmed official PA-API documentation now marks Product Advertising API as
+  deprecated as of 2026-05-15 and points to Creators API.
+- Added `src/features/amazon/config.ts` with explicit `fixtures`, `disabled`,
+  and `creators-api` modes.
+- Rejected `pa-api`, `paapi`, and `product-advertising-api` modes in code.
+- Defaulted non-production metadata extraction to deterministic fixtures.
+- Defaulted production metadata extraction to disabled.
+- Added Creators API environment validation for future HTTPS base URL and API
+  key.
+- Moved fixture metadata behind `src/features/amazon/metadata-provider.ts`.
+- Kept `src/features/shelves/metadata-adapter.ts` as the existing public adapter
+  while delegating to the Amazon provider.
+- Added `docs/amazon-integration.md` with PA-API deprecation, Creators API
+  migration, env vars, affiliate disclosure, and live verification limits.
+- Expanded `.env.example` with Amazon integration variables.
+
+Verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm vitest run tests/unit/amazon-config.test.ts tests/unit/amazon-metadata-provider.test.ts`:
+  passed, 6 tests.
+- `pnpm vitest run tests/unit/amazon-docs.test.ts tests/unit/metadata-adapter.test.ts`:
+  passed, 5 tests.
+- `pnpm test`: passed, 342 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
+  warning.
+- `pnpm test:e2e`: passed, 12 tests.
+
+Out of scope retained:
+
+- Live Creators API request implementation.
+- PA-API implementation.
+- Amazon account setup, API credentials, or live calls.
+- Payout reconciliation.
+- New product UX or visual polish.
+
 ## Production Readiness Audit
 
 ### Authentication
@@ -391,21 +439,25 @@ Current state:
   events, and redirects with `cache-control: no-store`.
 - Affiliate split selection is tested.
 - Amazon URL safety and tag rewriting are tested.
-- Studio metadata extraction uses local Amazon fixtures, not live Amazon APIs.
+- Studio metadata extraction uses local Amazon fixtures outside production and
+  is disabled by default in production.
+- Amazon integration config rejects deprecated PA-API modes.
+- `docs/amazon-integration.md` documents Creators API migration, env vars,
+  affiliate disclosure, and live verification limits.
 - Fan and creator affiliate tags can be stored locally.
 
 Production gaps:
 
-- No live Amazon Product Advertising API integration.
-- No Amazon API credentials or environment contract.
-- No compliance review for attribution text, affiliate disclosures, or tag usage.
+- Live Creators API metadata calls are not implemented because official
+  accessible request/response docs and credentials are unavailable.
+- No external compliance approval has been completed for disclosure copy.
 - No payout reconciliation/reporting pipeline.
 - No fraud/rate-limit/abuse controls for redirects.
 
 Backlog:
 
-- Sprint 29 should productionize Amazon Integration after OAuth, DB,
-  deployment, and monitoring are in place.
+- Release Candidate should verify the documented Amazon boundary, disclosure
+  copy, and redirect behavior as part of final release validation.
 
 ## Production Ready Definition Of Done
 
