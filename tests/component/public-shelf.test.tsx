@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { cleanup, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 import { CreatorProfilePage } from "@/features/public-profile/creator-profile-page";
 import { ShelfPage } from "@/features/public-profile/shelf-page";
@@ -161,6 +162,19 @@ describe("public LinkShelf surfaces", () => {
 
     expect(screen.getByLabelText("Desk Setup 2024 shelf preview")).toBeVisible();
     expect(screen.queryByRole("link", { name: "Open Desk Setup 2024 shelf" })).toBeNull();
+  });
+
+  it("opens fan authentication from the anonymous hero share button", async () => {
+    render(<ShelfPage shelf={shelf} />);
+
+    await userEvent.click(screen.getByRole("button", { name: "Share shelf" }));
+
+    expect(screen.getByRole("dialog", { name: "Fan Authentication" })).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Continue with Google" }).closest("form")?.querySelector(
+        'input[name="returnTo"]',
+      ),
+    ).toHaveValue("/liamroberts.photo/photography-kit?resume=share");
   });
 
   it("uses Stitch headline-md typography for creator profile section headings", () => {

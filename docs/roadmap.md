@@ -233,3 +233,11 @@ Definition of Done:
 - Visual QA evidence is fresh and reviewed.
 - Production Ready Definition of Done is satisfied.
 - Release Manager recommendation is documented.
+
+Status:
+
+- Complete for code release candidate validation.
+- Public production launch remains gated by external Google OAuth credentials
+  and callback verification, live hosting/persistent disk proof, hosted alert
+  delivery, live Creators API access, and external affiliate compliance/
+  reconciliation approval.

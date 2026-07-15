@@ -6,20 +6,21 @@ Last updated: 2026-07-15 Asia/Shanghai
 
 Current development phase:
 
-- Feature Freeze / Production Readiness.
+- Feature Freeze / Release Candidate.
 
 Current sprint:
 
-- Sprint 29: Amazon Integration.
+- Sprint 30: Release Candidate.
 
 Current completion level:
 
 - MVP product surface: functionally complete.
 - Visual QA: broad 15-screen evidence loop exists; remaining issues are P2
   fidelity drift unless otherwise noted.
-- Production readiness: near release-candidate. OAuth, SQLite persistence,
-  Docker/Compose deployment, structured stdout monitoring, and the production
-  Amazon integration boundary are code-complete for Sprints 25-29.
+- Production readiness: code release candidate accepted for stakeholder review
+  and production-environment setup. OAuth, SQLite persistence, Docker/Compose
+  deployment, structured stdout monitoring, and the production Amazon
+  integration boundary are code-complete for Sprints 25-29.
 
 Current blockers:
 
@@ -56,7 +57,7 @@ Current risks:
 
 Highest priority:
 
-- Start Sprint 30: Release Candidate.
+- Clear external launch gates before public production launch.
 
 ## Sprint 24 Scope
 
@@ -300,6 +301,44 @@ Out of scope retained:
 - Payout reconciliation.
 - New product UX or visual polish.
 
+## Sprint 30 Scope
+
+Goal:
+
+- Validate the whole app as a release candidate.
+
+Completed:
+
+- Created `docs/release-candidate.md` as the release candidate evidence ledger.
+- Added a documentation regression test for release candidate notes, visual QA
+  evidence, external launch gates, and handoff state.
+- Added Sprint 30 design and execution plan documents.
+- Ran the full verification suite.
+- Generated fresh 15-screen Visual QA evidence.
+- Reviewed representative comparison screenshots for release-critical drift.
+- Documented the Release Manager recommendation.
+
+Verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm test`: passed, 345 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
+  warning.
+- `pnpm test:e2e`: passed, 12 tests.
+- `node scripts/capture-design-qa.mjs`: passed, 15 captured states.
+
+Out of scope retained:
+
+- New product features.
+- Cosmetic visual fidelity work unless fresh evidence shows a release-critical
+  usability, accessibility, or brand-confidence issue.
+- Live Google OAuth callback verification without external credentials and a
+  deployed HTTPS origin.
+- Live external host deployment without hosting credentials.
+- Live Creators API calls without official accessible docs and credentials.
+
 ## Production Readiness Audit
 
 ### Authentication
@@ -513,7 +552,8 @@ Release Candidate visual QA should include:
 
 P1:
 
-- Amazon Integration sprint.
+- Clear external launch gates for live Google OAuth, live hosting, hosted
+  alerting, and live Creators API access.
 
 P2:
 

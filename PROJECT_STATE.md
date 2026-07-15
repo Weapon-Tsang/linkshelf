@@ -9,7 +9,7 @@ enough to shift the active work from feature delivery to production readiness.
 
 Active sprint:
 
-- Sprint 29: Amazon Integration
+- Sprint 30: Release Candidate
 
 Current branch:
 
@@ -30,6 +30,10 @@ Baseline source commit at Sprint 28 start:
 Baseline source commit at Sprint 29 start:
 
 - `7086668 feat: add monitoring baseline`
+
+Baseline source commit at Sprint 30 start:
+
+- `ebb704e feat: harden amazon integration boundary`
 
 Latest known remote state at Sprint 26 start:
 
@@ -65,7 +69,7 @@ The current app includes:
 
 Latest visual QA evidence:
 
-- `2026-07-11T08:25:23.631Z`
+- `2026-07-15T10:51:39.826Z`
 - 15 captured comparison states.
 - Evidence path: `test-results/design-qa/latest/`
 
@@ -150,6 +154,17 @@ Latest Sprint 29 verification:
   warning.
 - `pnpm test:e2e`: passed, 12 tests.
 
+Latest Sprint 30 verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm test`: passed, 345 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
+  warning.
+- `pnpm test:e2e`: passed, 12 tests.
+- `node scripts/capture-design-qa.mjs`: passed, 15 captured states.
+
 ## Production Readiness Summary
 
 Status by area:
@@ -169,8 +184,15 @@ Status by area:
   locally; deprecated PA-API mode is blocked; live Creators API access remains
   blocked by missing official accessible docs and credentials.
 - Visual QA: ongoing P2 fidelity backlog; remaining visual drift should move to
-  Release Candidate polish unless it blocks usability, accessibility, or release
+  Release Candidate review unless it blocks usability, accessibility, or release
   confidence.
+
+Release Manager recommendation:
+
+- Accept the branch as a code release candidate for stakeholder review and
+  production-environment setup.
+- Do not approve public production launch until the external launch gates in
+  `docs/release-candidate.md` are cleared.
 
 ## Operating Guardrails
 
