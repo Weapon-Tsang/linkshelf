@@ -1,5 +1,5 @@
 import type { DatabaseSync } from "node:sqlite";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createAffiliateRouteHandler } from "@/app/api/out/[productId]/route";
 import { createDatabase } from "@/lib/db/client";
 import { migrate } from "@/lib/db/migrate";
@@ -25,6 +25,8 @@ describe("affiliate redirect route", () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllEnvs();
     database.close();
   });
 
@@ -160,5 +162,36 @@ describe("affiliate redirect route", () => {
     expect(response.status).toBe(503);
     expect(response.headers.get("location")).toBeNull();
     expect(after.count).toBe(before.count);
+  });
+
+  it("emits monitoring events for redirect success and failure", async () => {
+    vi.stubEnv("LINKSHELF_MONITORING_STDOUT", "1");
+    const info = vi.spyOn(console, "info").mockImplementation(() => {});
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await requestProduct("product-sony-a7iv", "?share=jamie-photo");
+    expect(JSON.parse(info.mock.calls.at(-1)?.[0] as string)).toMatchObject({
+      type: "linkshelf.operational_event",
+      level: "info",
+      name: "affiliate.redirect",
+      outcome: "redirected",
+      metadata: {
+        productId: "product-sony-a7iv",
+        status: 302,
+        beneficiary: "FAN",
+      },
+    });
+
+    await requestProduct("missing-product");
+    expect(JSON.parse(warn.mock.calls.at(-1)?.[0] as string)).toMatchObject({
+      type: "linkshelf.operational_event",
+      level: "warn",
+      name: "affiliate.redirect",
+      outcome: "not_found",
+      metadata: {
+        productId: "missing-product",
+        status: 404,
+      },
+    });
   });
 });

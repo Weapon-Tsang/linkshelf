@@ -173,6 +173,11 @@ Definition of Done:
 - Incident triage steps are documented.
 - Privacy and telemetry boundaries are documented.
 
+Status:
+
+- Complete for structured stdout operational events and manual runbooks.
+- Hosted alert delivery remains future host-specific work.
+
 ## Sprint 29: Amazon Integration
 
 Goal:

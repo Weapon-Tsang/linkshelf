@@ -30,10 +30,10 @@ Project Operating System remains active:
 - All work must belong to one approved sprint.
 - Do not add work outside the active approved production sprint.
 
-Sprint 27 should be complete. First output a Project Health Report and confirm
+Sprint 28 should be complete. First output a Project Health Report and confirm
 that the recommended next sprint is:
 
-Sprint 28: Monitoring
+Sprint 29: Amazon Integration
 
 The user has said future sprint confirmations are not required in this flow, but
 still keep every change scoped to the current sprint.

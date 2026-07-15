@@ -9,7 +9,7 @@ enough to shift the active work from feature delivery to production readiness.
 
 Active sprint:
 
-- Sprint 27: Deployment
+- Sprint 28: Monitoring
 
 Current branch:
 
@@ -22,6 +22,10 @@ Baseline source commit at Sprint 26 start:
 Baseline source commit at Sprint 27 start:
 
 - `94547bb feat: define persistent database runtime`
+
+Baseline source commit at Sprint 28 start:
+
+- `197ea5f feat: add deployment baseline`
 
 Latest known remote state at Sprint 26 start:
 
@@ -44,6 +48,8 @@ The current app includes:
   non-production seed data, and demo DB refresh paths.
 - Docker/Compose production-like deployment baseline with standalone Next.js
   output, persistent SQLite volume, `/api/health`, and release/rollback runbook.
+- Structured stdout operational events for health, Google auth, Auth.js
+  production sign-in mapping, and affiliate redirects.
 - Affiliate redirect route with Amazon tag rewriting, click-event persistence,
   and fan/creator/platform split logic.
 - Share/fan auth resume flow.
@@ -108,6 +114,22 @@ Latest Sprint 27 verification:
 - `docker compose config`: not run because `docker` is not installed in this
   workspace.
 
+Latest Sprint 28 verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm vitest run tests/unit/monitoring-events.test.ts tests/unit/monitoring-docs.test.ts`:
+  passed, 4 tests.
+- `pnpm vitest run tests/integration/health-route.test.ts tests/integration/affiliate-route.test.ts`:
+  passed, 9 tests.
+- `pnpm vitest run tests/integration/auth-route.test.ts tests/integration/auth-production.test.ts`:
+  passed, 26 tests.
+- `pnpm test`: passed, 333 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
+  warning.
+- `pnpm test:e2e`: passed, 12 tests.
+
 ## Production Readiness Summary
 
 Status by area:
@@ -121,8 +143,8 @@ Status by area:
   validation remains for later hardening.
 - Deployment: Docker/Compose descriptor and release runbook are committed; live
   host compatibility remains unverified without external credentials.
-- Monitoring: only `/api/health` exists; no production observability baseline is
-  committed.
+- Monitoring: structured stdout operational events and runbook are committed;
+  hosted alert delivery remains future host-specific work.
 - Affiliate integration: local redirect and Amazon tag rewrite exist; real
   Amazon integration, compliance, and reporting are not productionized.
 - Visual QA: ongoing P2 fidelity backlog; remaining visual drift should move to
@@ -133,8 +155,7 @@ Status by area:
 
 - Do not add new product features during Feature Freeze unless the user changes
   the product priority.
-- Do not implement monitoring or Amazon API integration outside their dedicated
-  approved sprints.
+- Do not implement Amazon API integration outside its dedicated approved sprint.
 - Record newly discovered issues in `docs/project-status.md` instead of fixing
   them opportunistically.
 - Keep visual QA work behind production engineering unless a visual issue is a

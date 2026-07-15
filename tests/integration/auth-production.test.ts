@@ -101,6 +101,35 @@ describe("configured production Auth.js", () => {
     ).resolves.toBe(false);
   });
 
+  it("emits monitoring events for accepted and rejected Google subject mapping", async () => {
+    vi.stubEnv("LINKSHELF_MONITORING_STDOUT", "1");
+    vi.resetModules();
+    const info = vi.spyOn(console, "info").mockImplementation(() => {});
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { authOptions } = await import("@/auth");
+    const signIn = authOptions.callbacks?.signIn as (input: unknown) => Promise<boolean>;
+
+    await expect(signIn(googleCallbackInput("google-creator"))).resolves.toBe(true);
+    expect(JSON.parse(info.mock.calls.at(-1)?.[0] as string)).toMatchObject({
+      type: "linkshelf.operational_event",
+      level: "info",
+      name: "auth.google.sign_in",
+      outcome: "accepted",
+      metadata: { provider: "google", mapped: true },
+    });
+
+    await expect(
+      signIn(googleCallbackInput("unknown-subject", { email: "creator@linkshelf.local" })),
+    ).resolves.toBe(false);
+    expect(JSON.parse(warn.mock.calls.at(-1)?.[0] as string)).toMatchObject({
+      type: "linkshelf.operational_event",
+      level: "warn",
+      name: "auth.google.sign_in",
+      outcome: "rejected",
+      metadata: { provider: "google", mapped: false },
+    });
+  });
+
   it("persists only the exact local user ID in the JWT", async () => {
     const { authOptions } = await import("@/auth");
     const jwt = authOptions.callbacks?.jwt as (input: unknown) => Promise<{

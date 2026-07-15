@@ -48,6 +48,10 @@ afterEach(() => {
 });
 
 describe("development Google auth route", () => {
+  function lastOperationalEvent(spy: ReturnType<typeof vi.spyOn>) {
+    return JSON.parse(spy.mock.calls.at(-1)?.[0] as string);
+  }
+
   it("sets a signed session cookie and returns 303", async () => {
     const response = await googleLogin(
       post("/api/auth/google", {
@@ -124,6 +128,9 @@ describe("development Google auth route", () => {
   });
 
   it("rejects an admin role posted without the secret-entry signature", async () => {
+    vi.stubEnv("LINKSHELF_MONITORING_STDOUT", "1");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
     const response = await googleLogin(
       post("/api/auth/google", {
         role: "admin",
@@ -133,6 +140,72 @@ describe("development Google auth route", () => {
 
     expect(response.status).toBe(403);
     expect(response.headers.get("set-cookie")).toBeNull();
+    expect(lastOperationalEvent(warn)).toMatchObject({
+      type: "linkshelf.operational_event",
+      level: "warn",
+      name: "auth.google.request",
+      outcome: "admin_entry_rejected",
+      metadata: { status: 403, role: "admin" },
+    });
+  });
+
+  it("emits monitoring events for cross-origin rejection and successful development login", async () => {
+    vi.stubEnv("LINKSHELF_MONITORING_STDOUT", "1");
+    const info = vi.spyOn(console, "info").mockImplementation(() => {});
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const rejected = await googleLogin(
+      post(
+        "/api/auth/google",
+        { role: "creator", returnTo: "/studio/dashboard" },
+        undefined,
+        "https://evil.example",
+      ),
+    );
+    expect(rejected.status).toBe(403);
+    expect(lastOperationalEvent(warn)).toMatchObject({
+      level: "warn",
+      name: "auth.google.request",
+      outcome: "cross_origin_rejected",
+      metadata: { status: 403 },
+    });
+
+    const accepted = await googleLogin(
+      post("/api/auth/google", {
+        role: "fan",
+        returnTo: "/hub/dashboard",
+      }),
+    );
+    expect(accepted.status).toBe(303);
+    expect(lastOperationalEvent(info)).toMatchObject({
+      level: "info",
+      name: "auth.google.request",
+      outcome: "development_login",
+      metadata: { status: 303, role: "fan" },
+    });
+  });
+
+  it("emits a production monitoring event when Google auth is not configured", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("AUTH_SECRET", "");
+    vi.stubEnv("AUTH_GOOGLE_ID", "");
+    vi.stubEnv("AUTH_GOOGLE_SECRET", "");
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const response = await googleLogin(
+      post("/api/auth/google", {
+        role: "creator",
+        returnTo: "/studio/dashboard",
+      }),
+    );
+
+    expect(response.status).toBe(503);
+    expect(lastOperationalEvent(error)).toMatchObject({
+      level: "error",
+      name: "auth.google.request",
+      outcome: "google_configuration_missing",
+      metadata: { status: 503, environment: "production" },
+    });
   });
 
   it("mints and consumes a same-browser admin entry only once", async () => {

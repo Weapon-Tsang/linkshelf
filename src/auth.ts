@@ -11,6 +11,7 @@ import {
   type AuthUser,
 } from "@/features/auth/adapter";
 import { resolveSessionSecret } from "@/features/auth/session";
+import { recordOperationalEvent } from "@/lib/monitoring/events";
 
 export interface GoogleAuthEnvironment {
   readonly NODE_ENV?: string;
@@ -104,9 +105,20 @@ export function createAuthOptions(
     session: { strategy: "jwt" },
     callbacks: {
       async signIn({ account, profile }) {
-        return Boolean(
-          findCurrentGoogleUser(account, profile as GoogleProfile | undefined),
+        const user = findCurrentGoogleUser(
+          account,
+          profile as GoogleProfile | undefined,
         );
+        recordOperationalEvent({
+          level: user ? "info" : "warn",
+          name: "auth.google.sign_in",
+          outcome: user ? "accepted" : "rejected",
+          metadata: {
+            provider: account?.provider ?? "unknown",
+            mapped: Boolean(user),
+          },
+        });
+        return Boolean(user);
       },
       async jwt({ token, account, profile }) {
         if (!account) return token;

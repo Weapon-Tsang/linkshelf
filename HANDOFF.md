@@ -4,26 +4,25 @@ Last updated: 2026-07-15 Asia/Shanghai
 
 ## Current Sprint
 
-Sprint 27: Deployment.
+Sprint 28: Monitoring.
 
 Goal:
 
-- Make LinkShelf deployable and operable from Git.
+- Establish the minimum observability baseline for release.
 
 Status:
 
-- Sprint 27 implementation complete for a generic Docker/Compose production-like
-  deployment baseline.
-- Live preview/production URLs were not created because this workspace has no
-  external host credentials.
+- Sprint 28 implementation complete for structured stdout operational events,
+  critical flow instrumentation, and a monitoring runbook.
+- Hosted alert delivery remains external to this workspace.
 
 ## Workspace
 
 - Repo worktree: `/Users/weapon_tsang/Documents/linkshelf/.worktrees/linkshelf-mvp`
 - Branch: `codex/linkshelf-mvp`
 - Remote: `origin https://github.com/Weapon-Tsang/linkshelf.git`
-- Baseline source commit at Sprint 27 start:
-  `94547bb feat: define persistent database runtime`
+- Baseline source commit at Sprint 28 start:
+  `197ea5f feat: add deployment baseline`
 
 ## Current Project State
 
@@ -45,6 +44,8 @@ Completed product areas:
   non-production seed data, and demo DB refresh paths.
 - Docker/Compose deployment baseline with standalone Next.js output, persistent
   SQLite volume, `/api/health`, and release/rollback runbook.
+- Structured operational events for health, Google auth, Auth.js sign-in, and
+  affiliate redirects.
 - Affiliate redirect route with Amazon tag rewriting and click-event recording.
 - Share/fan auth resume flow.
 - 15-screen Stitch visual QA capture script.
@@ -54,35 +55,41 @@ Latest visual QA evidence:
 - `2026-07-11T08:25:23.631Z`
 - 15 captured states under `test-results/design-qa/latest/`
 
-Latest Sprint 27 verification:
+Latest Sprint 28 verification:
 
 - `git diff --check`: passed.
 - `pnpm typecheck`: passed.
 - `pnpm lint`: passed.
-- `pnpm test`: passed, 325 tests.
-- `pnpm vitest run tests/unit/deployment-config.test.ts`: passed, 6 tests.
-- `pnpm vitest run tests/integration/health-route.test.ts`: passed, 2 tests.
+- `pnpm vitest run tests/unit/monitoring-events.test.ts tests/unit/monitoring-docs.test.ts`:
+  passed, 4 tests.
+- `pnpm vitest run tests/integration/health-route.test.ts tests/integration/affiliate-route.test.ts`:
+  passed, 9 tests.
+- `pnpm vitest run tests/integration/auth-route.test.ts tests/integration/auth-production.test.ts`:
+  passed, 26 tests.
+- `pnpm test`: passed, 333 tests.
 - `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
   warning.
 - `pnpm test:e2e`: passed, 12 tests.
-- `docker compose config`: not run because `docker` is not installed in this
-  workspace.
 
-## Sprint 27 Changes
+## Sprint 28 Changes
 
 Code and documents created or updated:
 
-- `Dockerfile`
-- `.dockerignore`
-- `compose.yml`
-- `next.config.ts`
+- `src/lib/monitoring/events.ts`
 - `src/app/api/health/route.ts`
-- `tests/unit/deployment-config.test.ts`
+- `src/app/api/auth/google/route.ts`
+- `src/app/api/out/[productId]/route.ts`
+- `src/auth.ts`
+- `tests/unit/monitoring-events.test.ts`
+- `tests/unit/monitoring-docs.test.ts`
 - `tests/integration/health-route.test.ts`
+- `tests/integration/auth-route.test.ts`
+- `tests/integration/auth-production.test.ts`
+- `tests/integration/affiliate-route.test.ts`
 - `.env.example`
-- `docs/deployment.md`
-- `docs/superpowers/specs/2026-07-15-deployment-design.md`
-- `docs/superpowers/plans/2026-07-15-deployment.md`
+- `docs/monitoring.md`
+- `docs/superpowers/specs/2026-07-15-monitoring-design.md`
+- `docs/superpowers/plans/2026-07-15-monitoring.md`
 - `PROJECT_STATE.md`
 - `docs/project-status.md`
 - `docs/roadmap.md`
@@ -98,6 +105,8 @@ Authentication:
 - Production Google OAuth configuration exists and is documented.
 - Production server routes resolve Auth.js JWT cookies through
   `resolveServerAuthSession()`.
+- Google auth entry and Auth.js production sign-in mapping now emit structured
+  operational events.
 - Real OAuth credentials and deployed HTTPS callback verification remain blocked
   by external setup.
 
@@ -130,7 +139,12 @@ Deployment:
 Monitoring:
 
 - `/api/health` provides minimal deployment health proof.
-- Error reporting, alerting, telemetry, and incident triage remain for Sprint 28.
+- `src/lib/monitoring/events.ts` emits privacy-safe structured JSON events to
+  stdout in production.
+- `docs/monitoring.md` documents event schema, manual checks, alert thresholds,
+  incident triage, and privacy boundaries.
+- Hosted alert delivery and external monitoring SaaS setup remain future
+  host-specific work.
 
 Affiliate:
 
@@ -141,9 +155,8 @@ Affiliate:
 
 Recommended sprint sequence:
 
-1. Sprint 28: Monitoring.
-2. Sprint 29: Amazon Integration.
-3. Sprint 30: Release Candidate, Visual QA, and final release validation.
+1. Sprint 29: Amazon Integration.
+2. Sprint 30: Release Candidate, Visual QA, and final release validation.
 
 ## Remaining P2 Visual QA
 
@@ -167,21 +180,20 @@ accessibility, or release confidence:
 - Live deployment platform compatibility with `node:sqlite` and persistent disk
   is not proven because no external host was available.
 - Backup automation and retention are not implemented.
-- Monitoring beyond `/api/health` is absent.
+- Monitoring is stdout/manual-check based; no external alert delivery is wired.
 - Amazon integration is fixture/local-redirect based, not production-complete.
 - Long-lived project state now exists in docs, but future windows must keep
   those docs updated instead of relying on chat history.
 
-## Definition Of Done For Sprint 27
+## Definition Of Done For Sprint 28
 
-- Dockerfile builds a production standalone Next.js image.
-- Compose defines production env, port, persistent SQLite volume, and health
-  check.
-- Required env vars and environment model are documented.
-- Build/start/smoke-test and rollback path are documented.
-- Health route proves the app can open the production database runtime.
-- Tests cover deployment descriptors and health behavior.
+- Structured events emit to stdout in production.
+- Health, auth, and affiliate redirect paths have observable signals.
+- Secret-like metadata is redacted by the monitoring helper.
+- Manual checks, alert thresholds, incident triage, and privacy boundaries are
+  documented.
+- Tests cover event shape, routing coverage, and monitoring docs.
 
 ## Next Recommended Sprint
 
-Sprint 28: Monitoring.
+Sprint 29: Amazon Integration.

@@ -10,16 +10,16 @@ Current development phase:
 
 Current sprint:
 
-- Sprint 27: Deployment.
+- Sprint 28: Monitoring.
 
 Current completion level:
 
 - MVP product surface: functionally complete.
 - Visual QA: broad 15-screen evidence loop exists; remaining issues are P2
   fidelity drift unless otherwise noted.
-- Production readiness: not complete. OAuth, SQLite persistence, and the
-  Docker/Compose deployment baseline are code-complete for Sprints 25-27, but
-  monitoring and Amazon integration still need dedicated sprints.
+- Production readiness: not complete. OAuth, SQLite persistence,
+  Docker/Compose deployment, and structured stdout monitoring are code-complete
+  for Sprints 25-28, but Amazon integration still needs a dedicated sprint.
 
 Current blockers:
 
@@ -28,7 +28,9 @@ Current blockers:
   Google credentials and a deployed HTTPS origin exist.
 - P1: live deployment on an external host is blocked until credentials and a
   target origin exist.
-- P1: monitoring/observability baseline is absent beyond `/api/health`.
+- P1: Amazon live integration is not productionized.
+- P2: monitoring alert delivery is manual/stdout-based until a live host log
+  drain is selected.
 - P2: remaining Stitch visual drift and share-modal reference-state mismatch.
 
 Current risks:
@@ -47,11 +49,12 @@ Current risks:
   host proof.
 - Affiliate redirect logic is tested locally, but real Amazon API/compliance,
   reporting, and payout reconciliation are not complete.
-- Monitoring is not present, so production failures would be hard to diagnose.
+- Monitoring events are available in stdout, but no hosted alerting destination
+  exists in this workspace.
 
 Highest priority:
 
-- Start Sprint 28: Monitoring.
+- Start Sprint 29: Amazon Integration.
 
 ## Sprint 24 Scope
 
@@ -204,6 +207,51 @@ Out of scope retained:
 - Amazon live API integration.
 - Visual polish.
 
+## Sprint 28 Scope
+
+Goal:
+
+- Establish the minimum observability baseline for release.
+
+Completed:
+
+- Added `src/lib/monitoring/events.ts` for structured
+  `linkshelf.operational_event` JSON logs.
+- Events emit in production by default and can be enabled outside production
+  with `LINKSHELF_MONITORING_STDOUT=1`.
+- Secret-like metadata keys are redacted.
+- Instrumented `/api/health` with `health.check` events.
+- Instrumented `/api/auth/google` with `auth.google.request` events.
+- Instrumented Auth.js Google sign-in mapping with `auth.google.sign_in` events.
+- Instrumented `/api/out/[productId]` with `affiliate.redirect` events.
+- Added `docs/monitoring.md` with event schema, manual checks, alert thresholds,
+  incident triage, privacy boundaries, and future integration notes.
+- Added tests for event shape, docs, health, auth, and affiliate event coverage.
+
+Verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm vitest run tests/unit/monitoring-events.test.ts tests/unit/monitoring-docs.test.ts`:
+  passed, 4 tests.
+- `pnpm vitest run tests/integration/health-route.test.ts tests/integration/affiliate-route.test.ts`:
+  passed, 9 tests.
+- `pnpm vitest run tests/integration/auth-route.test.ts tests/integration/auth-production.test.ts`:
+  passed, 26 tests.
+- `pnpm test`: passed, 333 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
+  warning.
+- `pnpm test:e2e`: passed, 12 tests.
+
+Out of scope retained:
+
+- Hosted monitoring provider setup.
+- Alert delivery integrations such as email, Slack, PagerDuty, or webhooks.
+- Product analytics redesign.
+- Affiliate payout reporting.
+- Visual polish.
+
 ## Production Readiness Audit
 
 ### Authentication
@@ -316,23 +364,24 @@ Backlog:
 Current state:
 
 - `/api/health` returns database runtime health for deployment smoke checks.
-- No Sentry, OpenTelemetry, instrumentation file, uptime monitor, or structured
-  production logging baseline was found.
+- `src/lib/monitoring/events.ts` emits privacy-safe structured events to stdout.
+- Health, Google auth, Auth.js sign-in mapping, and affiliate redirects emit
+  operational events.
+- `docs/monitoring.md` documents manual checks, alert thresholds, incident
+  triage, and privacy boundaries.
 - Analytics screens in the product are app mock/derived views, not operational
   monitoring.
 
 Production gaps:
 
-- No error reporting.
-- No request/performance telemetry.
-- No uptime monitor or alerting.
-- No alerting or incident triage runbook.
-- No privacy posture for analytics/telemetry.
+- No external log drain or hosted alerting destination is configured.
+- No request/performance tracing beyond critical flow events.
+- No uptime monitor is configured outside the app.
 
 Backlog:
 
-- Sprint 28 should add the monitoring baseline on top of the deployment health
-  route.
+- A future host-specific operations task should connect stdout events to the
+  selected platform log drain and alert delivery.
 
 ### Affiliate And Amazon Integration
 
@@ -412,7 +461,6 @@ Release Candidate visual QA should include:
 
 P1:
 
-- Monitoring baseline sprint.
 - Amazon Integration sprint.
 
 P2:

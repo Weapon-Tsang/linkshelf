@@ -13,6 +13,7 @@ import {
   createSessionCookie,
   readAdminEntryCookie,
 } from "@/features/auth/session";
+import { recordOperationalEvent } from "@/lib/monitoring/events";
 
 const DEFAULT_DESTINATIONS: Record<DevelopmentRoleHint, string> = {
   creator: "/studio/dashboard",
@@ -46,6 +47,12 @@ function setResumeEntryCookieIfNeeded(
 
 export async function POST(request: Request): Promise<Response> {
   if (!hasSameOrigin(request)) {
+    recordOperationalEvent({
+      level: "warn",
+      name: "auth.google.request",
+      outcome: "cross_origin_rejected",
+      metadata: { status: 403 },
+    });
     return new Response("Cross-origin authentication request rejected", {
       status: 403,
     });
@@ -55,6 +62,12 @@ export async function POST(request: Request): Promise<Response> {
   try {
     form = await request.formData();
   } catch {
+    recordOperationalEvent({
+      level: "warn",
+      name: "auth.google.request",
+      outcome: "invalid_form",
+      metadata: { status: 400 },
+    });
     return new Response("Invalid form submission", { status: 400 });
   }
 
@@ -62,6 +75,12 @@ export async function POST(request: Request): Promise<Response> {
 
   if (process.env.NODE_ENV === "production") {
     if (!hasGoogleAuthConfiguration()) {
+      recordOperationalEvent({
+        level: "error",
+        name: "auth.google.request",
+        outcome: "google_configuration_missing",
+        metadata: { status: 503, environment: "production" },
+      });
       return new Response("Google authentication is not configured", { status: 503 });
     }
     const returnTo = safeReturnTo(requestedReturnTo, "/");
@@ -69,11 +88,23 @@ export async function POST(request: Request): Promise<Response> {
     authUrl.searchParams.set("callbackUrl", returnTo);
     const response = NextResponse.redirect(authUrl, 303);
     setResumeEntryCookieIfNeeded(response, requestedReturnTo);
+    recordOperationalEvent({
+      level: "info",
+      name: "auth.google.request",
+      outcome: "production_redirect",
+      metadata: { status: 303, environment: "production" },
+    });
     return response;
   }
 
   const role = form.get("role");
   if (!isRoleHint(role)) {
+    recordOperationalEvent({
+      level: "warn",
+      name: "auth.google.request",
+      outcome: "invalid_development_role",
+      metadata: { status: 400 },
+    });
     return new Response("Invalid development role", { status: 400 });
   }
   if (
@@ -84,13 +115,27 @@ export async function POST(request: Request): Promise<Response> {
       safeReturnTo(requestedReturnTo, DEFAULT_DESTINATIONS.admin),
     )
   ) {
+    recordOperationalEvent({
+      level: "warn",
+      name: "auth.google.request",
+      outcome: "admin_entry_rejected",
+      metadata: { status: 403, role },
+    });
     return new Response("Admin entry verification failed", { status: 403 });
   }
 
   const database = openAuthDatabase();
   try {
     const user = resolveDevelopmentUser(database, role);
-    if (!user) return new Response("Development identity unavailable", { status: 403 });
+    if (!user) {
+      recordOperationalEvent({
+        level: "error",
+        name: "auth.google.request",
+        outcome: "development_identity_missing",
+        metadata: { status: 403, role },
+      });
+      return new Response("Development identity unavailable", { status: 403 });
+    }
 
     const destination = safeReturnTo(
       requestedReturnTo,
@@ -110,6 +155,12 @@ export async function POST(request: Request): Promise<Response> {
         maxAge: 0,
       });
     }
+    recordOperationalEvent({
+      level: "info",
+      name: "auth.google.request",
+      outcome: "development_login",
+      metadata: { status: 303, role },
+    });
     return response;
   } finally {
     database.close();
