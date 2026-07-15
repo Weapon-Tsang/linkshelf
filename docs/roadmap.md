@@ -140,6 +140,12 @@ Definition of Done:
 - Rollback path is documented.
 - Handoff includes preview/production URLs if available.
 
+Status:
+
+- Complete for a generic Docker/Compose production-like deployment baseline.
+- Live preview/production URLs remain unavailable until external hosting
+  credentials and an origin exist.
+
 ## Sprint 28: Monitoring
 
 Goal:

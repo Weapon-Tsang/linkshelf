@@ -9,7 +9,7 @@ enough to shift the active work from feature delivery to production readiness.
 
 Active sprint:
 
-- Sprint 26: Persistent Database
+- Sprint 27: Deployment
 
 Current branch:
 
@@ -18,6 +18,10 @@ Current branch:
 Baseline source commit at Sprint 26 start:
 
 - `2b2241a feat: harden production google oauth`
+
+Baseline source commit at Sprint 27 start:
+
+- `94547bb feat: define persistent database runtime`
 
 Latest known remote state at Sprint 26 start:
 
@@ -38,6 +42,8 @@ The current app includes:
   Auth.js JWT session resolution, and documented provisioning runbook.
 - Production-contracted file-backed SQLite runtime, migrations, deterministic
   non-production seed data, and demo DB refresh paths.
+- Docker/Compose production-like deployment baseline with standalone Next.js
+  output, persistent SQLite volume, `/api/health`, and release/rollback runbook.
 - Affiliate redirect route with Amazon tag rewriting, click-event persistence,
   and fan/creator/platform split logic.
 - Share/fan auth resume flow.
@@ -88,6 +94,20 @@ Latest Sprint 26 verification:
   around `node:sqlite` usage.
 - `pnpm test:e2e`: passed, 12 tests.
 
+Latest Sprint 27 verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm test`: passed, 325 tests.
+- `pnpm vitest run tests/unit/deployment-config.test.ts`: passed, 6 tests.
+- `pnpm vitest run tests/integration/health-route.test.ts`: passed, 2 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
+  warning.
+- `pnpm test:e2e`: passed, 12 tests.
+- `docker compose config`: not run because `docker` is not installed in this
+  workspace.
+
 ## Production Readiness Summary
 
 Status by area:
@@ -96,11 +116,13 @@ Status by area:
   Sprint 25; live Google credential/deployed callback verification remains
   blocked by missing external credentials and deployment.
 - Database: file-backed SQLite on an explicit persistent volume path is selected
-  for MVP production; deployment compatibility must be proven in Sprint 27.
+  for MVP production; Compose mounts it at `/data/linkshelf`.
 - Environment configuration: OAuth env contract exists; broader production env
-  validation remains for DB/deployment sprints.
-- Deployment: no deployment target or runbook is committed.
-- Monitoring: no production observability baseline is committed.
+  validation remains for later hardening.
+- Deployment: Docker/Compose descriptor and release runbook are committed; live
+  host compatibility remains unverified without external credentials.
+- Monitoring: only `/api/health` exists; no production observability baseline is
+  committed.
 - Affiliate integration: local redirect and Amazon tag rewrite exist; real
   Amazon integration, compliance, and reporting are not productionized.
 - Visual QA: ongoing P2 fidelity backlog; remaining visual drift should move to
@@ -111,8 +133,8 @@ Status by area:
 
 - Do not add new product features during Feature Freeze unless the user changes
   the product priority.
-- Do not implement persistent DB, deployment, monitoring, or Amazon API
-  integration outside their dedicated approved sprints.
+- Do not implement monitoring or Amazon API integration outside their dedicated
+  approved sprints.
 - Record newly discovered issues in `docs/project-status.md` instead of fixing
   them opportunistically.
 - Keep visual QA work behind production engineering unless a visual issue is a

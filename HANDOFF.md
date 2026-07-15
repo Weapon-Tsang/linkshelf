@@ -4,26 +4,26 @@ Last updated: 2026-07-15 Asia/Shanghai
 
 ## Current Sprint
 
-Sprint 26: Persistent Database.
+Sprint 27: Deployment.
 
 Goal:
 
-- Replace local-demo persistence assumptions with an explicit production
-  database contract.
+- Make LinkShelf deployable and operable from Git.
 
 Status:
 
-- Sprint 26 implementation complete for local file-backed SQLite and explicit
-  persistent path contract.
-- Deployment target persistent disk behavior remains for Sprint 27.
+- Sprint 27 implementation complete for a generic Docker/Compose production-like
+  deployment baseline.
+- Live preview/production URLs were not created because this workspace has no
+  external host credentials.
 
 ## Workspace
 
 - Repo worktree: `/Users/weapon_tsang/Documents/linkshelf/.worktrees/linkshelf-mvp`
 - Branch: `codex/linkshelf-mvp`
 - Remote: `origin https://github.com/Weapon-Tsang/linkshelf.git`
-- Baseline source commit at Sprint 26 start:
-  `2b2241a feat: harden production google oauth`
+- Baseline source commit at Sprint 27 start:
+  `94547bb feat: define persistent database runtime`
 
 ## Current Project State
 
@@ -43,6 +43,8 @@ Completed product areas:
 - Production Auth.js JWT session resolution for protected App Router surfaces.
 - Production-contracted file-backed SQLite runtime, migrations, deterministic
   non-production seed data, and demo DB refresh paths.
+- Docker/Compose deployment baseline with standalone Next.js output, persistent
+  SQLite volume, `/api/health`, and release/rollback runbook.
 - Affiliate redirect route with Amazon tag rewriting and click-event recording.
 - Share/fan auth resume flow.
 - 15-screen Stitch visual QA capture script.
@@ -52,31 +54,35 @@ Latest visual QA evidence:
 - `2026-07-11T08:25:23.631Z`
 - 15 captured states under `test-results/design-qa/latest/`
 
-Latest Sprint 26 verification:
+Latest Sprint 27 verification:
 
 - `git diff --check`: passed.
 - `pnpm typecheck`: passed.
 - `pnpm lint`: passed.
-- `pnpm test`: passed, 317 tests.
-- `pnpm test tests/integration/database.test.ts tests/integration/auth-production.test.ts tests/integration/affiliate-route.test.ts`:
-  passed, 42 tests.
+- `pnpm test`: passed, 325 tests.
+- `pnpm vitest run tests/unit/deployment-config.test.ts`: passed, 6 tests.
+- `pnpm vitest run tests/integration/health-route.test.ts`: passed, 2 tests.
 - `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
   warning.
 - `pnpm test:e2e`: passed, 12 tests.
+- `docker compose config`: not run because `docker` is not installed in this
+  workspace.
 
-## Sprint 26 Changes
+## Sprint 27 Changes
 
 Code and documents created or updated:
 
-- `src/lib/db/runtime.ts`
-- `src/features/auth/adapter.ts`
-- `src/features/shelves/service.ts`
-- `src/app/api/out/[productId]/route.ts`
-- `tests/integration/database.test.ts`
+- `Dockerfile`
+- `.dockerignore`
+- `compose.yml`
+- `next.config.ts`
+- `src/app/api/health/route.ts`
+- `tests/unit/deployment-config.test.ts`
+- `tests/integration/health-route.test.ts`
 - `.env.example`
-- `docs/persistent-database.md`
-- `docs/superpowers/specs/2026-07-15-persistent-database-design.md`
-- `docs/superpowers/plans/2026-07-15-persistent-database.md`
+- `docs/deployment.md`
+- `docs/superpowers/specs/2026-07-15-deployment-design.md`
+- `docs/superpowers/plans/2026-07-15-deployment.md`
 - `PROJECT_STATE.md`
 - `docs/project-status.md`
 - `docs/roadmap.md`
@@ -103,7 +109,7 @@ Database:
 - Production app open paths run migrations and do not seed demo data.
 - Migration, seed-safety, backup, restore, and provisioning runbooks are in
   `docs/persistent-database.md`.
-- Deployment target persistent disk behavior remains for Sprint 27.
+- Compose mounts persistent SQLite storage at `/data/linkshelf`.
 
 Environment:
 
@@ -113,13 +119,18 @@ Environment:
 
 Deployment:
 
-- Build/test scripts exist.
-- No deployment target, descriptor, or release runbook was found.
-- Sprint 27 should prove `node:sqlite` and persistent disk compatibility.
+- Dockerfile builds a Next.js standalone Node 24 image.
+- `compose.yml` defines required production env vars, port 3000, persistent
+  SQLite volume, and `/api/health` health check.
+- `docs/deployment.md` documents build/start, smoke tests, environment model,
+  release checklist, and rollback.
+- Live host compatibility remains unverified until external deployment
+  credentials exist.
 
 Monitoring:
 
-- No production observability baseline was found.
+- `/api/health` provides minimal deployment health proof.
+- Error reporting, alerting, telemetry, and incident triage remain for Sprint 28.
 
 Affiliate:
 
@@ -130,10 +141,9 @@ Affiliate:
 
 Recommended sprint sequence:
 
-1. Sprint 27: Deployment.
-2. Sprint 28: Monitoring.
-3. Sprint 29: Amazon Integration.
-4. Sprint 30: Release Candidate, Visual QA, and final release validation.
+1. Sprint 28: Monitoring.
+2. Sprint 29: Amazon Integration.
+3. Sprint 30: Release Candidate, Visual QA, and final release validation.
 
 ## Remaining P2 Visual QA
 
@@ -154,25 +164,24 @@ accessibility, or release confidence:
 
 - Production auth has not been verified against real Google OAuth credentials or
   a deployed callback URL.
-- Deployment platform compatibility with `node:sqlite` and persistent disk is
-  not proven.
+- Live deployment platform compatibility with `node:sqlite` and persistent disk
+  is not proven because no external host was available.
 - Backup automation and retention are not implemented.
-- Monitoring is absent.
+- Monitoring beyond `/api/health` is absent.
 - Amazon integration is fixture/local-redirect based, not production-complete.
 - Long-lived project state now exists in docs, but future windows must keep
   those docs updated instead of relying on chat history.
 
-## Definition Of Done For Sprint 26
+## Definition Of Done For Sprint 27
 
-- Production DB provider/path is documented.
-- Production runtime requires explicit absolute `LINKSHELF_DB_PATH`.
-- Migrations are reproducible.
-- Production app open paths do not seed demo data.
-- Data survives close/reopen assumptions for the selected local SQLite strategy.
-- Backup/restore runbook exists.
-- Tests cover selected production DB boundaries.
-- No product features were added.
+- Dockerfile builds a production standalone Next.js image.
+- Compose defines production env, port, persistent SQLite volume, and health
+  check.
+- Required env vars and environment model are documented.
+- Build/start/smoke-test and rollback path are documented.
+- Health route proves the app can open the production database runtime.
+- Tests cover deployment descriptors and health behavior.
 
 ## Next Recommended Sprint
 
-Sprint 27: Deployment.
+Sprint 28: Monitoring.

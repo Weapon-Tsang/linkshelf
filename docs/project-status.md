@@ -10,24 +10,25 @@ Current development phase:
 
 Current sprint:
 
-- Sprint 26: Persistent Database.
+- Sprint 27: Deployment.
 
 Current completion level:
 
 - MVP product surface: functionally complete.
 - Visual QA: broad 15-screen evidence loop exists; remaining issues are P2
   fidelity drift unless otherwise noted.
-- Production readiness: not complete. OAuth and the SQLite persistence contract
-  are code-complete for Sprints 25-26, but deployment, monitoring, and Amazon
-  integration still need dedicated sprints.
+- Production readiness: not complete. OAuth, SQLite persistence, and the
+  Docker/Compose deployment baseline are code-complete for Sprints 25-27, but
+  monitoring and Amazon integration still need dedicated sprints.
 
 Current blockers:
 
 - P0: none known.
 - P1: production Google OAuth live callback verification is blocked until real
   Google credentials and a deployed HTTPS origin exist.
-- P1: deployment target, environment contract, and release runbook are absent.
-- P1: monitoring/observability baseline is absent.
+- P1: live deployment on an external host is blocked until credentials and a
+  target origin exist.
+- P1: monitoring/observability baseline is absent beyond `/api/health`.
 - P2: remaining Stitch visual drift and share-modal reference-state mismatch.
 
 Current risks:
@@ -35,20 +36,22 @@ Current risks:
 - Production Google OAuth code now maps Auth.js JWT sessions into protected
   Studio, Fan Hub, and Super Admin surfaces; real Google consent has not been
   exercised against a deployed callback URL.
-- The app now has a file-backed SQLite production persistence contract; actual
-  persistent disk behavior still needs deployment proof in Sprint 27.
+- The app now has a file-backed SQLite production persistence contract and a
+  Compose persistent volume mapping; actual host behavior still needs live
+  deployment proof.
 - `.env.example` and `docs/production-google-oauth.md` now document the OAuth
   environment contract; broader startup validation and deployment env ownership
   remain open.
 - The build passes with an existing non-fatal Turbopack NFT tracing warning
-  around SQLite imports; deployment platform compatibility still needs proof.
+  around SQLite/seed imports; deployment platform compatibility still needs live
+  host proof.
 - Affiliate redirect logic is tested locally, but real Amazon API/compliance,
   reporting, and payout reconciliation are not complete.
 - Monitoring is not present, so production failures would be hard to diagnose.
 
 Highest priority:
 
-- Start Sprint 27: Deployment.
+- Start Sprint 28: Monitoring.
 
 ## Sprint 24 Scope
 
@@ -159,6 +162,48 @@ Out of scope retained:
 - Amazon Integration.
 - Visual polish.
 
+## Sprint 27 Scope
+
+Goal:
+
+- Make LinkShelf deployable and operable from Git.
+
+Completed:
+
+- Enabled Next.js standalone output.
+- Added a multi-stage Node 24 `Dockerfile`.
+- Added `.dockerignore` for local caches, secrets, data, and worktrees.
+- Added `compose.yml` with production env vars, port 3000, a persistent SQLite
+  volume at `/data/linkshelf`, and an `/api/health` health check.
+- Added `src/app/api/health/route.ts` to verify the application database runtime
+  can open and migrate the production SQLite file.
+- Added `docs/deployment.md` with environment model, build/start commands,
+  smoke tests, release checklist, and rollback.
+- Expanded `.env.example` with deployment-oriented `PORT`, `HOSTNAME`, and
+  `LINKSHELF_DB_PATH` examples.
+- Added automated descriptor and health-route tests.
+
+Verification:
+
+- `git diff --check`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed.
+- `pnpm test`: passed, 325 tests.
+- `pnpm vitest run tests/unit/deployment-config.test.ts`: passed, 6 tests.
+- `pnpm vitest run tests/integration/health-route.test.ts`: passed, 2 tests.
+- `pnpm build`: passed with the existing non-fatal Turbopack NFT tracing
+  warning.
+- `pnpm test:e2e`: passed, 12 tests.
+- `docker compose config`: not run because `docker` is not installed in this
+  workspace.
+
+Out of scope retained:
+
+- Live cloud deployment, public preview URL, and DNS setup.
+- Monitoring beyond minimal `/api/health`.
+- Amazon live API integration.
+- Visual polish.
+
 ## Production Readiness Audit
 
 ### Authentication
@@ -244,31 +289,34 @@ Backlog:
 
 Current state:
 
-- `next.config.ts` is empty.
+- `next.config.ts` enables standalone output.
 - `package.json` provides `dev`, `build`, `start`, `lint`, `typecheck`, `test`,
   and `test:e2e` scripts.
 - Playwright can launch `next dev` for local E2E.
-- No deployment descriptor was found for Vercel, Fly, Render, Railway, Docker, or
-  similar.
+- `Dockerfile` builds a production Node 24 standalone server image.
+- `compose.yml` runs the app with production env, persistent SQLite storage, and
+  `/api/health`.
+- `docs/deployment.md` documents build/start, smoke tests, environment model,
+  release checklist, and rollback.
 
 Production gaps:
 
-- No target platform selected.
-- No production build/start/runtime runbook.
-- No preview/staging/prod environment model.
-- No persistent storage story tied to deployment.
-- No release rollback procedure.
+- No live external deployment target was exercised.
+- No preview or production URL exists yet.
+- Docker CLI is not installed in this workspace, so Compose parsing/building was
+  not locally executed.
 
 Backlog:
 
-- Sprint 27 should establish deployment and release operations after DB is
-  decided.
+- A future release or ops task should exercise the committed Docker/Compose
+  baseline on the selected live host.
 
 ### Monitoring
 
 Current state:
 
-- No Sentry, OpenTelemetry, instrumentation file, uptime checks, or structured
+- `/api/health` returns database runtime health for deployment smoke checks.
+- No Sentry, OpenTelemetry, instrumentation file, uptime monitor, or structured
   production logging baseline was found.
 - Analytics screens in the product are app mock/derived views, not operational
   monitoring.
@@ -277,13 +325,14 @@ Production gaps:
 
 - No error reporting.
 - No request/performance telemetry.
-- No uptime or health check.
+- No uptime monitor or alerting.
 - No alerting or incident triage runbook.
 - No privacy posture for analytics/telemetry.
 
 Backlog:
 
-- Sprint 28 should add the monitoring baseline after deployment exists.
+- Sprint 28 should add the monitoring baseline on top of the deployment health
+  route.
 
 ### Affiliate And Amazon Integration
 
@@ -363,9 +412,6 @@ Release Candidate visual QA should include:
 
 P1:
 
-- Production Google OAuth sprint.
-- Persistent production database sprint.
-- Deployment and release runbook sprint.
 - Monitoring baseline sprint.
 - Amazon Integration sprint.
 
